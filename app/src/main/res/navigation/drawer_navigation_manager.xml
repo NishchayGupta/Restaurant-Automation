@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_navigation"
+    app:startDestination="@id/menu_add_item">
+
+    <fragment
+        android:id="@id/menu_add_item"
+        android:name="com.hexamind.uniquorestaurant.Manager.AddItemFragment"
+        android:label="@string/menu_add_food_item_string"
+        tools:layout="@layout/fragment_add_item" />
+    <fragment
+        android:id="@id/menu_edit_item"
+        android:name="com.hexamind.uniquorestaurant.Manager.UpdateItemFragment"
+        android:label="@string/menu_edit_food_item_string"
+        tools:layout="@layout/fragment_update_item" />
+    <fragment
+        android:id="@id/menu_delete_item"
+        android:name="com.hexamind.uniquorestaurant.Manager.DeleteItemFragment"
+        android:label="@string/menu_delete_food_item_string"
+        tools:layout="@layout/fragment_delete_item" />
+</navigation>

@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Customer.MenuItemViewActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimaryDark"
+        android:id="@+id/appBar"
+        android:padding="16dp">
+
+        <ImageView
+            android:id="@+id/back"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_arrow_back_black_24dp"
+            android:layout_gravity="center" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="@string/title_string"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="@android:color/primary_text_dark"
+            android:fontFamily="@font/ubuntu_regular" />
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/foodItemImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/background"
+        android:scaleType="centerCrop"
+        android:layout_below="@+id/appBar" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="350dp"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/drawable_menu_item_bottom_view"
+        android:orientation="vertical"
+        android:padding="64dp">
+
+        <TextView
+            android:id="@+id/foodItemName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/food_item_name_string"
+            android:textColor="@android:color/primary_text_light"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:textStyle="bold"
+            android:fontFamily="@font/ubuntu_regular" />
+
+        <TextView
+            android:id="@+id/foodItemDesc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="32dp"
+            android:text="@string/food_item_desc_string"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="@android:color/primary_text_light"
+            android:fontFamily="@font/ubuntu_regular" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/bottomLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/drawable_menu_item_bottom_view_quantity"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="8dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/quantity_string"
+                android:textColor="@android:color/primary_text_dark"
+                android:textAppearance="@style/TextAppearance.AppCompat.Menu"
+                android:fontFamily="@font/ubuntu_regular" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp">
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/addPersons"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:text="@string/add_person_string"
+                    android:background="@drawable/drawable_table_booking_unselected"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+                <LinearLayout
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="16dp"
+                    android:background="@drawable/drawable_table_booking_persons_text">
+
+                    <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/noOfPersons"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:text="1"
+                        android:textColor="@android:color/primary_text_dark"
+                        android:backgroundTint="@android:color/transparent"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                        android:textAlignment="center" />
+
+                </LinearLayout>
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/removePersons"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:text="@string/remove_person_string"
+                    android:background="@drawable/drawable_table_booking_unselected"
+                    android:layout_marginStart="16dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textAlignment="viewEnd"
+            android:layout_marginEnd="8dp"
+            android:text="@string/food_item_price_string"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+            android:textColor="@android:color/primary_text_dark"
+            android:fontFamily="@font/ubuntu_regular" />
+
+    </LinearLayout>
+
+</RelativeLayout>

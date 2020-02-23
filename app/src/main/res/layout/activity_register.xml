@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".RegisterActivity">
+
+    <com.jgabrielfreitas.core.BlurImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/background_two"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#AE000000"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:padding="16dp">
+
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="center"
+            android:src="@drawable/logo" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="@string/register_title_text"
+            android:layout_gravity="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+            android:textColor="@android:color/primary_text_dark"
+            android:fontFamily="@font/ubuntu_regular" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_marginTop="32dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:boxStrokeColor="@android:color/primary_text_dark"
+            app:hintTextColor="@android:color/primary_text_dark"
+            android:textColorHint="@android:color/primary_text_dark"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/name_string"
+                android:textColorHint="@android:color/primary_text_dark"
+                android:textColor="@android:color/primary_text_dark"
+                app:hintTextColor="@android:color/primary_text_dark"
+                android:fontFamily="@font/ubuntu_regular" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_marginTop="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:boxStrokeColor="@android:color/primary_text_dark"
+            app:hintTextColor="@android:color/primary_text_dark"
+            android:textColorHint="@android:color/primary_text_dark"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/email_string"
+                android:textColorHint="@android:color/primary_text_dark"
+                android:textColor="@android:color/primary_text_dark"
+                app:hintTextColor="@android:color/primary_text_dark"
+                android:fontFamily="@font/ubuntu_regular"
+                android:inputType="textEmailAddress" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_marginTop="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:boxStrokeColor="@android:color/primary_text_dark"
+            app:hintTextColor="@android:color/primary_text_dark"
+            android:textColorHint="@android:color/primary_text_dark"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/password_string"
+                android:textColorHint="@android:color/primary_text_dark"
+                android:textColor="@android:color/primary_text_dark"
+                app:hintTextColor="@android:color/primary_text_dark"
+                android:fontFamily="@font/ubuntu_regular"
+                android:inputType="textPassword" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_marginTop="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:boxStrokeColor="@android:color/primary_text_dark"
+            app:hintTextColor="@android:color/primary_text_dark"
+            android:textColorHint="@android:color/primary_text_dark"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/phoneNumber"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/phone_number_string"
+                android:textColorHint="@android:color/primary_text_dark"
+                android:textColor="@android:color/primary_text_dark"
+                app:hintTextColor="@android:color/primary_text_dark"
+                android:fontFamily="@font/ubuntu_regular"
+                android:inputType="phone" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/termsConditions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/ubuntu_regular"
+            android:textColor="@android:color/primary_text_dark"
+            app:buttonTint="@android:color/background_light"
+            android:checked="true"
+            app:useMaterialThemeColors="false" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/register"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            app:strokeColor="@android:color/background_light"
+            android:padding="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/register_string"
+            android:textColor="@android:color/primary_text_light"
+            android:textAppearance="@style/TextAppearance.AppCompat.Button"
+            app:cornerRadius="8dp"
+            android:fontFamily="@font/ubuntu_regular"
+            android:layout_marginTop="16dp"
+            app:backgroundTint="@android:color/background_light"/>
+
+        <TextView
+            android:id="@+id/loginHere"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textColor="@android:color/primary_text_dark"
+            android:fontFamily="@font/ubuntu_regular"
+            android:layout_marginTop="32dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Menu"/>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

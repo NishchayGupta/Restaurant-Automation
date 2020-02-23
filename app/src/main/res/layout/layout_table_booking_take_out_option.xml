@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="40dp"
+        android:text="@string/enter_details_here_string"
+        android:textColor="@android:color/primary_text_dark"
+        android:textAppearance="@style/TextAppearance.AppCompat.Menu"
+        android:fontFamily="@font/ubuntu_regular" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/usernameInput"
+        android:layout_marginTop="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/drawable_table_booking_edittext_background"
+        app:boxStrokeColor="@android:color/primary_text_dark"
+        app:hintTextColor="@android:color/primary_text_dark"
+        android:textColorHint="@android:color/primary_text_dark"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/custName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/name_string"
+            android:textColorHint="@android:color/primary_text_dark"
+            android:textColor="@android:color/primary_text_dark"
+            app:hintTextColor="@android:color/primary_text_dark"
+            android:fontFamily="@font/ubuntu_regular"
+            android:inputType="textEmailAddress" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_marginTop="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:boxStrokeColor="@android:color/primary_text_dark"
+        android:background="@drawable/drawable_table_booking_edittext_background"
+        app:hintTextColor="@android:color/primary_text_dark"
+        android:textColorHint="@android:color/primary_text_dark"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/custPhoneNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/phone_number_string"
+            android:textColorHint="@android:color/primary_text_dark"
+            android:textColor="@android:color/primary_text_dark"
+            app:hintTextColor="@android:color/primary_text_dark"
+            android:fontFamily="@font/ubuntu_regular"
+            android:inputType="textPassword" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/reserveTakeout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="64dp"
+        android:text="@string/reserve_takeout_string"
+        android:fontFamily="@font/ubuntu_regular"
+        android:textColor="@android:color/primary_text_light"
+        android:background="@drawable/drawable_table_booking_unselected"
+        android:padding="16dp"
+        android:textAllCaps="true"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+</LinearLayout>

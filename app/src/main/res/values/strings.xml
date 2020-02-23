@@ -1,0 +1,118 @@
+<resources>
+    <string name="app_name">UniquoRestaurant</string>
+    <string name="image_desc">Logo</string>
+    <string name="login_string">Login</string>
+    <string name="register_string">Register</string>
+    <string name="welcome_string">Hello and welcome to</string>
+    <string name="restaurant_name">Uniquo Restaurant</string>
+    <string name="username_string">Username</string>
+    <string name="forgot_password_string">Forgot Password?</string>
+    <string name="register_here_text">Don\'t have an account? Register Here</string>
+    <string name="password_string">Password</string>
+    <string name="register_title_text">Enter registration details here</string>
+    <string name="name_string">Name</string>
+    <string name="retype_password_string">Retype password</string>
+    <string name="terms_and_conditions_check_string">I have read all the </string>
+    <string name="terms_and_conditions_check_substring">terms and conditions</string>
+    <string name="login_here_text">Already have an account?</string>
+    <string name="login_here_substring_text">Login here</string>
+    <string name="menu_card_string">Menu Card</string>
+    <string name="past_orders_string">Past Orders</string>
+    <string name="cart_string">Cart</string>
+    <string name="notifications_string">Notifications</string>
+    <string name="profile_string">Profile</string>
+    <string name="settings_string">Settings</string>
+    <string name="welcome_user_string">Welcome %1$s!</string>
+    <string name="logout_string">Logout</string>
+    <array name="menuOptions">
+        <item>Menu Card</item>
+        <item>Past Orders</item>
+        <item>Cart</item>
+        <item>Notifications</item>
+        <item>Profile</item>
+        <item>Settings</item>
+    </array>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="item_name_string">Item Name</string>
+    <string name="item_cost_string">$ %1$s</string>
+    <string name="item_string">Items</string>
+    <string name="items_ordered_string">Items Ordered</string>
+    <string name="ordered_on_string">Ordered on</string>
+    <string name="date_ordered_string">Date ordered</string>
+    <string name="amount_paid_string">Amount paid</string>
+    <string name="select_dining_type_string">Select Dining Type</string>
+    <string name="dine_in_string">Dine In</string>
+    <string name="take_out_string">Take Out</string>
+    <string name="enter_details_here_string">Enter your contact information</string>
+    <string name="problem_getting_customer_details_string">There was some problem in getting the details of the customer. Please try again later..</string>
+    <string name="email_string">Email Address</string>
+    <string name="phone_number_string">Phone Number</string>
+    <string name="register_success_string">Customer was registered successfully</string>
+    <string name="problem_registering_customer_details_string">Some problem was encountered while registring the customer. Please try again later...</string>
+    <string name="number_of_persons_string">Number of person(s)</string>
+    <string name="add_person_string">+</string>
+    <string name="remove_person_string">-</string>
+    <string name="arrival_time_string">Time of arrival</string>
+    <string name="check_availability_string">Check Availability</string>
+    <string name="book_table_string">Book a table</string>
+    <string name="reserve_takeout_string">Reserve Take Out</string>
+    <string name="title_string">Screen Title</string>
+    <string name="food_item_name_string">Food Item Name</string>
+    <string name="food_item_desc_string">Food Item Description</string>
+    <string name="quantity_string">Quantity</string>
+    <string name="food_item_price_string">$ 0.0</string>
+    <string name="invalid_name_error_string">Invalid name entered</string>
+    <string name="invalid_email_error_string">Invalid email entered</string>
+    <string name="invalid_password_error_string">Invalid password entered</string>
+    <string name="invalid_phone_number_error_string">Invalid phone number entered</string>
+    <string name="invalid_username_error_string">Invalid username entered</string>
+    <string name="menu_item_menu_card_string">Menu Card</string>
+    <string name="menu_item_past_orders_string">Past Orders</string>
+    <string name="menu_item_my_cart_string">My Cart</string>
+    <string name="menu_item_notifications_string">Notifications</string>
+    <string name="menu_item_profile_string">Profile</string>
+    <string name="menu_item_logout_string">Logout</string>
+    <string name="logout_success_message_string">You were logged out successfully</string>
+    <string name="default_price_string">$ 0.0</string>
+    <string name="add_item_cart_string">+</string>
+    <string name="remove_item_cart_string">-</string>
+    <string name="default_item_count_string">1</string>
+    <string name="proceed_to_payment_string">Proceed to Payment</string>
+    <string name="total_amount_string">Total Amount</string>
+    <string name="total_cost_string">Total Cost</string>
+    <string name="total_tax_string">Total Tax</string>
+    <string name="total_string">Total</string>
+    <string name="select_payment_type_string">Select Payment Type</string>
+    <string name="card_string">Card</string>
+    <string name="cash_string">Cash</string>
+    <string name="enter_card_details_string">Enter your card details</string>
+    <string name="name_on_card_string">Name on card</string>
+    <string name="expiry_date_string">Expiry Date</string>
+    <string name="cvv_string">CVV</string>
+    <string name="pay_now_string">Pay Now</string>
+    <string name="table_number_string">Table Number</string>
+    <string name="edit_profile_string">Edit Profile</string>
+    <string name="done_string">Done</string>
+    <string name="food_items_ordered_list">Food Items Order List</string>
+    <string name="order_ready_string">Order Ready</string>
+    <string name="payment_type_string">Payment Type</string>
+    <string name="view_receipt_string">View Receipt</string>
+    <string name="menu_add_food_item_string">Add an Item</string>
+    <string name="menu_edit_food_item_string">Edit an item</string>
+    <string name="menu_delete_food_item_string">Delete an item</string>
+    <string name="item_details_string">Item Details</string>
+    <string name="add_item_string">Add Food Item</string>
+    <string name="update_item_string">Update Item</string>
+    <string name="invoice_string">Invoice</string>
+    <string name="invoice_date_string">Invoice Date</string>
+    <string name="items_string">Items</string>
+    <string name="sub_total_string">Sub Total</string>
+    <string name="taxes_string">Taxes</string>
+    <string name="make_payment_string">Make Payment</string>
+    <string name="send_in_mail_string">Send in mail</string>
+    <string name="table_available_string">Table Available: %1$d</string>
+    <string name="table_available_waiting_time_string">Waiting time: %1$s</string>
+    <string name="booking_table_error_string">There was some problem in booking the table. Please try again later...</string>
+</resources>

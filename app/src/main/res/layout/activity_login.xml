@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".LoginActivity">
+
+    <com.jgabrielfreitas.core.BlurImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/background"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#A1000000"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/imageView"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp">
+
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/logo" />
+
+        <TextView
+            android:id="@+id/welcome"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="@string/welcome_string"
+            android:layout_below="@+id/logo"
+            android:fontFamily="@font/ubuntu_regular"
+            android:textColor="@android:color/primary_text_dark"
+            android:layout_marginTop="16dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
+
+        <TextView
+            android:id="@+id/restName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="@string/restaurant_name"
+            android:layout_below="@+id/welcome"
+            android:fontFamily="@font/ubuntu_regular"
+            android:textColor="@android:color/primary_text_dark"
+            android:layout_marginTop="4dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/usernameInput"
+            android:layout_below="@+id/restName"
+            android:layout_marginTop="32dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:boxStrokeColor="@android:color/primary_text_dark"
+            app:hintTextColor="@android:color/primary_text_dark"
+            android:textColorHint="@android:color/primary_text_dark"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/username_string"
+                android:textColorHint="@android:color/primary_text_dark"
+                android:textColor="@android:color/primary_text_dark"
+                app:hintTextColor="@android:color/primary_text_dark"
+                android:fontFamily="@font/ubuntu_regular"
+                android:inputType="textEmailAddress" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/passwordInput"
+            android:layout_below="@+id/usernameInput"
+            android:layout_marginTop="32dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:boxStrokeColor="@android:color/primary_text_dark"
+            app:hintTextColor="@android:color/primary_text_dark"
+            android:textColorHint="@android:color/primary_text_dark"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/password_string"
+                android:textColorHint="@android:color/primary_text_dark"
+                android:textColor="@android:color/primary_text_dark"
+                app:hintTextColor="@android:color/primary_text_dark"
+                android:fontFamily="@font/ubuntu_regular"
+                android:inputType="textPassword" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:id="@+id/forgotPassword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:fontFamily="@font/ubuntu_regular"
+            android:textStyle="bold"
+            android:text="@string/forgot_password_string"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+            android:textColor="@android:color/primary_text_dark"
+            android:layout_below="@+id/passwordInput"
+            android:textAllCaps="true"
+            android:layout_marginTop="24dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/login"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            app:strokeColor="@android:color/background_light"
+            android:padding="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/login_string"
+            android:textColor="@android:color/primary_text_light"
+            android:textAppearance="@style/TextAppearance.AppCompat.Button"
+            app:cornerRadius="4dp"
+            android:fontFamily="@font/ubuntu_regular"
+            android:layout_below="@+id/forgotPassword"
+            android:layout_marginTop="16dp"
+            app:backgroundTint="@android:color/background_light"/>
+
+        <TextView
+            android:id="@+id/register"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="@string/register_here_text"
+            android:textColor="@android:color/primary_text_dark"
+            android:layout_below="@+id/login"
+            android:fontFamily="@font/ubuntu_regular"
+            android:layout_marginTop="32dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Menu"/>
+
+    </RelativeLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
