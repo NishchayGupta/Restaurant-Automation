@@ -3,11 +3,17 @@ package com.hexamind.uniquorestaurant.Retrofit;
 import com.hexamind.uniquorestaurant.Data.BookTableSuccess;
 import com.hexamind.uniquorestaurant.Data.CheckAvailabilitySuccess;
 import com.hexamind.uniquorestaurant.Data.CustomerSuccess;
+import com.hexamind.uniquorestaurant.Data.FoodItem;
+import com.hexamind.uniquorestaurant.Data.FoodItems;
+import com.hexamind.uniquorestaurant.Data.GeneralError;
 import com.hexamind.uniquorestaurant.Data.Person;
 import com.hexamind.uniquorestaurant.Data.RegisterPost;
 import com.hexamind.uniquorestaurant.Data.RegisterSuccess;
 
+import java.util.List;
+
 import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
@@ -27,4 +33,10 @@ public interface ApiService {
 
     @PUT("customer/bookTable/{tableId}")
     Call<BookTableSuccess> bookTable(@Path("tableId") Long tableId, @Body Person person);
+
+    @GET("table/updateWaitingTime")
+    Call<GeneralError> checkAvailabilityCheck();
+
+    @GET("foodItems")
+    Call<List<FoodItems>> getAllFoodItems();
 }

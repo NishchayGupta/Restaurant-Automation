@@ -92,7 +92,7 @@
             android:background="@drawable/drawable_table_booking_persons_text">
 
             <androidx.appcompat.widget.AppCompatEditText
-                android:id="@+id/noOfPersons"
+                android:id="@+id/quantity"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:text="1"

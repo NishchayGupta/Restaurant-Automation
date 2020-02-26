@@ -18,11 +18,11 @@ import retrofit2.Response;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.Handler;
 import android.util.ArraySet;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,6 +32,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.hexamind.uniquorestaurant.Data.BookTableSuccess;
 import com.hexamind.uniquorestaurant.Data.CheckAvailabilitySuccess;
 import com.hexamind.uniquorestaurant.Data.CustomerSuccess;
+import com.hexamind.uniquorestaurant.Data.GeneralError;
 import com.hexamind.uniquorestaurant.Data.Person;
 import com.hexamind.uniquorestaurant.LoginActivity;
 import com.hexamind.uniquorestaurant.R;
@@ -88,10 +89,9 @@ public class CustomerHomeActivity extends AppCompatActivity {
                     return true;
                 });
 
-        new Handler().postDelayed(this::viewBookingDialog, 3000);
-
         customer = SharedPreferencesUtils.getCustomerFromSharedPrefs(this, Utils.CUSTOMER_OBJ_NAME);
         person = customer.getPerson();
+        viewBookingDialog();
 
         Toast.makeText(this, "Customer name: " + person.getName(), Toast.LENGTH_SHORT).show();
     }
@@ -116,7 +116,8 @@ public class CustomerHomeActivity extends AppCompatActivity {
         TextView tableAvailable = tableBooking.findViewById(R.id.tableAvailable);
         TextView timer = tableBooking.findViewById(R.id.timer);
         TextView removePersons = tableBooking.findViewById(R.id.removePersons);
-        AppCompatEditText numberOfPersons = tableBooking.findViewById(R.id.noOfPersons);
+        ImageView close = tableBooking.findViewById(R.id.close);
+        AppCompatEditText numberOfPersons = tableBooking.findViewById(R.id.quantity);
         AppCompatButton checkAvailability = tableBooking.findViewById(R.id.checkAvailability);
         AppCompatButton bookTable = tableBooking.findViewById(R.id.bookTable);
         AppCompatButton reserveTakeout = tableBooking.findViewById(R.id.reserveTakeout);
@@ -155,52 +156,72 @@ public class CustomerHomeActivity extends AppCompatActivity {
                 numberOfPersons.setText(String.valueOf(noOfPersons));
             }
         });
+        close.setOnClickListener(view -> dialog.dismiss());
         bookTable.setOnClickListener(view -> {
             Toast.makeText(this, "The table has successfully been booked", Toast.LENGTH_SHORT).show();
             dialog.dismiss();
         });
         reserveTakeout.setOnClickListener(view -> dialog.dismiss());
         checkAvailability.setOnClickListener(view -> {
-            ApiService api = RetrofitClient.getApiService();
-            Call<CheckAvailabilitySuccess> call = api.checkAvailability();
-            call.enqueue(new Callback<CheckAvailabilitySuccess>() {
+            ApiService apiService = RetrofitClient.getApiService();
+            Call<GeneralError> initUpdateCall = apiService.checkAvailabilityCheck();
+
+            initUpdateCall.enqueue(new Callback<GeneralError>() {
                 @Override
-                public void onResponse(Call<CheckAvailabilitySuccess> call, Response<CheckAvailabilitySuccess> response) {
-                    CheckAvailabilitySuccess checkAvailability = response.body();
+                public void onResponse(Call<GeneralError> initCall, Response<GeneralError> response) {
+                    GeneralError init = response.body();
 
-                    if (countDownTimer != null)
-                        countDownTimer.cancel();
-                    tableAvailable.setVisibility(View.VISIBLE);
-                    timer.setVisibility(View.VISIBLE);
-                    tableId = checkAvailability.getTableNumber();
-                    if (checkAvailability.getWaitingTimeInMinutes() == 0) {
-                        tableAvailable.setText(getResources().getString(R.string.table_available_string, checkAvailability.getTableNumber()));
-                        timer.setVisibility(View.GONE);
-                        bookTable.setEnabled(true);
+                    if (init.getStatus().equals("OK")) {
+                        ApiService api = RetrofitClient.getApiService();
+                        Call<CheckAvailabilitySuccess> call = api.checkAvailability();
+                        call.enqueue(new Callback<CheckAvailabilitySuccess>() {
+                            @Override
+                            public void onResponse(Call<CheckAvailabilitySuccess> call, Response<CheckAvailabilitySuccess> response) {
+                                CheckAvailabilitySuccess checkAvailability = response.body();
+
+                                if (countDownTimer != null)
+                                    countDownTimer.cancel();
+                                tableAvailable.setVisibility(View.VISIBLE);
+                                timer.setVisibility(View.VISIBLE);
+                                tableId = checkAvailability.getTableNumber();
+                                if (checkAvailability.getWaitingTimeInMinutes() == 0) {
+                                    tableAvailable.setText(getResources().getString(R.string.table_available_string, checkAvailability.getTableNumber()));
+                                    timer.setVisibility(View.GONE);
+                                    bookTable.setEnabled(true);
+                                } else {
+                                    tableAvailable.setText(getResources().getString(R.string.table_available_string, checkAvailability.getTableNumber()));
+
+                                    countDownTimer = new CountDownTimer(getMillis(checkAvailability.getWaitingTimeInMinutes()), 1000) {
+                                        @Override
+                                        public void onTick(long l) {
+                                            timer.setText(getResources().getString(R.string.table_available_waiting_time_string, String.format(Locale.getDefault(),
+                                                    "%d:%d", TimeUnit.MILLISECONDS.toMinutes(l), TimeUnit.MILLISECONDS.toSeconds(l) -
+                                                            TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(l)))));
+                                        }
+
+                                        @Override
+                                        public void onFinish() {
+                                            Toast.makeText(CustomerHomeActivity.this, "Table no. " + checkAvailability.getTableNumber() + " is now available!!!", Toast.LENGTH_SHORT).show();
+                                            bookTable.setEnabled(true);
+                                        }
+                                    }.start();
+
+                                    bookTable.setEnabled(false);
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<CheckAvailabilitySuccess> call, Throwable t) {
+                                Toast.makeText(CustomerHomeActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
                     } else {
-                        tableAvailable.setText(getResources().getString(R.string.table_available_string, checkAvailability.getTableNumber()));
-
-                        countDownTimer = new CountDownTimer(getMillis(checkAvailability.getWaitingTimeInMinutes()), 1000) {
-                            @Override
-                            public void onTick(long l) {
-                                timer.setText(getResources().getString(R.string.table_available_waiting_time_string, String.format(Locale.getDefault(),
-                                        "%d:%d", TimeUnit.MILLISECONDS.toMinutes(l), TimeUnit.MILLISECONDS.toSeconds(l) -
-                                                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(l)))));
-                            }
-
-                            @Override
-                            public void onFinish() {
-                                Toast.makeText(CustomerHomeActivity.this, "Table no. " + checkAvailability.getTableNumber() + " is now available!!!", Toast.LENGTH_SHORT).show();
-                                bookTable.setEnabled(true);
-                            }
-                        }.start();
-
-                        bookTable.setEnabled(false);
+                        Toast.makeText(CustomerHomeActivity.this, getString(R.string.check_availability_string), Toast.LENGTH_SHORT).show();
                     }
                 }
 
                 @Override
-                public void onFailure(Call<CheckAvailabilitySuccess> call, Throwable t) {
+                public void onFailure(Call<GeneralError> call, Throwable t) {
                     Toast.makeText(CustomerHomeActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
@@ -214,6 +235,7 @@ public class CustomerHomeActivity extends AppCompatActivity {
                     BookTableSuccess bookTable = response.body();
 
                     if (response.code() == 200) {
+                        SharedPreferencesUtils.saveBooleanToSharedPrefs(CustomerHomeActivity.this, Utils.IS_TABLE_BOOKED, true);
                         Toast.makeText(CustomerHomeActivity.this, tableId + " was booked successfully", Toast.LENGTH_SHORT).show();
                         dialog.dismiss();
                     } else {

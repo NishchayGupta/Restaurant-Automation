@@ -20,14 +20,28 @@
             android:background="@drawable/drawable_dialog_background"
             android:animateLayoutChanges="true">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="@string/select_dining_type_string"
-                android:textColor="@android:color/primary_text_dark"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                android:fontFamily="@font/ubuntu_regular" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:text="@string/select_dining_type_string"
+                    android:textColor="@android:color/primary_text_dark"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                    android:fontFamily="@font/ubuntu_regular" />
+
+                <ImageView
+                    android:id="@+id/close"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/ic_close_black_24dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true" />
+
+            </RelativeLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"

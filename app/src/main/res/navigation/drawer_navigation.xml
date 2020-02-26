@@ -12,14 +12,14 @@
         tools:layout="@layout/fragment_menu_card" />
     <fragment
         android:id="@id/menu_past_orders"
-        android:name="com.hexamind.uniquorestaurant.Customer.MyCartFragment"
+        android:name="com.hexamind.uniquorestaurant.Customer.PastOrdersFragment"
         android:label="@string/menu_item_past_orders_string"
-        tools:layout="@layout/fragment_my_cart" />
+        tools:layout="@layout/fragment_past_orders" />
     <fragment
         android:id="@id/menu_my_cart"
-        android:name="com.hexamind.uniquorestaurant.Customer.PastOrdersFragment"
+        android:name="com.hexamind.uniquorestaurant.Customer.MyCartFragment"
         android:label="@string/menu_item_my_cart_string"
-        tools:layout="@layout/fragment_past_orders" />
+        tools:layout="@layout/fragment_my_cart" />
     <fragment
         android:id="@id/menu_notifications"
         android:name="com.hexamind.uniquorestaurant.Customer.NotificationsFragment"

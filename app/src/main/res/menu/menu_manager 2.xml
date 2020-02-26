@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_add_item"
+        android:title="@string/menu_add_food_item_string"
+        android:icon="@drawable/ic_add_black_24dp" />
+    <item
+        android:id="@+id/menu_edit_item"
+        android:title="@string/menu_edit_food_item_string"
+        android:icon="@drawable/ic_edit_black_24dp" />
+    <item
+        android:id="@+id/menu_delete_item"
+        android:title="@string/menu_delete_food_item_string"
+        android:icon="@drawable/ic_delete_black_24dp" />
+    <item
+        android:id="@+id/menu_logout"
+        android:title="@string/menu_item_logout_string"
+        android:icon="@drawable/ic_exit_to_app_black_24dp" />
+</menu>

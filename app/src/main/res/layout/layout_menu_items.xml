@@ -5,9 +5,11 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardView"
     app:cardUseCompatPadding="true"
     app:contentPadding="8dp"
-    app:cardCornerRadius="4dp">
+    app:cardCornerRadius="4dp"
+    app:cardBackgroundColor="@android:color/background_light">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -20,7 +22,9 @@
             <ImageView
                 android:id="@+id/itemImage"
                 android:layout_width="match_parent"
-                android:layout_height="250dp" />
+                android:layout_height="250dp"
+                android:src="@drawable/background_two"
+                android:scaleType="centerCrop"/>
 
         </LinearLayout>
 
@@ -36,7 +40,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/item_name_string"
-                android:textColor="@android:color/primary_text_light"
+                android:textColor="@android:color/primary_text_dark"
                 android:textAppearance="@style/TextAppearance.AppCompat.Menu"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentStart="true" />
@@ -46,7 +50,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/item_cost_string"
-                android:textColor="@android:color/primary_text_light"
+                android:textColor="@android:color/primary_text_dark"
                 android:textAppearance="@style/TextAppearance.AppCompat.Menu"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true" />

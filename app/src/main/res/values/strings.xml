@@ -75,11 +75,11 @@
     <string name="menu_item_profile_string">Profile</string>
     <string name="menu_item_logout_string">Logout</string>
     <string name="logout_success_message_string">You were logged out successfully</string>
-    <string name="default_price_string">$ 0.0</string>
+    <string name="default_price_string">$ %1$s</string>
     <string name="add_item_cart_string">+</string>
     <string name="remove_item_cart_string">-</string>
     <string name="default_item_count_string">1</string>
-    <string name="proceed_to_payment_string">Proceed to Payment</string>
+    <string name="proceed_to_payment_string">Add to Order</string>
     <string name="total_amount_string">Total Amount</string>
     <string name="total_cost_string">Total Cost</string>
     <string name="total_tax_string">Total Tax</string>
@@ -115,4 +115,7 @@
     <string name="table_available_string">Table Available: %1$d</string>
     <string name="table_available_waiting_time_string">Waiting time: %1$s</string>
     <string name="booking_table_error_string">There was some problem in booking the table. Please try again later...</string>
+    <string name="add_to_cart_string">Add to cart</string>
+    <string name="book_tabled_needed_string">You need to book a table before continuing</string>
+    <string name="item_add_success">1 item was added to the cart</string>
 </resources>

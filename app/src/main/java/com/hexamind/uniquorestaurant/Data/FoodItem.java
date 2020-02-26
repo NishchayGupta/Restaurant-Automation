@@ -1,57 +1,26 @@
+
 package com.hexamind.uniquorestaurant.Data;
 
+import java.util.ArrayList;
+import java.util.List;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 public class FoodItem {
-    private int foodItemID;
-    private String foodItemName;
-    private String foodItemDesc;
-    private Double foodItemPrice;
-    private String foodItemPicture;
-
-    public FoodItem(int foodItemID, String foodItemName, String foodItemDesc, Double foodItemPrice, String foodItemPicture) {
-        this.foodItemID = foodItemID;
-        this.foodItemName = foodItemName;
-        this.foodItemDesc = foodItemDesc;
-        this.foodItemPrice = foodItemPrice;
-        this.foodItemPicture = foodItemPicture;
+    public FoodItem(List<FoodItems> foodItems) {
+        this.foodItems = foodItems;
     }
 
-    public int getFoodItemID() {
-        return foodItemID;
+    @SerializedName("Food Items")
+    @Expose
+    private List<FoodItems> foodItems = null;
+
+    public List<FoodItems> getFoodItems() {
+        return foodItems;
     }
 
-    public void setFoodItemID(int foodItemID) {
-        this.foodItemID = foodItemID;
+    public void setFoodItems(ArrayList<FoodItems> foodItems) {
+        this.foodItems = foodItems;
     }
 
-    public String getFoodItemName() {
-        return foodItemName;
-    }
-
-    public void setFoodItemName(String foodItemName) {
-        this.foodItemName = foodItemName;
-    }
-
-    public String getFoodItemDesc() {
-        return foodItemDesc;
-    }
-
-    public void setFoodItemDesc(String foodItemDesc) {
-        this.foodItemDesc = foodItemDesc;
-    }
-
-    public Double getFoodItemPrice() {
-        return foodItemPrice;
-    }
-
-    public void setFoodItemPrice(Double foodItemPrice) {
-        this.foodItemPrice = foodItemPrice;
-    }
-
-    public String getFoodItemPicture() {
-        return foodItemPicture;
-    }
-
-    public void setFoodItemPicture(String foodItemPicture) {
-        this.foodItemPicture = foodItemPicture;
-    }
 }

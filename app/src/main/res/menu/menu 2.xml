@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_menu_card"
+        android:title="@string/menu_item_menu_card_string"
+        android:icon="@drawable/ic_home_white_24dp" />
+    <item
+        android:id="@+id/menu_past_orders"
+        android:title="@string/menu_item_past_orders_string"
+        android:icon="@drawable/ic_done_all_black_24dp" />
+    <item
+        android:id="@+id/menu_my_cart"
+        android:title="@string/menu_item_my_cart_string"
+        android:icon="@drawable/ic_shopping_cart_black_24dp" />
+    <item
+        android:id="@+id/menu_notifications"
+        android:title="@string/menu_item_notifications_string"
+        android:icon="@drawable/ic_notifications_active_black_24dp" />
+    <item
+        android:id="@+id/menu_profile"
+        android:title="@string/menu_item_profile_string"
+        android:icon="@drawable/ic_account_box_black_24dp" />
+    <item
+        android:id="@+id/menu_logout"
+        android:title="@string/menu_item_logout_string"
+        android:icon="@drawable/ic_exit_to_app_black_24dp" />
+</menu>

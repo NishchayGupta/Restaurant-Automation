@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.hexamind.uniquorestaurant.Data.FoodItem;
+import com.hexamind.uniquorestaurant.Data.FoodItems;
 import com.hexamind.uniquorestaurant.Data.Order;
 import com.hexamind.uniquorestaurant.R;
 
@@ -58,7 +59,7 @@ public class ChefOrdersAdapter extends RecyclerView.Adapter<ChefOrdersAdapter.Ch
         Order order = orderList.get(position);
 
         holder.tableNumber.setText(String.valueOf(order.getTable().getId()));
-        for (FoodItem foodItem : order.getFoodItems()) {
+        for (FoodItems foodItem : order.getFoodItems()) {
             holder.itemOrderList.setText(foodItem + "\n");
         }
         holder.expand.setOnClickListener(view -> {

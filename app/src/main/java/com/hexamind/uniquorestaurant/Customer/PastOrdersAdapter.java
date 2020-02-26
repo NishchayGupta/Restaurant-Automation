@@ -6,7 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.hexamind.uniquorestaurant.Data.FoodItem;
+import com.hexamind.uniquorestaurant.Data.FoodItems;
 import com.hexamind.uniquorestaurant.Data.Order;
 import com.hexamind.uniquorestaurant.R;
 
@@ -47,7 +47,7 @@ public class PastOrdersAdapter extends RecyclerView.Adapter<PastOrdersAdapter.Pa
     public void onBindViewHolder(@NonNull PastOrdersViewHolder holder, int position) {
         Order order = orderList.get(position);
 
-        for (FoodItem items : order.getFoodItems())
+        for (FoodItems items : order.getFoodItems())
             holder.itemsOrdered.setText(items.getFoodItemName());
         holder.dateOrdered.setText(order.getOrderDate());
         holder.amountPaid.setText(context.getResources().getString(R.string.item_cost_string, String.valueOf(order.getTotalCost())));

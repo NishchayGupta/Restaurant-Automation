@@ -7,11 +7,11 @@ public class Order {
     private Double totalCost;
     private String orderType;
     private String orderDate;
-    private List<FoodItem> foodItems;
+    private List<FoodItems> foodItems;
     private Customer customer;
     private Table table;
 
-    public Order(int orderID, Double totalCost, String orderType, String orderDate, List<FoodItem> foodItems, Customer customer, Table table) {
+    public Order(int orderID, Double totalCost, String orderType, String orderDate, List<FoodItems> foodItems, Customer customer, Table table) {
         this.orderID = orderID;
         this.totalCost = totalCost;
         this.orderType = orderType;
@@ -53,11 +53,11 @@ public class Order {
         this.orderType = orderType;
     }
 
-    public List<FoodItem> getFoodItems() {
+    public List<FoodItems> getFoodItems() {
         return foodItems;
     }
 
-    public void setFoodItems(List<FoodItem> foodItems) {
+    public void setFoodItems(List<FoodItems> foodItems) {
         this.foodItems = foodItems;
     }
 
