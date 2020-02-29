@@ -18,7 +18,7 @@ public class FoodItems {
     @SerializedName("foodItemOrders")
     @Expose
     private List<Object> foodItemOrders = null;
-    @SerializedName("foodItemId")
+    @SerializedName("id")
     @Expose
     private Integer foodItemId;
 

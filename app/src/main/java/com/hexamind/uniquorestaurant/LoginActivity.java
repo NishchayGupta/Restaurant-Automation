@@ -1,12 +1,14 @@
 package com.hexamind.uniquorestaurant;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,11 +21,10 @@ import com.hexamind.uniquorestaurant.Data.GeneralError;
 import com.hexamind.uniquorestaurant.Retrofit.ApiService;
 import com.hexamind.uniquorestaurant.Retrofit.RetrofitClient;
 import com.hexamind.uniquorestaurant.Utils.SharedPreferencesUtils;
-import com.hexamind.uniquorestaurant.Utils.Utils;
+import com.hexamind.uniquorestaurant.Utils.Constants;
 import com.jgabrielfreitas.core.BlurImageView;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 
 public class LoginActivity extends AppCompatActivity {
     private BlurImageView imageView;
@@ -32,6 +33,7 @@ public class LoginActivity extends AppCompatActivity {
     private boolean usernameValid = false;
     private MaterialButton login;
     private TextView register;
+    private ConstraintLayout progress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,11 +45,13 @@ public class LoginActivity extends AppCompatActivity {
         password = findViewById(R.id.password);
         login = findViewById(R.id.login);
         register = findViewById(R.id.register);
+        progress = findViewById(R.id.progress);
 
         imageView.setBlur(2);
 
         login.setOnClickListener(view -> {
             if (!username.getText().toString().equals("") || !password.getText().toString().equals("")) {
+                progress.setVisibility(View.VISIBLE);
                 ApiService api = RetrofitClient.getApiService();
                 Call<CustomerSuccess> call = api.getCustomerDetails(username.getText().toString(), password.getText().toString());
 
@@ -57,13 +61,15 @@ public class LoginActivity extends AppCompatActivity {
                         CustomerSuccess customer = response.body();
 
                         if (response.code() == 200) {
+                            progress.setVisibility(View.GONE);
                             if (customer.getPerson().getCustomer() != null) {
-                                SharedPreferencesUtils.saveCustomerToSharedPrefs(LoginActivity.this, Utils.CUSTOMER_OBJ_NAME, customer);
+                                SharedPreferencesUtils.saveCustomerToSharedPrefs(LoginActivity.this, Constants.CUSTOMER_OBJ_NAME, customer);
                                 startActivity(new Intent(LoginActivity.this, CustomerHomeActivity.class));
                                 finish();
                             } else
                                 Toast.makeText(LoginActivity.this, getString(R.string.problem_getting_customer_details_string), Toast.LENGTH_SHORT).show();
                         } else if (response.code() == 404) {
+                            progress.setVisibility(View.GONE);
                             try {
                                 Gson gson = new Gson();
                                 GeneralError error = gson.fromJson(response.errorBody().string(), GeneralError.class);
@@ -77,12 +83,14 @@ public class LoginActivity extends AppCompatActivity {
                                 e.printStackTrace();
                             }
                         } else {
+                            progress.setVisibility(View.GONE);
                             Toast.makeText(LoginActivity.this, getString(R.string.problem_getting_customer_details_string), Toast.LENGTH_SHORT).show();
                         }
                     }
 
                     @Override
                     public void onFailure(Call<CustomerSuccess> call, Throwable t) {
+                        progress.setVisibility(View.GONE);
                         Toast.makeText(LoginActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });

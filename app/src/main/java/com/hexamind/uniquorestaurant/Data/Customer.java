@@ -8,7 +8,7 @@ public class Customer {
     @Expose
     private Long customerId;
     @Expose
-    private Table tableRestaurants;
+    private Table tableRestaurant;
 
     public Long getCustomerId() {
         return customerId;
@@ -18,12 +18,12 @@ public class Customer {
         this.customerId = customerId;
     }
 
-    public Table getTableRestaurants() {
-        return tableRestaurants;
+    public Table getTableRestaurant() {
+        return tableRestaurant;
     }
 
-    public void setTableRestaurants(Table tableRestaurants) {
-        this.tableRestaurants = tableRestaurants;
+    public void setTableRestaurant(Table tableRestaurant) {
+        this.tableRestaurant = tableRestaurant;
     }
 
 }

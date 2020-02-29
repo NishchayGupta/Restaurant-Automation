@@ -76,6 +76,7 @@
     <string name="menu_item_logout_string">Logout</string>
     <string name="logout_success_message_string">You were logged out successfully</string>
     <string name="default_price_string">$ %1$s</string>
+    <string name="default_cart_price_string">$ 0.0</string>
     <string name="add_item_cart_string">+</string>
     <string name="remove_item_cart_string">-</string>
     <string name="default_item_count_string">1</string>
@@ -118,4 +119,11 @@
     <string name="add_to_cart_string">Add to cart</string>
     <string name="book_tabled_needed_string">You need to book a table before continuing</string>
     <string name="item_add_success">1 item was added to the cart</string>
+    <string name="cart_empty_message_string">The cart is empty</string>
+    <string name="delete_item_title_string">Delete Item</string>
+    <string name="delete_item_message_string">Are you sure you want to delete the selected item?</string>
+    <string name="order_successful_message_string">The order was successfully placed</string>
+    <string name="order_error_message_string">There was an issue in creating the order at this moment. Please try again later.</string>
+    <string name="checking_table_availability_message_string">Checking table availability</string>
+    <string name="customer_table_exist_error_message_string">The check for the table existance for a customer can\'t be executed now. Please try again later...</string>
 </resources>

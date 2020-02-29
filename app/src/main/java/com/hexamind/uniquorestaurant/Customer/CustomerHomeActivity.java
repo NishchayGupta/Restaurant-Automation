@@ -33,13 +33,14 @@ import com.hexamind.uniquorestaurant.Data.BookTableSuccess;
 import com.hexamind.uniquorestaurant.Data.CheckAvailabilitySuccess;
 import com.hexamind.uniquorestaurant.Data.CustomerSuccess;
 import com.hexamind.uniquorestaurant.Data.GeneralError;
+import com.hexamind.uniquorestaurant.Data.OrderSuccess;
 import com.hexamind.uniquorestaurant.Data.Person;
 import com.hexamind.uniquorestaurant.LoginActivity;
 import com.hexamind.uniquorestaurant.R;
 import com.hexamind.uniquorestaurant.Retrofit.ApiService;
 import com.hexamind.uniquorestaurant.Retrofit.RetrofitClient;
 import com.hexamind.uniquorestaurant.Utils.SharedPreferencesUtils;
-import com.hexamind.uniquorestaurant.Utils.Utils;
+import com.hexamind.uniquorestaurant.Utils.Constants;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -56,6 +57,7 @@ public class CustomerHomeActivity extends AppCompatActivity {
     private Person person;
     private CustomerSuccess customer;
     private CountDownTimer countDownTimer = null;
+    boolean tableExistsAlready = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,9 +91,12 @@ public class CustomerHomeActivity extends AppCompatActivity {
                     return true;
                 });
 
-        customer = SharedPreferencesUtils.getCustomerFromSharedPrefs(this, Utils.CUSTOMER_OBJ_NAME);
+        customer = SharedPreferencesUtils.getCustomerFromSharedPrefs(this, Constants.CUSTOMER_OBJ_NAME);
         person = customer.getPerson();
-        viewBookingDialog();
+        if (getCustomerTableAlreadyExists()) {
+            viewBookingDialog();
+            SharedPreferencesUtils.deleteLongFromSharedPrefs(this, Constants.TABLE_ID_CONST_STRING);
+        }
 
         Toast.makeText(this, "Customer name: " + person.getName(), Toast.LENGTH_SHORT).show();
     }
@@ -121,6 +126,7 @@ public class CustomerHomeActivity extends AppCompatActivity {
         AppCompatButton checkAvailability = tableBooking.findViewById(R.id.checkAvailability);
         AppCompatButton bookTable = tableBooking.findViewById(R.id.bookTable);
         AppCompatButton reserveTakeout = tableBooking.findViewById(R.id.reserveTakeout);
+        LinearLayout progress = tableBooking.findViewById(R.id.progress);
 
         dineIn.setOnClickListener(view -> {
             dineIn.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.drawable_table_booking_selected));
@@ -163,10 +169,12 @@ public class CustomerHomeActivity extends AppCompatActivity {
         });
         reserveTakeout.setOnClickListener(view -> dialog.dismiss());
         checkAvailability.setOnClickListener(view -> {
+            progress.setVisibility(View.VISIBLE);
             ApiService apiService = RetrofitClient.getApiService();
             Call<GeneralError> initUpdateCall = apiService.checkAvailabilityCheck();
 
             initUpdateCall.enqueue(new Callback<GeneralError>() {
+
                 @Override
                 public void onResponse(Call<GeneralError> initCall, Response<GeneralError> response) {
                     GeneralError init = response.body();
@@ -181,6 +189,7 @@ public class CustomerHomeActivity extends AppCompatActivity {
 
                                 if (countDownTimer != null)
                                     countDownTimer.cancel();
+                                progress.setVisibility(View.GONE);
                                 tableAvailable.setVisibility(View.VISIBLE);
                                 timer.setVisibility(View.VISIBLE);
                                 tableId = checkAvailability.getTableNumber();
@@ -235,7 +244,8 @@ public class CustomerHomeActivity extends AppCompatActivity {
                     BookTableSuccess bookTable = response.body();
 
                     if (response.code() == 200) {
-                        SharedPreferencesUtils.saveBooleanToSharedPrefs(CustomerHomeActivity.this, Utils.IS_TABLE_BOOKED, true);
+                        SharedPreferencesUtils.saveBooleanToSharedPrefs(CustomerHomeActivity.this, Constants.IS_TABLE_BOOKED, true);
+                        SharedPreferencesUtils.saveLongToSharedPrefs(CustomerHomeActivity.this, Constants.TABLE_ID_CONST_STRING, tableId);
                         Toast.makeText(CustomerHomeActivity.this, tableId + " was booked successfully", Toast.LENGTH_SHORT).show();
                         dialog.dismiss();
                     } else {
@@ -262,6 +272,43 @@ public class CustomerHomeActivity extends AppCompatActivity {
     @Override
     public boolean onSupportNavigateUp() {
         return NavigationUI.navigateUp(navController, appbarConfig) || super.onSupportNavigateUp();
+    }
+
+    private boolean getCustomerTableAlreadyExists() {
+        ApiService api = RetrofitClient.getApiService();
+        Call<OrderSuccess> callTableExists = api.getCustomerTableExists(customer.getPerson().getCustomer().getCustomerId());
+        callTableExists.enqueue(new Callback<OrderSuccess>() {
+            @Override
+            public void onResponse(Call<OrderSuccess> call, Response<OrderSuccess> response) {
+                OrderSuccess order = response.body();
+
+                if (response.code() == 200) {
+                    Long id = order.getId();
+
+                    if (id != 12)
+                        tableExistsAlready = true;
+                    else {
+                        if (order.getTable() != null && order.isOrderPrepared())
+                            tableExistsAlready = false;
+                        else
+                            tableExistsAlready = true;
+                    }
+
+                    SharedPreferencesUtils.saveBooleanToSharedPrefs(CustomerHomeActivity.this, Constants.TABLE_EXISTS_ALREADY_STRING, tableExistsAlready);
+                } else {
+                    Toast.makeText(CustomerHomeActivity.this, getString(R.string.customer_table_exist_error_message_string), Toast.LENGTH_SHORT).show();
+                    tableExistsAlready = false;
+                }
+            }
+
+            @Override
+            public void onFailure(Call<OrderSuccess> call, Throwable t) {
+                Toast.makeText(CustomerHomeActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                tableExistsAlready = false;
+            }
+        });
+
+        return tableExistsAlready;
     }
 
     @Override

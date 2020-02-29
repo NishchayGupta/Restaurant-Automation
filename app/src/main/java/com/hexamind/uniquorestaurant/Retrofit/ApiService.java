@@ -6,6 +6,8 @@ import com.hexamind.uniquorestaurant.Data.CustomerSuccess;
 import com.hexamind.uniquorestaurant.Data.FoodItem;
 import com.hexamind.uniquorestaurant.Data.FoodItems;
 import com.hexamind.uniquorestaurant.Data.GeneralError;
+import com.hexamind.uniquorestaurant.Data.Order;
+import com.hexamind.uniquorestaurant.Data.OrderSuccess;
 import com.hexamind.uniquorestaurant.Data.Person;
 import com.hexamind.uniquorestaurant.Data.RegisterPost;
 import com.hexamind.uniquorestaurant.Data.RegisterSuccess;
@@ -39,4 +41,13 @@ public interface ApiService {
 
     @GET("foodItems")
     Call<List<FoodItems>> getAllFoodItems();
+
+    @POST("orderFood")
+    Call<OrderSuccess> createOrder(@Body Order order);
+
+    @GET("order/customer/{customerId}")
+    Call<OrderSuccess> getCustomerTableExists(@Path("customerId") Long customerId);
+
+    @PUT("uniquo/customer/payment/{orderId}")
+    Call
 }

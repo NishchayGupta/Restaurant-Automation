@@ -70,6 +70,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/delete"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"

@@ -32,6 +32,7 @@ import com.hexamind.uniquorestaurant.LoginActivity;
 import com.hexamind.uniquorestaurant.R;
 import com.hexamind.uniquorestaurant.Retrofit.ApiService;
 import com.hexamind.uniquorestaurant.Retrofit.RetrofitClient;
+import com.hexamind.uniquorestaurant.Utils.Constants;
 import com.hexamind.uniquorestaurant.Utils.SharedPreferencesUtils;
 
 import org.jetbrains.annotations.NotNull;
@@ -41,9 +42,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import static com.hexamind.uniquorestaurant.Utils.Utils.CUSTOMER_OBJ_NAME;
-import static com.hexamind.uniquorestaurant.Utils.Utils.FOOD_ITEM_STRING;
-import static com.hexamind.uniquorestaurant.Utils.Utils.IS_TABLE_BOOKED;
+import static com.hexamind.uniquorestaurant.Utils.Constants.CUSTOMER_OBJ_NAME;
+import static com.hexamind.uniquorestaurant.Utils.Constants.FOOD_ITEM_STRING;
+import static com.hexamind.uniquorestaurant.Utils.Constants.IS_TABLE_BOOKED;
 
 public class MenuItemViewActivity extends AppCompatActivity {
     private CountDownTimer countDownTimer = null;
@@ -56,6 +57,8 @@ public class MenuItemViewActivity extends AppCompatActivity {
     private Boolean isTabledBooked = false;
     private FoodItems foodItem;
     private List<CartFoodItems> list = new ArrayList<>();
+    private ImageView back;
+    private Boolean isCustomerTableAlreadyExists = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +72,8 @@ public class MenuItemViewActivity extends AppCompatActivity {
         String object = getIntent().getStringExtra(FOOD_ITEM_STRING);
         foodItem = gson.fromJson(object, FoodItems.class);
         isTabledBooked = SharedPreferencesUtils.getBooleanFromSharedPrefs(this, IS_TABLE_BOOKED);
+        back = findViewById(R.id.back);
+        isCustomerTableAlreadyExists = SharedPreferencesUtils.getBooleanFromSharedPrefs(this, Constants.TABLE_EXISTS_ALREADY_STRING);
 
         addPersons = findViewById(R.id.addPersons);
         removePersons = findViewById(R.id.removePersons);
@@ -91,6 +96,12 @@ public class MenuItemViewActivity extends AppCompatActivity {
                 quantity.setText(String.valueOf(quantityInt));
             }
         });
+
+        if (isCustomerTableAlreadyExists)
+            addToCart.setEnabled(false);
+        else
+            addToCart.setEnabled(true);
+
         addToCart.setOnClickListener(view -> {
             if (!isTabledBooked) {
                 Toast.makeText(this, getString(R.string.book_tabled_needed_string), Toast.LENGTH_SHORT).show();
@@ -105,6 +116,9 @@ public class MenuItemViewActivity extends AppCompatActivity {
                 Toast.makeText(this, getString(R.string.item_add_success), Toast.LENGTH_SHORT).show();
             }
         });
+        back.setOnClickListener(view ->
+            startActivity(new Intent(MenuItemViewActivity.this, CustomerHomeActivity.class))
+        );
         foodItemName.setText(foodItem.getFoodItemName());
         price.setText(String.valueOf(foodItem.getFoodItemPrice()));
     }

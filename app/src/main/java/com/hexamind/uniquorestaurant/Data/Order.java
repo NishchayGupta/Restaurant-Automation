@@ -1,79 +1,44 @@
 package com.hexamind.uniquorestaurant.Data;
 
 import java.util.List;
+import com.google.gson.annotations.Expose;
 
 public class Order {
-    private int orderID;
-    private Double totalCost;
-    private String orderType;
-    private String orderDate;
-    private List<FoodItems> foodItems;
-    private Customer customer;
-    private Table table;
+    @Expose
+    private Long customerId;
+    @Expose
+    private List<OrderCart> orderCart;
+    @Expose
+    private Long tableId;
 
-    public Order(int orderID, Double totalCost, String orderType, String orderDate, List<FoodItems> foodItems, Customer customer, Table table) {
-        this.orderID = orderID;
-        this.totalCost = totalCost;
-        this.orderType = orderType;
-        this.orderDate = orderDate;
-        this.foodItems = foodItems;
-        this.customer = customer;
-        this.table = table;
+    public Order(Long customerId, List<OrderCart> orderCart, Long tableId) {
+        this.customerId = customerId;
+        this.orderCart = orderCart;
+        this.tableId = tableId;
     }
 
-    public int getOrderID() {
-        return orderID;
+    public Long getCustomerId() {
+        return customerId;
     }
 
-    public void setOrderID(int orderID) {
-        this.orderID = orderID;
+    public void setCustomerId(Long customerId) {
+        this.customerId = customerId;
     }
 
-    public String getOrderDate() {
-        return orderDate;
+    public List<OrderCart> getOrderCart() {
+        return orderCart;
     }
 
-    public void setOrderDate(String orderDate) {
-        this.orderDate = orderDate;
+    public void setOrderCart(List<OrderCart> orderCart) {
+        this.orderCart = orderCart;
     }
 
-    public Double getTotalCost() {
-        return totalCost;
+    public Long getTableId() {
+        return tableId;
     }
 
-    public void setTotalCost(Double totalCost) {
-        this.totalCost = totalCost;
+    public void setTableId(Long tableId) {
+        this.tableId = tableId;
     }
 
-    public String getOrderType() {
-        return orderType;
-    }
-
-    public void setOrderType(String orderType) {
-        this.orderType = orderType;
-    }
-
-    public List<FoodItems> getFoodItems() {
-        return foodItems;
-    }
-
-    public void setFoodItems(List<FoodItems> foodItems) {
-        this.foodItems = foodItems;
-    }
-
-    public Customer getCustomer() {
-        return customer;
-    }
-
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
-    }
-
-    public Table getTable() {
-        return table;
-    }
-
-    public void setTable(Table table) {
-        this.table = table;
-    }
 }

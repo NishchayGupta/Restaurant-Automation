@@ -1,6 +1,5 @@
 package com.hexamind.uniquorestaurant.Customer;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -9,12 +8,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
-import com.hexamind.uniquorestaurant.Data.FoodItem;
 import com.hexamind.uniquorestaurant.Data.FoodItems;
 import com.hexamind.uniquorestaurant.R;
-import com.hexamind.uniquorestaurant.Utils.Utils;
+import com.hexamind.uniquorestaurant.Utils.Constants;
 
 import java.util.ArrayList;
 
@@ -62,7 +59,7 @@ public class MenuCardAdapter extends RecyclerView.Adapter<MenuCardAdapter.MenuCa
         holder.cardView.setOnClickListener(view -> {
             Intent intent = new Intent(context, MenuItemViewActivity.class);
             Gson gson = new Gson();
-            intent.putExtra(Utils.FOOD_ITEM_STRING, gson.toJson(item));
+            intent.putExtra(Constants.FOOD_ITEM_STRING, gson.toJson(item));
             context.startActivity(intent);
         });
     }

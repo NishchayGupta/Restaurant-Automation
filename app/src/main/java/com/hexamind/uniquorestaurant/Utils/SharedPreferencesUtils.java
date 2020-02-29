@@ -5,17 +5,13 @@ import android.content.SharedPreferences;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.hexamind.uniquorestaurant.Data.Cart;
 import com.hexamind.uniquorestaurant.Data.CartFoodItems;
 import com.hexamind.uniquorestaurant.Data.CustomerSuccess;
-import com.hexamind.uniquorestaurant.Data.FoodItem;
-import com.hexamind.uniquorestaurant.Data.FoodItems;
 
 import java.lang.reflect.Type;
 import java.util.List;
-import java.util.Set;
 
-import static com.hexamind.uniquorestaurant.Utils.Utils.SHARED_PREFS_NAME;
+import static com.hexamind.uniquorestaurant.Utils.Constants.SHARED_PREFS_NAME;
 
 public class SharedPreferencesUtils {
     private static SharedPreferences getSharedPreference(Context context) {
@@ -30,6 +26,20 @@ public class SharedPreferencesUtils {
 
     public static Boolean getBooleanFromSharedPrefs(Context context, String name) {
         return getSharedPreference(context).getBoolean(name, false);
+    }
+
+    public static void saveLongToSharedPrefs(Context context, String name, Long value) {
+        SharedPreferences.Editor editor = getSharedPreference(context).edit();
+        editor.putLong(name, value);
+        editor.apply();
+    }
+
+    public static Long getLongFromSharedPrefs(Context context, String name) {
+        return getSharedPreference(context).getLong(name, 0);
+    }
+
+    public static void deleteLongFromSharedPrefs(Context context, String name) {
+        getSharedPreference(context).edit().remove(name).apply();
     }
 
     public static void saveStringToSharedPrefs(Context context, String name, String value) {

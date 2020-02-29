@@ -1,6 +1,7 @@
 package com.hexamind.uniquorestaurant;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -14,6 +15,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
 import android.util.Patterns;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,7 +26,7 @@ import com.hexamind.uniquorestaurant.Data.RegisterPost;
 import com.hexamind.uniquorestaurant.Data.RegisterSuccess;
 import com.hexamind.uniquorestaurant.Retrofit.ApiService;
 import com.hexamind.uniquorestaurant.Retrofit.RetrofitClient;
-import com.hexamind.uniquorestaurant.Utils.Utils;
+import com.hexamind.uniquorestaurant.Utils.Constants;
 import com.jgabrielfreitas.core.BlurImageView;
 
 public class RegisterActivity extends AppCompatActivity {
@@ -35,6 +37,7 @@ public class RegisterActivity extends AppCompatActivity {
     private boolean usernameValid;
     private MaterialButton register;
     private static final String TAG = RegisterActivity.class.getName();
+    private ConstraintLayout progress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +52,7 @@ public class RegisterActivity extends AppCompatActivity {
         password = findViewById(R.id.password);
         phoneNumber = findViewById(R.id.phoneNumber);
         register = findViewById(R.id.register);
+        progress = findViewById(R.id.progress);
 
         imageView.setBlur(2);
         Spannable termsString = new SpannableString(getString(R.string.terms_and_conditions_check_string));
@@ -149,7 +153,8 @@ public class RegisterActivity extends AppCompatActivity {
 
         register.setOnClickListener(view -> {
                     if (!name.getText().toString().equals("") || !email.getText().toString().equals("") || !password.getText().toString().equals("") || phoneNumber.getText().toString().length() == 10) {
-                        RegisterPost post = new RegisterPost(name.getText().toString(), email.getText().toString(), Long.parseLong(phoneNumber.getText().toString()), password.getText().toString(), Utils.CUSTOMER_STRING);
+                        progress.setVisibility(View.VISIBLE);
+                        RegisterPost post = new RegisterPost(name.getText().toString(), email.getText().toString(), Long.parseLong(phoneNumber.getText().toString()), password.getText().toString(), Constants.CUSTOMER_STRING);
                         ApiService api = RetrofitClient.getApiService();
                         Call<RegisterSuccess> call = api.registerUser(post);
                         call.enqueue(new Callback<RegisterSuccess>() {
@@ -160,6 +165,7 @@ public class RegisterActivity extends AppCompatActivity {
                                 System.out.println(response.message());
 
                                 if (response.code() == 200) {
+                                    progress.setVisibility(View.GONE);
                                     if (customer.getPerson() != null) {
                                         Toast.makeText(RegisterActivity.this, getString(R.string.register_success_string), Toast.LENGTH_SHORT).show();
                                         startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
@@ -168,12 +174,14 @@ public class RegisterActivity extends AppCompatActivity {
                                         Toast.makeText(RegisterActivity.this, getString(R.string.problem_registering_customer_details_string), Toast.LENGTH_SHORT).show();
                                     }
                                 } else {
+                                    progress.setVisibility(View.GONE);
                                     Toast.makeText(RegisterActivity.this, getString(R.string.problem_registering_customer_details_string), Toast.LENGTH_SHORT).show();
                                 }
                             }
 
                             @Override
                             public void onFailure(Call<RegisterSuccess> call, Throwable t) {
+                                progress.setVisibility(View.GONE);
                                 Toast.makeText(RegisterActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
                             }
                         });

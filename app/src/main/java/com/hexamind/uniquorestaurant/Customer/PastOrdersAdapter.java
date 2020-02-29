@@ -47,10 +47,10 @@ public class PastOrdersAdapter extends RecyclerView.Adapter<PastOrdersAdapter.Pa
     public void onBindViewHolder(@NonNull PastOrdersViewHolder holder, int position) {
         Order order = orderList.get(position);
 
-        for (FoodItems items : order.getFoodItems())
+        /*for (FoodItems items : order.getFoodItems())
             holder.itemsOrdered.setText(items.getFoodItemName());
         holder.dateOrdered.setText(order.getOrderDate());
-        holder.amountPaid.setText(context.getResources().getString(R.string.item_cost_string, String.valueOf(order.getTotalCost())));
+        holder.amountPaid.setText(context.getResources().getString(R.string.item_cost_string, String.valueOf(order.getTotalCost())));*/
     }
 
     @Override
