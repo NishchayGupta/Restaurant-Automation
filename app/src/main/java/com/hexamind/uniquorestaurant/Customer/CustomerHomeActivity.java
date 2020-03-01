@@ -93,9 +93,17 @@ public class CustomerHomeActivity extends AppCompatActivity {
 
         customer = SharedPreferencesUtils.getCustomerFromSharedPrefs(this, Constants.CUSTOMER_OBJ_NAME);
         person = customer.getPerson();
-        if (getCustomerTableAlreadyExists()) {
+        if (SharedPreferencesUtils.getLongFromSharedPrefs(this, Constants.TABLE_ID_CONST_STRING) != 12
+                && SharedPreferencesUtils.getLongFromSharedPrefs(this, Constants.TABLE_ID_CONST_STRING) != 0) {
+            if (SharedPreferencesUtils.getBooleanFromSharedPrefs(this, Constants.TABLE_EXISTS_ALREADY_STRING)) {
+                if (!getCustomerTableAlreadyExists()) {
+
+                }
+            }
+        } else {
             viewBookingDialog();
             SharedPreferencesUtils.deleteLongFromSharedPrefs(this, Constants.TABLE_ID_CONST_STRING);
+            SharedPreferencesUtils.saveBooleanToSharedPrefs(this, Constants.TABLE_EXISTS_ALREADY_STRING, false);
         }
 
         Toast.makeText(this, "Customer name: " + person.getName(), Toast.LENGTH_SHORT).show();
@@ -298,6 +306,8 @@ public class CustomerHomeActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(CustomerHomeActivity.this, getString(R.string.customer_table_exist_error_message_string), Toast.LENGTH_SHORT).show();
                     tableExistsAlready = false;
+
+                    SharedPreferencesUtils.saveBooleanToSharedPrefs(CustomerHomeActivity.this, Constants.TABLE_EXISTS_ALREADY_STRING, tableExistsAlready);
                 }
             }
 
@@ -305,6 +315,8 @@ public class CustomerHomeActivity extends AppCompatActivity {
             public void onFailure(Call<OrderSuccess> call, Throwable t) {
                 Toast.makeText(CustomerHomeActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
                 tableExistsAlready = false;
+
+                SharedPreferencesUtils.saveBooleanToSharedPrefs(CustomerHomeActivity.this, Constants.TABLE_EXISTS_ALREADY_STRING, tableExistsAlready);
             }
         });
 

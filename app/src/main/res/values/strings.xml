@@ -126,4 +126,7 @@
     <string name="order_error_message_string">There was an issue in creating the order at this moment. Please try again later.</string>
     <string name="checking_table_availability_message_string">Checking table availability</string>
     <string name="customer_table_exist_error_message_string">The check for the table existance for a customer can\'t be executed now. Please try again later...</string>
+    <string name="payment_failure_message_string">There was an issue in proceeding with the payment. Please try again later</string>
+    <string name="no_items_added_cart_string">No Items added</string>
+    <string name="email_exists_message_string">Email already exists</string>
 </resources>

@@ -71,27 +71,57 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_marginTop="8dp"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:boxStrokeColor="@android:color/primary_text_dark"
-            app:hintTextColor="@android:color/primary_text_dark"
-            android:textColorHint="@android:color/primary_text_dark"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+            android:layout_marginTop="8dp">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/email"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/email_string"
                 android:textColorHint="@android:color/primary_text_dark"
-                android:textColor="@android:color/primary_text_dark"
+                app:boxStrokeColor="@android:color/primary_text_dark"
                 app:hintTextColor="@android:color/primary_text_dark"
-                android:fontFamily="@font/ubuntu_regular"
-                android:inputType="textEmailAddress" />
+                android:layout_toStartOf="@+id/progressBar"
+                android:layout_marginEnd="16dp">
 
-        </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/ubuntu_regular"
+                    android:hint="@string/email_string"
+                    android:inputType="textEmailAddress"
+                    android:textColor="@android:color/primary_text_dark"
+                    android:textColorHint="@android:color/primary_text_dark"
+                    app:hintTextColor="@android:color/primary_text_dark" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:indeterminate="true"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="8dp"
+                android:visibility="gone"/>
+
+            <TextView
+                android:id="@+id/emailExistsText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/email_exists_message_string"
+                android:textColor="@android:color/primary_text_dark"
+                android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                android:textAlignment="textEnd"
+                android:layout_below="@+id/textInputLayout"
+                android:visibility="gone" />
+
+        </RelativeLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_marginTop="8dp"
@@ -146,7 +176,7 @@
             android:fontFamily="@font/ubuntu_regular"
             android:textColor="@android:color/primary_text_dark"
             app:buttonTint="@android:color/background_light"
-            android:checked="true"
+            android:checked="false"
             app:useMaterialThemeColors="false" />
 
         <com.google.android.material.button.MaterialButton

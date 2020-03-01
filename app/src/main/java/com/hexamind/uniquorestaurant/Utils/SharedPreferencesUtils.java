@@ -7,9 +7,11 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.hexamind.uniquorestaurant.Data.CartFoodItems;
 import com.hexamind.uniquorestaurant.Data.CustomerSuccess;
+import com.hexamind.uniquorestaurant.Data.UserOrder;
 
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.Map;
 
 import static com.hexamind.uniquorestaurant.Utils.Constants.SHARED_PREFS_NAME;
 
@@ -63,6 +65,23 @@ public class SharedPreferencesUtils {
     public static List<CartFoodItems> getFoodItemsFromSharedPrefs(Context context, String objectName) {
         Gson gson = new Gson();
         Type type = new TypeToken<List<CartFoodItems>>(){}.getType();
+
+        String object = getSharedPreference(context).getString(objectName, "");
+
+        return gson.fromJson(object, type);
+    }
+
+    public static void saveUserOrdersToSharedPrefs(Context context, String objectName, List<UserOrder> userOrderList) {
+        SharedPreferences.Editor editor = getSharedPreference(context).edit();
+        Gson gson = new Gson();
+        String object = gson.toJson(userOrderList);
+        editor.putString(objectName, object);
+        editor.apply();
+    }
+
+    public static Map<Long, CartFoodItems> getUserOrdersFromSharedPrefs(Context context, String objectName) {
+        Gson gson = new Gson();
+        Type type = new TypeToken<List<UserOrder>>(){}.getType();
 
         String object = getSharedPreference(context).getString(objectName, "");
 

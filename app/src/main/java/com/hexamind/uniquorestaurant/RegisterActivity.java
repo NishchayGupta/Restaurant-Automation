@@ -16,17 +16,20 @@ import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
 import android.util.Patterns;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.textfield.TextInputEditText;
+import com.hexamind.uniquorestaurant.Data.GeneralError;
 import com.hexamind.uniquorestaurant.Data.RegisterPost;
 import com.hexamind.uniquorestaurant.Data.RegisterSuccess;
 import com.hexamind.uniquorestaurant.Retrofit.ApiService;
 import com.hexamind.uniquorestaurant.Retrofit.RetrofitClient;
 import com.hexamind.uniquorestaurant.Utils.Constants;
+import com.hexamind.uniquorestaurant.Utils.SharedPreferencesUtils;
 import com.jgabrielfreitas.core.BlurImageView;
 
 public class RegisterActivity extends AppCompatActivity {
@@ -38,6 +41,8 @@ public class RegisterActivity extends AppCompatActivity {
     private MaterialButton register;
     private static final String TAG = RegisterActivity.class.getName();
     private ConstraintLayout progress;
+    private ProgressBar progressBar;
+    private TextView emailExistsText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +58,8 @@ public class RegisterActivity extends AppCompatActivity {
         phoneNumber = findViewById(R.id.phoneNumber);
         register = findViewById(R.id.register);
         progress = findViewById(R.id.progress);
+        progressBar = findViewById(R.id.progressBar);
+        emailExistsText = findViewById(R.id.emailExistsText);
 
         imageView.setBlur(2);
         Spannable termsString = new SpannableString(getString(R.string.terms_and_conditions_check_string));
@@ -90,20 +97,34 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
 
-        email.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        email.setOnFocusChangeListener((view, hasFocus) -> {
+            if (!hasFocus) {
+                progressBar.setVisibility(View.VISIBLE);
 
-            }
+                ApiService api = RetrofitClient.getApiService();
+                Call<GeneralError> call = api.checkEmailExists(email.getText().toString());
 
-            @Override
-            public void onTextChanged(CharSequence target, int i, int i1, int i2) {
-                usernameValid = isValidUsername(target);
-            }
+                call.enqueue(new Callback<GeneralError>() {
+                    @Override
+                    public void onResponse(Call<GeneralError> call, Response<GeneralError> response) {
+                        GeneralError emailExists = response.body();
 
-            @Override
-            public void afterTextChanged(Editable editable) {
+                        if (response.code() == 200) {
+                            emailExistsText.setVisibility(View.GONE);
+                        } else if (response.code() == 400) {
+                            emailExistsText.setText(getString(R.string.email_exists_message_string));
+                            emailExistsText.setVisibility(View.VISIBLE);
+                        }
+                        progressBar.setVisibility(View.GONE);
+                    }
 
+                    @Override
+                    public void onFailure(Call<GeneralError> call, Throwable t) {
+                        progressBar.setVisibility(View.GONE);
+                    }
+                });
+            } else {
+                emailExistsText.setVisibility(View.GONE);
             }
         });
 
@@ -144,6 +165,10 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
 
+        loginHere.setOnClickListener(view ->
+                startActivity(new Intent(RegisterActivity.this, LoginActivity.class))
+        );
+
         termsConditions.setOnCheckedChangeListener((compoundButton, checked) -> {
             if (checked && name.getText().length() > 0 && isValidUsername(email.getText().toString()) && phoneNumber.getText().length() == 10)
                 register.setEnabled(true);
@@ -152,53 +177,58 @@ public class RegisterActivity extends AppCompatActivity {
         });
 
         register.setOnClickListener(view -> {
-                    if (!name.getText().toString().equals("") || !email.getText().toString().equals("") || !password.getText().toString().equals("") || phoneNumber.getText().toString().length() == 10) {
-                        progress.setVisibility(View.VISIBLE);
-                        RegisterPost post = new RegisterPost(name.getText().toString(), email.getText().toString(), Long.parseLong(phoneNumber.getText().toString()), password.getText().toString(), Constants.CUSTOMER_STRING);
-                        ApiService api = RetrofitClient.getApiService();
-                        Call<RegisterSuccess> call = api.registerUser(post);
-                        call.enqueue(new Callback<RegisterSuccess>() {
-                            @Override
-                            public void onResponse(Call<RegisterSuccess> call, Response<RegisterSuccess> response) {
-                                RegisterSuccess customer = response.body();
+            if (emailExistsText.getVisibility() == View.GONE) {
+                if (!name.getText().toString().equals("") || !email.getText().toString().equals("") || !password.getText().toString().equals("") || phoneNumber.getText().toString().length() == 10) {
+                    progress.setVisibility(View.VISIBLE);
+                    RegisterPost post = new RegisterPost(name.getText().toString(), email.getText().toString(), Long.parseLong(phoneNumber.getText().toString()), password.getText().toString(), Constants.CUSTOMER_STRING);
+                    ApiService api = RetrofitClient.getApiService();
+                    Call<RegisterSuccess> call = api.registerUser(post);
+                    call.enqueue(new Callback<RegisterSuccess>() {
+                        @Override
+                        public void onResponse(Call<RegisterSuccess> call, Response<RegisterSuccess> response) {
+                            RegisterSuccess customer = response.body();
 
-                                System.out.println(response.message());
+                            System.out.println(response.message());
 
-                                if (response.code() == 200) {
-                                    progress.setVisibility(View.GONE);
-                                    if (customer.getPerson() != null) {
-                                        Toast.makeText(RegisterActivity.this, getString(R.string.register_success_string), Toast.LENGTH_SHORT).show();
-                                        startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
-                                        finish();
-                                    } else {
-                                        Toast.makeText(RegisterActivity.this, getString(R.string.problem_registering_customer_details_string), Toast.LENGTH_SHORT).show();
-                                    }
+                            if (response.code() == 200) {
+                                SharedPreferencesUtils.deleteLongFromSharedPrefs(RegisterActivity.this, Constants.TABLE_ID_CONST_STRING);
+                                progress.setVisibility(View.GONE);
+                                if (customer.getPerson() != null) {
+                                    Toast.makeText(RegisterActivity.this, getString(R.string.register_success_string), Toast.LENGTH_SHORT).show();
+                                    startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+                                    finish();
                                 } else {
-                                    progress.setVisibility(View.GONE);
                                     Toast.makeText(RegisterActivity.this, getString(R.string.problem_registering_customer_details_string), Toast.LENGTH_SHORT).show();
                                 }
-                            }
-
-                            @Override
-                            public void onFailure(Call<RegisterSuccess> call, Throwable t) {
+                            } else {
                                 progress.setVisibility(View.GONE);
-                                Toast.makeText(RegisterActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(RegisterActivity.this, getString(R.string.problem_registering_customer_details_string), Toast.LENGTH_SHORT).show();
                             }
-                        });
-                    } else {
-                        if (name.getText().toString().equals("")) {
-                            name.setError(getString(R.string.invalid_name_error_string));
                         }
-                        if (email.getText().toString().equals("")) {
-                            email.setError(getString(R.string.invalid_email_error_string));
+
+                        @Override
+                        public void onFailure(Call<RegisterSuccess> call, Throwable t) {
+                            progress.setVisibility(View.GONE);
+                            Toast.makeText(RegisterActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
                         }
-                        if (password.getText().toString().equals("")) {
-                            password.setError(getString(R.string.invalid_password_error_string));
-                        }
-                        if (phoneNumber.getText().length() < 10) {
-                            phoneNumber.setError(getString(R.string.invalid_phone_number_error_string));
-                        }
+                    });
+                } else {
+                    if (name.getText().toString().equals("")) {
+                        name.setError(getString(R.string.invalid_name_error_string));
                     }
+                    if (email.getText().toString().equals("")) {
+                        email.setError(getString(R.string.invalid_email_error_string));
+                    }
+                    if (password.getText().toString().equals("")) {
+                        password.setError(getString(R.string.invalid_password_error_string));
+                    }
+                    if (phoneNumber.getText().length() < 10) {
+                        phoneNumber.setError(getString(R.string.invalid_phone_number_error_string));
+                    }
+                }
+            } else {
+                email.setError(getString(R.string.email_exists_message_string));
+            }
         }
         );
     }

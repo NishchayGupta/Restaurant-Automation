@@ -48,6 +48,9 @@ public interface ApiService {
     @GET("order/customer/{customerId}")
     Call<OrderSuccess> getCustomerTableExists(@Path("customerId") Long customerId);
 
-    @PUT("uniquo/customer/payment/{orderId}")
-    Call
+    @PUT("customer/payment/{orderId}")
+    Call<GeneralError> getPaymentConfirmation(@Path("orderId") Long orderId);
+
+    @GET("customer/emailCheck/{email}")
+    Call<GeneralError> checkEmailExists(@Path("email") String email);
 }

@@ -97,24 +97,24 @@ public class MenuItemViewActivity extends AppCompatActivity {
             }
         });
 
-        if (isCustomerTableAlreadyExists)
-            addToCart.setEnabled(false);
-        else
-            addToCart.setEnabled(true);
+        if (SharedPreferencesUtils.getLongFromSharedPrefs(this, Constants.TABLE_ID_CONST_STRING) == 12
+                && SharedPreferencesUtils.getLongFromSharedPrefs(this, Constants.TABLE_ID_CONST_STRING) == 0)
+            viewBookingDialog();
+        else {
+            if (isCustomerTableAlreadyExists)
+                addToCart.setEnabled(false);
+            else
+                addToCart.setEnabled(true);
+        }
 
         addToCart.setOnClickListener(view -> {
-            if (!isTabledBooked) {
-                Toast.makeText(this, getString(R.string.book_tabled_needed_string), Toast.LENGTH_SHORT).show();
-                viewBookingDialog();
-            } else {
-                list = SharedPreferencesUtils.getFoodItemsFromSharedPrefs(MenuItemViewActivity.this, FOOD_ITEM_STRING);
-                CartFoodItems cartFood = new CartFoodItems(foodItem, Integer.parseInt(quantity.getText().toString()));
-                if (list == null)
-                    list = new ArrayList<>();
-                list.add(cartFood);
-                SharedPreferencesUtils.saveFoodItemsToSharedPrefs(MenuItemViewActivity.this, FOOD_ITEM_STRING, list);
-                Toast.makeText(this, getString(R.string.item_add_success), Toast.LENGTH_SHORT).show();
-            }
+            list = SharedPreferencesUtils.getFoodItemsFromSharedPrefs(MenuItemViewActivity.this, FOOD_ITEM_STRING);
+            CartFoodItems cartFood = new CartFoodItems(foodItem, Integer.parseInt(quantity.getText().toString()));
+            if (list == null)
+                list = new ArrayList<>();
+            list.add(cartFood);
+            SharedPreferencesUtils.saveFoodItemsToSharedPrefs(MenuItemViewActivity.this, FOOD_ITEM_STRING, list);
+            Toast.makeText(this, getString(R.string.item_add_success), Toast.LENGTH_SHORT).show();
         });
         back.setOnClickListener(view ->
             startActivity(new Intent(MenuItemViewActivity.this, CustomerHomeActivity.class))

@@ -36,6 +36,7 @@ import com.hexamind.uniquorestaurant.Data.GeneralError;
 import com.hexamind.uniquorestaurant.Data.Order;
 import com.hexamind.uniquorestaurant.Data.OrderCart;
 import com.hexamind.uniquorestaurant.Data.OrderSuccess;
+import com.hexamind.uniquorestaurant.Data.UserOrder;
 import com.hexamind.uniquorestaurant.LoginActivity;
 import com.hexamind.uniquorestaurant.R;
 import com.hexamind.uniquorestaurant.Retrofit.ApiService;
@@ -56,7 +57,7 @@ public class MyCartFragment extends Fragment implements OnTotalComputedListener 
     private List<CartFoodItems> foodItemList = new ArrayList<>();
     private MyCartAdapter adapter;
     private RecyclerView recyclerView;
-    private TextView foodPrice, totalCost, totalTax, totalTxt;
+    private TextView foodPrice, totalCost, totalTax, totalTxt, noItems;
     private DecimalFormat df = new DecimalFormat("#.##");
     private ConstraintLayout paymentSecondaryLayout;
     private LinearLayout paymentPrimaryLayout;
@@ -80,6 +81,7 @@ public class MyCartFragment extends Fragment implements OnTotalComputedListener 
         totalTxt = root.findViewById(R.id.total);
         addOrder = root.findViewById(R.id.addOrder);
         closeDialog = root.findViewById(R.id.closeDialog);
+        noItems = root.findViewById(R.id.noItems);
         isCustomerTableAlreadyExists = SharedPreferencesUtils.getBooleanFromSharedPrefs(root.getContext(), Constants.TABLE_EXISTS_ALREADY_STRING);
 
         foodPrice.setText(getString(R.string.default_cart_price_string));
@@ -91,10 +93,12 @@ public class MyCartFragment extends Fragment implements OnTotalComputedListener 
             recyclerView.setItemAnimator(new DefaultItemAnimator());
             recyclerView.setAdapter(adapter);
         } else {
-            Toast.makeText(root.getContext(), getString(R.string.cart_empty_message_string), Toast.LENGTH_SHORT).show();
+            noItems.setVisibility(View.VISIBLE);
         }
 
-        if (isCustomerTableAlreadyExists)
+        if ((SharedPreferencesUtils.getLongFromSharedPrefs(root.getContext(), Constants.TABLE_ID_CONST_STRING) != 12
+                && SharedPreferencesUtils.getLongFromSharedPrefs(root.getContext(), Constants.TABLE_ID_CONST_STRING) != 0)
+                && isCustomerTableAlreadyExists)
             addOrder.setEnabled(false);
         else
             addOrder.setEnabled(true);
@@ -103,26 +107,15 @@ public class MyCartFragment extends Fragment implements OnTotalComputedListener 
             if (layoutClicked) {
                 paymentSecondaryLayout.setVisibility(View.VISIBLE);
                 layoutClicked = false;
-                foodPrice.setVisibility(View.GONE);
-                addOrder.setBackgroundDrawable(ContextCompat.getDrawable(root.getContext(), R.drawable.drawable_table_booking_unselected));
-                addOrder.setTextColor(ContextCompat.getColor(root.getContext(), android.R.color.black));
-                addOrder.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
             } else {
                 paymentSecondaryLayout.setVisibility(View.GONE);
                 layoutClicked = true;
-                foodPrice.setVisibility(View.VISIBLE);
-                addOrder.setBackgroundDrawable(ContextCompat.getDrawable(root.getContext(), android.R.drawable.screen_background_dark_transparent));
-                addOrder.setTextColor(Color.parseColor("#102A46"));
-                addOrder.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_END);
             }
         });
 
         closeDialog.setOnClickListener(view -> {
             paymentSecondaryLayout.setVisibility(View.GONE);
             foodPrice.setVisibility(View.VISIBLE);
-            addOrder.setTextColor(Color.parseColor("#102A46"));
-            addOrder.setTextColor(ContextCompat.getColor(root.getContext(), android.R.color.white));
-            addOrder.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_END);
         });
 
         addOrder.setOnClickListener(view -> {
@@ -145,12 +138,15 @@ public class MyCartFragment extends Fragment implements OnTotalComputedListener 
                     OrderSuccess orderSuccess = response.body();
 
                     if (response.code() == 200) {
-                        new AlertDialog.Builder(root.getContext())
+                        /*new AlertDialog.Builder(root.getContext())
                                 .setMessage(getString(R.string.order_successful_message_string) +"\n" +
                                         "Order Id " + orderSuccess.getId() + " was created successfully. " + "\n" +
                                         "The total cost of the order is: " + (1.15 * orderSuccess.getTotalCost()))
                                 .setCancelable(true)
-                                .show();
+                                .show();*/
+                        Toast.makeText(root.getContext(), getString(R.string.order_successful_message_string), Toast.LENGTH_SHORT).show();
+                        viewBookingDialog(orderSuccess.getId());
+                        SharedPreferencesUtils.saveBooleanToSharedPrefs(root.getContext(), Constants.TABLE_EXISTS_ALREADY_STRING, true);
                     } else {
                         Toast.makeText(root.getContext(), root.getContext().getString(R.string.order_error_message_string), Toast.LENGTH_SHORT).show();
                     }
@@ -170,9 +166,9 @@ public class MyCartFragment extends Fragment implements OnTotalComputedListener 
         return root;
     }
 
-    private void viewBookingDialog() {
+    private void viewBookingDialog(Long orderId) {
         androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(root.getContext());
-        builder.setCancelable(false);
+        builder.setCancelable(true);
         LayoutInflater inflater = this.getLayoutInflater();
         View tableBooking = inflater.inflate(R.layout.layout_payment, null);
         builder.setView(tableBooking);
@@ -209,7 +205,29 @@ public class MyCartFragment extends Fragment implements OnTotalComputedListener 
             cashLayout.setVisibility(View.GONE);
         });
         payNow.setOnClickListener(view -> {
+            ApiService api = RetrofitClient.getApiService();
+            Call<GeneralError> call = api.getPaymentConfirmation(orderId);
 
+            call.enqueue(new Callback<GeneralError>() {
+                @Override
+                public void onResponse(Call<GeneralError> call, Response<GeneralError> response) {
+                    GeneralError payment = response.body();
+
+                    if (response.code() == 200) {
+                        Toast.makeText(root.getContext(), payment.getMessage(), Toast.LENGTH_SHORT).show();
+                        dialog.dismiss();
+                    } else {
+                        Toast.makeText(root.getContext(), getString(R.string.payment_failure_message_string), Toast.LENGTH_SHORT).show();
+                        dialog.dismiss();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<GeneralError> call, Throwable t) {
+                    Toast.makeText(root.getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
+                }
+            });
         });
     }
 
