@@ -41,7 +41,7 @@
     <string name="items_ordered_string">Items Ordered</string>
     <string name="ordered_on_string">Ordered on</string>
     <string name="date_ordered_string">Date ordered</string>
-    <string name="amount_paid_string">Amount paid</string>
+    <string name="amount_paid_string">Amount due</string>
     <string name="select_dining_type_string">Select Dining Type</string>
     <string name="dine_in_string">Dine In</string>
     <string name="take_out_string">Take Out</string>
@@ -76,6 +76,8 @@
     <string name="menu_item_logout_string">Logout</string>
     <string name="logout_success_message_string">You were logged out successfully</string>
     <string name="default_price_string">$ %1$s</string>
+    <string name="default_table_string">Table Number %1$s</string>
+    <string name="chef_orders_items_view">%1$s x %2$s\n</string>
     <string name="default_cart_price_string">$ 0.0</string>
     <string name="add_item_cart_string">+</string>
     <string name="remove_item_cart_string">-</string>
@@ -129,4 +131,13 @@
     <string name="payment_failure_message_string">There was an issue in proceeding with the payment. Please try again later</string>
     <string name="no_items_added_cart_string">No Items added</string>
     <string name="email_exists_message_string">Email already exists</string>
+    <string name="payment_first_string">Please process the payment for the previous order.</string>
+    <string name="chef_orders_title_string">Chef Orders</string>
+    <string name="paid_string">Paid</string>
+    <string name="not_paid_string">Payment pending</string>
+    <string name="dialog_title">Title</string>
+    <string name="dialog_message">Message</string>
+    <string name="payment_success_string">The payment was successful</string>
+    <string name="confirm_payment_message_string">Are you sure you want to pay for the order?</string>
+    <string name="pay_order_title_string">Pay for order</string>
 </resources>

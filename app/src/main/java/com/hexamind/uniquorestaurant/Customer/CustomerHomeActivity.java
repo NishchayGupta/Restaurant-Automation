@@ -201,6 +201,7 @@ public class CustomerHomeActivity extends AppCompatActivity {
                                 tableAvailable.setVisibility(View.VISIBLE);
                                 timer.setVisibility(View.VISIBLE);
                                 tableId = checkAvailability.getTableNumber();
+                                System.out.println("\n\n\n\n\nTable ID: " + tableId);
                                 if (checkAvailability.getWaitingTimeInMinutes() == 0) {
                                     tableAvailable.setText(getResources().getString(R.string.table_available_string, checkAvailability.getTableNumber()));
                                     timer.setVisibility(View.GONE);
@@ -254,6 +255,8 @@ public class CustomerHomeActivity extends AppCompatActivity {
                     if (response.code() == 200) {
                         SharedPreferencesUtils.saveBooleanToSharedPrefs(CustomerHomeActivity.this, Constants.IS_TABLE_BOOKED, true);
                         SharedPreferencesUtils.saveLongToSharedPrefs(CustomerHomeActivity.this, Constants.TABLE_ID_CONST_STRING, tableId);
+
+                        System.out.println("\n\n\n\n\nBooked Table ID: " + tableId);
                         Toast.makeText(CustomerHomeActivity.this, tableId + " was booked successfully", Toast.LENGTH_SHORT).show();
                         dialog.dismiss();
                     } else {

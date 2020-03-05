@@ -94,7 +94,7 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.MyCartView
                     minQuantityReached = true;
             }
             cartItemList.get(position).setQuantity(quantityInt);
-            listener.saveFoodItems(Constants.FOOD_ITEM_STRING, cartItemList);
+            listener.saveFoodItems(Constants.FOOD_ITEM_MAP_STRING, cartItemList);
             listener.onTotalComputed(total);
         });
         holder.addItem.setOnClickListener(view -> {
@@ -103,7 +103,7 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.MyCartView
             quantityInt++;
             holder.itemCount.setText(String.valueOf(quantityInt));
             cartItemList.get(position).setQuantity(quantityInt);
-            listener.saveFoodItems(Constants.FOOD_ITEM_STRING, cartItemList);
+            listener.saveFoodItems(Constants.FOOD_ITEM_MAP_STRING, cartItemList);
             price = cartItem.getFoodItem().getFoodItemPrice();
 
             total += 1.15 * price;
@@ -116,7 +116,7 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.MyCartView
                     .setPositiveButton(android.R.string.yes, (dialogInterface, i) -> {
                         int newPosition = holder.getAdapterPosition();
                         delete(newPosition);
-                        listener.saveFoodItems(Constants.FOOD_ITEM_STRING, cartItemList);
+                        listener.saveFoodItems(Constants.FOOD_ITEM_MAP_STRING, cartItemList);
                         total = 0.0;
                     })
                     .setNegativeButton(android.R.string.no, (dialogInterface, i) -> {

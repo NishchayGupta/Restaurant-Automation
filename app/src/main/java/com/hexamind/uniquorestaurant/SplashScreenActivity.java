@@ -19,6 +19,9 @@ public class SplashScreenActivity extends AppCompatActivity {
         background = findViewById(R.id.background);
         background.setBlur(2);
 
-        new Handler().postDelayed(() -> startActivity(new Intent(SplashScreenActivity.this, CoverActivity.class)), 1500);
+        new Handler().postDelayed(() -> {
+            startActivity(new Intent(SplashScreenActivity.this, CoverActivity.class));
+            finish();
+        }, 1500);
     }
 }

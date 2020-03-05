@@ -37,12 +37,16 @@ import com.hexamind.uniquorestaurant.Utils.SharedPreferencesUtils;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static com.hexamind.uniquorestaurant.Utils.Constants.CUSTOMER_OBJ_NAME;
+import static com.hexamind.uniquorestaurant.Utils.Constants.FOOD_ITEM_MAP_STRING;
 import static com.hexamind.uniquorestaurant.Utils.Constants.FOOD_ITEM_STRING;
 import static com.hexamind.uniquorestaurant.Utils.Constants.IS_TABLE_BOOKED;
 
@@ -59,6 +63,7 @@ public class MenuItemViewActivity extends AppCompatActivity {
     private List<CartFoodItems> list = new ArrayList<>();
     private ImageView back;
     private Boolean isCustomerTableAlreadyExists = false;
+    private DecimalFormat dfDoubleInt = new DecimalFormat("#");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +92,11 @@ public class MenuItemViewActivity extends AppCompatActivity {
 
             quantityInt++;
             this.quantity.setText(String.valueOf(quantityInt));
+            Double totalPrice = quantityInt * foodItem.getFoodItemPrice();
+            if (foodItem.getFoodItemPrice() % 1 == 0)
+                price.setText(getString(R.string.default_price_string, String.valueOf(dfDoubleInt.format(totalPrice))));
+            else
+                price.setText(getString(R.string.default_price_string, String.valueOf(totalPrice)));
         });
         removePersons.setOnClickListener(view -> {
             int quantityInt = Integer.parseInt(quantity.getText().toString());
@@ -94,6 +104,11 @@ public class MenuItemViewActivity extends AppCompatActivity {
             if (quantityInt > 1) {
                 quantityInt--;
                 quantity.setText(String.valueOf(quantityInt));
+                Double totalPrice = quantityInt * foodItem.getFoodItemPrice();
+                if (foodItem.getFoodItemPrice() % 1 == 0)
+                    price.setText(getString(R.string.default_price_string, String.valueOf(dfDoubleInt.format(totalPrice))));
+                else
+                    price.setText(getString(R.string.default_price_string, String.valueOf(totalPrice)));
             }
         });
 
@@ -101,26 +116,34 @@ public class MenuItemViewActivity extends AppCompatActivity {
                 && SharedPreferencesUtils.getLongFromSharedPrefs(this, Constants.TABLE_ID_CONST_STRING) == 0)
             viewBookingDialog();
         else {
-            if (isCustomerTableAlreadyExists)
-                addToCart.setEnabled(false);
-            else
+            if (isCustomerTableAlreadyExists) {
+                Toast.makeText(this, getString(R.string.payment_first_string), Toast.LENGTH_SHORT).show();
+            } else
                 addToCart.setEnabled(true);
         }
 
         addToCart.setOnClickListener(view -> {
-            list = SharedPreferencesUtils.getFoodItemsFromSharedPrefs(MenuItemViewActivity.this, FOOD_ITEM_STRING);
             CartFoodItems cartFood = new CartFoodItems(foodItem, Integer.parseInt(quantity.getText().toString()));
-            if (list == null)
-                list = new ArrayList<>();
+            list = new ArrayList<>();
+            if (SharedPreferencesUtils.getFoodItemsByCustomerFromSharedPrefs(MenuItemViewActivity.this, FOOD_ITEM_MAP_STRING) != null) {
+                if (SharedPreferencesUtils.getFoodItemsByCustomerFromSharedPrefs(MenuItemViewActivity.this, FOOD_ITEM_MAP_STRING).get(customer.getPerson().getCustomer().getCustomerId()) != null)
+                    list = SharedPreferencesUtils.getFoodItemsByCustomerFromSharedPrefs(MenuItemViewActivity.this, FOOD_ITEM_MAP_STRING).get(customer.getPerson().getCustomer().getCustomerId());
+            }
             list.add(cartFood);
-            SharedPreferencesUtils.saveFoodItemsToSharedPrefs(MenuItemViewActivity.this, FOOD_ITEM_STRING, list);
+            //SharedPreferencesUtils.saveFoodItemsToSharedPrefs(MenuItemViewActivity.this, FOOD_ITEM_STRING, list);
+            Map<Long, List<CartFoodItems>> foodItemsInCart = new HashMap<>();
+            foodItemsInCart.put(customer.getPerson().getCustomer().getCustomerId(), list);
+            SharedPreferencesUtils.saveFoodItemsByCustomerToSharedPrefs(this, Constants.FOOD_ITEM_MAP_STRING, foodItemsInCart);
             Toast.makeText(this, getString(R.string.item_add_success), Toast.LENGTH_SHORT).show();
         });
         back.setOnClickListener(view ->
             startActivity(new Intent(MenuItemViewActivity.this, CustomerHomeActivity.class))
         );
         foodItemName.setText(foodItem.getFoodItemName());
-        price.setText(String.valueOf(foodItem.getFoodItemPrice()));
+        if (foodItem.getFoodItemPrice() % 1 == 0)
+            price.setText(getString(R.string.default_price_string, dfDoubleInt.format(foodItem.getFoodItemPrice())));
+        else
+            price.setText(getResources().getString(R.string.default_price_string, String.valueOf(foodItem.getFoodItemPrice())));
     }
 
     private void viewBookingDialog() {

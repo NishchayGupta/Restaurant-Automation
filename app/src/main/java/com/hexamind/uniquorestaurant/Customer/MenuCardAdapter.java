@@ -13,6 +13,7 @@ import com.hexamind.uniquorestaurant.Data.FoodItems;
 import com.hexamind.uniquorestaurant.R;
 import com.hexamind.uniquorestaurant.Utils.Constants;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
@@ -22,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 public class MenuCardAdapter extends RecyclerView.Adapter<MenuCardAdapter.MenuCardViewHolder> {
     private Context context;
     private ArrayList<FoodItems> foodItemList;
+    private DecimalFormat dfDoubleInt = new DecimalFormat("#");
 
     public MenuCardAdapter(Context context, ArrayList<FoodItems> foodItemList) {
         this.context = context;
@@ -55,13 +57,16 @@ public class MenuCardAdapter extends RecyclerView.Adapter<MenuCardAdapter.MenuCa
         FoodItems item = foodItemList.get(position);
 
         holder.itemName.setText(item.getFoodItemName());
-        holder.itemCost.setText(context.getResources().getString(R.string.item_cost_string, String.valueOf(item.getFoodItemPrice())));
         holder.cardView.setOnClickListener(view -> {
             Intent intent = new Intent(context, MenuItemViewActivity.class);
             Gson gson = new Gson();
             intent.putExtra(Constants.FOOD_ITEM_STRING, gson.toJson(item));
             context.startActivity(intent);
         });
+        if (item.getFoodItemPrice() % 1 == 0)
+            holder.itemCost.setText(context.getString(R.string.default_price_string, String.valueOf(dfDoubleInt.format(item.getFoodItemPrice()))));
+        else
+            holder.itemCost.setText(context.getString(R.string.default_price_string, String.valueOf(item.getFoodItemPrice())));
     }
 
     @Override

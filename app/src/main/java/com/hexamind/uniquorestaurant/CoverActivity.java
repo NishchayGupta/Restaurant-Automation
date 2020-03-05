@@ -33,7 +33,10 @@ public class CoverActivity extends AppCompatActivity {
             System.exit(0);
         }
 
-        login.setOnClickListener(view -> startActivity(new Intent(CoverActivity.this, LoginActivity.class)));
+        login.setOnClickListener(view -> {
+            startActivity(new Intent(CoverActivity.this, LoginActivity.class));
+            finish();
+        });
 
         register.setOnClickListener(view -> startActivity(new Intent(CoverActivity.this, RegisterActivity.class)));
     }

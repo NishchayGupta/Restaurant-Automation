@@ -6,10 +6,12 @@ import android.content.SharedPreferences;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.hexamind.uniquorestaurant.Data.CartFoodItems;
+import com.hexamind.uniquorestaurant.Data.ChefOrders;
 import com.hexamind.uniquorestaurant.Data.CustomerSuccess;
 import com.hexamind.uniquorestaurant.Data.UserOrder;
 
 import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -44,6 +46,10 @@ public class SharedPreferencesUtils {
         getSharedPreference(context).edit().remove(name).apply();
     }
 
+    public static void deleteBooleanFromSharedPrefs(Context context, String name) {
+        getSharedPreference(context).edit().remove(name).apply();
+    }
+
     public static void saveStringToSharedPrefs(Context context, String name, String value) {
         SharedPreferences.Editor editor = getSharedPreference(context).edit();
         editor.putString(name, value);
@@ -69,6 +75,27 @@ public class SharedPreferencesUtils {
         String object = getSharedPreference(context).getString(objectName, "");
 
         return gson.fromJson(object, type);
+    }
+
+    public static void saveFoodItemsByCustomerToSharedPrefs(Context context, String objectName, Map<Long, List<CartFoodItems>> foodItemsMap) {
+        SharedPreferences.Editor editor = getSharedPreference(context).edit();
+        Gson gson = new Gson();
+        String object = gson.toJson(foodItemsMap);
+        editor.putString(objectName, object);
+        editor.apply();
+    }
+
+    public static HashMap<Long, List<CartFoodItems>> getFoodItemsByCustomerFromSharedPrefs(Context context, String objectName) {
+        Gson gson = new Gson();
+        Type type = new TypeToken<Map<Long, List<CartFoodItems>>>(){}.getType();
+
+        String object = getSharedPreference(context).getString(objectName, "");
+
+        return gson.fromJson(object, type);
+    }
+
+    public static void removeCartItems(Context context, String name) {
+        getSharedPreference(context).edit().remove(name).apply();
     }
 
     public static void saveUserOrdersToSharedPrefs(Context context, String objectName, List<UserOrder> userOrderList) {

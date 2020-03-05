@@ -2,6 +2,7 @@ package com.hexamind.uniquorestaurant.Retrofit;
 
 import com.hexamind.uniquorestaurant.Data.BookTableSuccess;
 import com.hexamind.uniquorestaurant.Data.CheckAvailabilitySuccess;
+import com.hexamind.uniquorestaurant.Data.ChefOrders;
 import com.hexamind.uniquorestaurant.Data.CustomerSuccess;
 import com.hexamind.uniquorestaurant.Data.FoodItem;
 import com.hexamind.uniquorestaurant.Data.FoodItems;
@@ -25,7 +26,7 @@ import retrofit2.http.Query;
 
 public interface ApiService {
     @GET("person/login")
-    Call<CustomerSuccess>  getCustomerDetails(@Query("email") String email, @Query("password") String password);
+    Call<CustomerSuccess> getCustomerDetails(@Query("email") String email, @Query("password") String password);
 
     @POST("customer/registration")
     Call<RegisterSuccess> registerUser(@Body RegisterPost newUser);
@@ -53,4 +54,10 @@ public interface ApiService {
 
     @GET("customer/emailCheck/{email}")
     Call<GeneralError> checkEmailExists(@Path("email") String email);
+
+    @GET("chef/existingOrders")
+    Call<List<ChefOrders>> getAllOrdersForChef();
+
+    @GET("order/customer/allOrders/{customerId}")
+    Call<List<ChefOrders>> getAllOrders(@Path("customerId") Long customerId);
 }

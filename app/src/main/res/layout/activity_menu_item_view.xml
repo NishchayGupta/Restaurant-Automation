@@ -95,10 +95,10 @@
                     android:layout_marginTop="8dp">
 
                     <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/addPersons"
+                        android:id="@+id/removePersons"
                         android:layout_width="48dp"
                         android:layout_height="48dp"
-                        android:text="@string/add_person_string"
+                        android:text="@string/remove_person_string"
                         android:background="@drawable/drawable_table_booking_unselected"
                         android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
@@ -112,6 +112,7 @@
                             android:id="@+id/quantity"
                             android:layout_width="48dp"
                             android:layout_height="48dp"
+                            android:enabled="false"
                             android:text="1"
                             android:textColor="@android:color/primary_text_dark"
                             android:backgroundTint="@android:color/transparent"
@@ -121,10 +122,10 @@
                     </LinearLayout>
 
                     <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/removePersons"
+                        android:id="@+id/addPersons"
                         android:layout_width="48dp"
                         android:layout_height="48dp"
-                        android:text="@string/remove_person_string"
+                        android:text="@string/add_person_string"
                         android:background="@drawable/drawable_table_booking_unselected"
                         android:layout_marginStart="16dp"
                         android:textAppearance="@style/TextAppearance.AppCompat.Title" />
@@ -141,7 +142,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:text="@string/food_item_price_string"
+                android:text="@string/default_price_string"
                 android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                 android:textColor="@android:color/primary_text_dark"
                 android:fontFamily="@font/ubuntu_regular" />

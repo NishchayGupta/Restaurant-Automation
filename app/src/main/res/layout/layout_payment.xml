@@ -270,6 +270,7 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/ubuntu_regular"
                         android:hint="@string/table_number_string"
+                        android:enabled="false"
                         android:inputType="number"
                         android:textColor="@android:color/primary_text_dark"
                         android:textColorHint="@android:color/primary_text_dark"

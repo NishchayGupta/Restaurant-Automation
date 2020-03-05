@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
+import com.hexamind.uniquorestaurant.Chef.ChefOrdersActivity;
 import com.hexamind.uniquorestaurant.Customer.CustomerHomeActivity;
 import com.hexamind.uniquorestaurant.Data.CustomerSuccess;
 import com.hexamind.uniquorestaurant.Data.GeneralError;
@@ -66,6 +67,13 @@ public class LoginActivity extends AppCompatActivity {
                                 SharedPreferencesUtils.saveCustomerToSharedPrefs(LoginActivity.this, Constants.CUSTOMER_OBJ_NAME, customer);
                                 startActivity(new Intent(LoginActivity.this, CustomerHomeActivity.class));
                                 finish();
+                            } else if (customer.getPerson().getChef() != null) {
+                                startActivity(new Intent(LoginActivity.this, ChefOrdersActivity.class));
+                                finish();
+                            }  else if (customer.getPerson().getCashier() != null) {
+
+                            }  else if (customer.getPerson().getManager() != null) {
+
                             } else
                                 Toast.makeText(LoginActivity.this, getString(R.string.problem_getting_customer_details_string), Toast.LENGTH_SHORT).show();
                         } else if (response.code() == 404) {
@@ -105,5 +113,11 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         register.setOnClickListener(view  -> startActivity(new Intent(LoginActivity.this, RegisterActivity.class)));
+    }
+
+    @Override
+    public void onBackPressed() {
+        finishAffinity();
+        super.onBackPressed();
     }
 }
