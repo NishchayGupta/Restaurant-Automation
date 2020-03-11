@@ -2,103 +2,116 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:padding="8dp">
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp">
 
-    <LinearLayout
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="8dp"
-        android:background="@drawable/drawable_past_orders_border">
+        app:contentPadding="16dp"
+        app:cardUseCompatPadding="true"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp">
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/item_string"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-                    android:textColor="@android:color/secondary_text_dark" />
-
-                <TextView
-                    android:id="@+id/itemsOrdered"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/items_ordered_string"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Menu" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/ordered_on_string"
-                    android:layout_marginTop="8dp"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-                    android:textColor="@android:color/secondary_text_dark" />
-
-                <TextView
-                    android:id="@+id/dateOrdered"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/date_ordered_string"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Menu" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
                 <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:gravity="center">
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
                     <TextView
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/amount_paid_string"
+                        android:text="@string/item_string"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                        android:textColor="@android:color/secondary_text_dark" />
+
+                    <TextView
+                        android:id="@+id/itemsOrdered"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/items_ordered_string"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Menu" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/ordered_on_string"
                         android:layout_marginTop="8dp"
                         android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-                        android:textColor="@android:color/secondary_text_dark"
-                        android:textAlignment="viewEnd" />
+                        android:textColor="@android:color/secondary_text_dark" />
 
                     <TextView
-                        android:id="@+id/amountPaid"
-                        android:layout_width="match_parent"
+                        android:id="@+id/dateOrdered"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/amount_paid_string"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Menu"
-                        android:textAlignment="viewEnd" />
+                        android:text="@string/date_ordered_string"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Menu" />
 
                 </LinearLayout>
 
-            </LinearLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true">
 
-        </RelativeLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:gravity="center">
 
-        <TextView
-            android:id="@+id/paidText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/paid_string"
-            android:layout_marginTop="8dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:textColor="#4CAF50"
-            android:textStyle="bold"
-            android:textAlignment="textEnd" />
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/amount_paid_string"
+                            android:layout_marginTop="8dp"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                            android:textColor="@android:color/secondary_text_dark"
+                            android:textAlignment="viewEnd" />
 
-    </LinearLayout>
+                        <TextView
+                            android:id="@+id/amountPaid"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/amount_paid_string"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Menu"
+                            android:textAlignment="viewEnd" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/paidText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/paid_string"
+                android:layout_marginTop="8dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="#4CAF50"
+                android:textStyle="bold"
+                android:textAlignment="textEnd" />
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
 
 </LinearLayout>

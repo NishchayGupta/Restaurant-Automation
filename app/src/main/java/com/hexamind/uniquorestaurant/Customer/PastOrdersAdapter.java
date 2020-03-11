@@ -19,7 +19,15 @@ import com.hexamind.uniquorestaurant.Utils.Constants;
 import com.hexamind.uniquorestaurant.Utils.SharedPreferencesUtils;
 
 import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -69,7 +77,20 @@ public class PastOrdersAdapter extends RecyclerView.Adapter<PastOrdersAdapter.Pa
         for (CartFoodItems foodItems: order.getFoodItemOrder()) {
             holder.itemsOrdered.append(context.getString(R.string.chef_orders_items_view, foodItems.getFoodItem().getFoodItemName(), String.valueOf(foodItems.getQuantity())));
         }
-        holder.dateOrdered.setText(order.getTable().getBookingDateTime());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.getDefault());
+        sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+        /*try {
+            OffsetDateTime odt = OffsetDateTime.parse(order.getTable().getBookingDateTime(), DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+            holder.dateOrdered.setText(odt.getMonth() + " " + odt.getDayOfMonth() + ", " + odt.getYear());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }*/
+        //holder.dateOrdered.setText(order.getTable().getBookingDateTime().getDate());
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(order.getTable().getBookingDateTime());
+
+        String dateString = cal.get(Calendar.DATE) + " " + getMonth(cal.get(Calendar.MONTH)) + ", " + cal.get(Calendar.YEAR);
+        holder.dateOrdered.setText(dateString);
         holder.amountPaid.setText(df.format((order.getTotalCost() * 1.15)));
         if (order.getExistingOrder()) {
             holder.paidText.setText(context.getString(R.string.not_paid_string));
@@ -128,6 +149,53 @@ public class PastOrdersAdapter extends RecyclerView.Adapter<PastOrdersAdapter.Pa
                 dialog.dismiss();
             });
         });
+    }
+
+    private String getMonth(int monthInt) {
+        String month;
+        switch (monthInt) {
+            case 1:
+                month = "January";
+                break;
+            case 2:
+                month =  "February";
+                break;
+            case 3:
+                month =  "March";
+                break;
+            case 4:
+                month =  "April";
+                break;
+            case 5:
+                month =  "May";
+                break;
+            case 6:
+                month =  "June";
+                break;
+            case 7:
+                month =  "July";
+                break;
+            case 8:
+                month =  "August";
+                break;
+            case 9:
+                month =  "September";
+                break;
+            case 10:
+                month =  "October";
+                break;
+            case 11:
+                month =  "November";
+                break;
+            case 12:
+                month =  "December";
+                break;
+            default:
+                month =  "";
+                break;
+        }
+
+        return month;
     }
 
     @Override

@@ -3,27 +3,29 @@ package com.hexamind.uniquorestaurant.Data;
 
 import com.google.gson.annotations.Expose;
 
+import java.util.Date;
+
 public class Table {
     @Expose
-    private String bookingDateTime;
+    private Date bookingDateTime;
     @Expose
     private Object customers;
     @Expose
-    private Object endDateTime;
+    private Date endDateTime;
     @Expose
     private Long id;
     @Expose
     private Object orderFood;
     @Expose
-    private Object startDateTime;
+    private Date startDateTime;
     @Expose
     private Long waitingTime;
 
-    public String getBookingDateTime() {
+    public Date getBookingDateTime() {
         return bookingDateTime;
     }
 
-    public void setBookingDateTime(String bookingDateTime) {
+    public void setBookingDateTime(Date bookingDateTime) {
         this.bookingDateTime = bookingDateTime;
     }
 
@@ -39,7 +41,7 @@ public class Table {
         return endDateTime;
     }
 
-    public void setEndDateTime(Object endDateTime) {
+    public void setEndDateTime(Date endDateTime) {
         this.endDateTime = endDateTime;
     }
 
@@ -63,7 +65,7 @@ public class Table {
         return startDateTime;
     }
 
-    public void setStartDateTime(Object startDateTime) {
+    public void setStartDateTime(Date startDateTime) {
         this.startDateTime = startDateTime;
     }
 

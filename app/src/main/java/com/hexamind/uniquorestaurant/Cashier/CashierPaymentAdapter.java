@@ -16,6 +16,7 @@ import com.hexamind.uniquorestaurant.Data.Order;
 import com.hexamind.uniquorestaurant.Manager.ManagerActivity;
 import com.hexamind.uniquorestaurant.R;
 
+import java.util.Calendar;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -94,7 +95,10 @@ public class CashierPaymentAdapter extends RecyclerView.Adapter<CashierPaymentAd
             TextView total = confirm.findViewById(R.id.total);
             AppCompatButton makePayment = confirm.findViewById(R.id.receivePayment);
 
-            invoiceDate.setText(orders.getTable().getBookingDateTime());
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(orders.getTable().getBookingDateTime());
+            String dateString = cal.get(Calendar.DATE) + " " + getMonth(cal.get(Calendar.MONTH)) + ", " + cal.get(Calendar.YEAR);
+            invoiceDate.setText(dateString);
             items.setText("");
             for (CartFoodItems itemsOrdered : orders.getFoodItemOrder()) {
                 items.append(itemsOrdered.getFoodItem() + " x " + itemsOrdered.getQuantity() + "\n");
@@ -112,5 +116,52 @@ public class CashierPaymentAdapter extends RecyclerView.Adapter<CashierPaymentAd
     @Override
     public int getItemCount() {
         return paymentList.size();
+    }
+
+    private String getMonth(int monthInt) {
+        String month;
+        switch (monthInt) {
+            case 1:
+                month = "January";
+                break;
+            case 2:
+                month =  "February";
+                break;
+            case 3:
+                month =  "March";
+                break;
+            case 4:
+                month =  "April";
+                break;
+            case 5:
+                month =  "May";
+                break;
+            case 6:
+                month =  "June";
+                break;
+            case 7:
+                month =  "July";
+                break;
+            case 8:
+                month =  "August";
+                break;
+            case 9:
+                month =  "September";
+                break;
+            case 10:
+                month =  "October";
+                break;
+            case 11:
+                month =  "November";
+                break;
+            case 12:
+                month =  "December";
+                break;
+            default:
+                month =  "";
+                break;
+        }
+
+        return month;
     }
 }
