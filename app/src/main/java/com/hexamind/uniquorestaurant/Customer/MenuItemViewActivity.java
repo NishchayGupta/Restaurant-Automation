@@ -136,6 +136,7 @@ public class MenuItemViewActivity extends AppCompatActivity {
                         quant = list.get(i).getQuantity() + Integer.parseInt(quantity.getText().toString());
                         foodItemExists = true;
                         position = i;
+                        break;
                     } else {
                         foodItemExists = false;
                     }
