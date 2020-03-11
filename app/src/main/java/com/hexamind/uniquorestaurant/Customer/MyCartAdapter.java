@@ -1,11 +1,11 @@
 package com.hexamind.uniquorestaurant.Customer;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.hexamind.uniquorestaurant.Data.CartFoodItems;
@@ -15,6 +15,8 @@ import com.hexamind.uniquorestaurant.Utils.Constants;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -36,7 +38,7 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.MyCartView
     class MyCartViewHolder extends RecyclerView.ViewHolder {
         ImageView foodItemImage;
         TextView  foodItemName, foodItemDesc, foodItemPrice, addItem, itemCount, removeItem;
-        ConstraintLayout delete;
+        RelativeLayout delete;
 
         public MyCartViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -109,19 +111,33 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.MyCartView
             total += 1.15 * price;
             listener.onTotalComputed(total);
         });
-        holder.delete.setOnClickListener(view -> {
-            AlertDialog.Builder builder = new AlertDialog.Builder(context);
-            builder.setTitle(context.getString(R.string.delete_item_title_string))
-                    .setMessage(context.getString(R.string.delete_item_message_string))
-                    .setPositiveButton(android.R.string.yes, (dialogInterface, i) -> {
-                        int newPosition = holder.getAdapterPosition();
-                        delete(newPosition);
-                        listener.saveFoodItems(Constants.FOOD_ITEM_MAP_STRING, cartItemList);
-                        total = 0.0;
-                    })
-                    .setNegativeButton(android.R.string.no, (dialogInterface, i) -> {
-                        dialogInterface.dismiss();
-                    }).show();
+        holder.delete.setOnClickListener(view -> {AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setCancelable(false);
+            LayoutInflater inflater = ((CustomerHomeActivity) context).getLayoutInflater();
+            View confirm = inflater.inflate(R.layout.layout_confirm_dialog, null);
+            builder.setView(confirm);
+
+            AlertDialog dialog = builder.create();
+            dialog.show();
+
+            TextView title = confirm.findViewById(R.id.title);
+            TextView message = confirm.findViewById(R.id.message);
+            AppCompatButton yes = confirm.findViewById(R.id.confirmBtn);
+            AppCompatButton no = confirm.findViewById(R.id.cancelBtn);
+
+            message.setText(context.getString(R.string.delete_item_message_string));
+            title.setText(context.getString(R.string.delete_item_title_string));
+            yes.setOnClickListener(view1 -> {
+                int newPosition = holder.getAdapterPosition();
+                delete(newPosition);
+                listener.saveFoodItems(Constants.FOOD_ITEM_MAP_STRING, cartItemList);
+                if (cartItemList.isEmpty())
+                    listener.onTotalComputed(0.0);
+                total = 0.0;
+
+                dialog.dismiss();
+            });
+            no.setOnClickListener(view1 -> dialog.dismiss());
         });
 
         Double totalPrice = cartItem.getFoodItem().getFoodItemPrice();

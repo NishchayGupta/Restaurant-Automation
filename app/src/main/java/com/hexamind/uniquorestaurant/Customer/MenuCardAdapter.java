@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 import com.hexamind.uniquorestaurant.Data.FoodItems;
 import com.hexamind.uniquorestaurant.R;
@@ -38,7 +39,7 @@ public class MenuCardAdapter extends RecyclerView.Adapter<MenuCardAdapter.MenuCa
         public MenuCardViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            itemImage = itemView.findViewById(R.id.imageView);
+            itemImage = itemView.findViewById(R.id.itemImage);
             itemName = itemView.findViewById(R.id.itemName);
             itemCost = itemView.findViewById(R.id.itemCost);
             cardView = itemView.findViewById(R.id.cardView);
@@ -67,6 +68,10 @@ public class MenuCardAdapter extends RecyclerView.Adapter<MenuCardAdapter.MenuCa
             holder.itemCost.setText(context.getString(R.string.default_price_string, String.valueOf(dfDoubleInt.format(item.getFoodItemPrice()))));
         else
             holder.itemCost.setText(context.getString(R.string.default_price_string, String.valueOf(item.getFoodItemPrice())));
+        Glide.with(context)
+                .load(item.getFoodItemPicture())
+                .placeholder(R.drawable.ic_image_black_24dp)
+                .into(holder.itemImage);
     }
 
     @Override

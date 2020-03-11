@@ -19,7 +19,11 @@
         android:id="@id/menu_my_cart"
         android:name="com.hexamind.uniquorestaurant.Customer.MyCartFragment"
         android:label="@string/menu_item_my_cart_string"
-        tools:layout="@layout/fragment_my_cart" />
+        tools:layout="@layout/fragment_my_cart" >
+        <action
+            android:id="@+id/action_menu_my_cart_to_menu_menu_card_repeat"
+            app:destination="@id/menu_menu_card_repeat" />
+    </fragment>
     <fragment
         android:id="@id/menu_notifications"
         android:name="com.hexamind.uniquorestaurant.Customer.NotificationsFragment"
@@ -30,4 +34,10 @@
         android:name="com.hexamind.uniquorestaurant.Customer.ProfileFragment"
         android:label="@string/menu_item_profile_string"
         tools:layout="@layout/fragment_profile" />
+
+    <fragment
+        android:id="@+id/menu_menu_card_repeat"
+        android:name="com.hexamind.uniquorestaurant.Customer.MenuCardFragment"
+        android:label="@string/menu_item_menu_card_string"
+        tools:layout="@layout/fragment_menu_card" />
 </navigation>

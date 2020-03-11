@@ -78,11 +78,11 @@
                 android:id="@+id/cardLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:visibility="gone">
+                app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
                     android:id="@+id/textView6"
@@ -109,12 +109,13 @@
                     app:layout_constraintTop_toBottomOf="@+id/textView6">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/nameOnCard"
+                        android:id="@+id/cardNumber"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/ubuntu_regular"
-                        android:hint="@string/name_on_card_string"
-                        android:inputType="textEmailAddress"
+                        android:hint="@string/card_number_string"
+                        android:inputType="number"
+                        android:maxLength="16"
                         android:textColor="@android:color/primary_text_dark"
                         android:textColorHint="@android:color/primary_text_dark"
                         app:hintTextColor="@android:color/primary_text_dark" />
@@ -147,6 +148,10 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/ubuntu_regular"
                             android:hint="@string/expiry_date_string"
+                            android:clickable="true"
+                            android:cursorVisible="false"
+                            android:focusable="true"
+                            android:focusableInTouchMode="false"
                             android:textColor="@android:color/primary_text_dark"
                             android:textColorHint="@android:color/primary_text_dark"
                             app:hintTextColor="@android:color/primary_text_dark" />
@@ -172,6 +177,7 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/ubuntu_regular"
                             android:hint="@string/cvv_string"
+                            android:maxLength="3"
                             android:inputType="textPassword"
                             android:textColor="@android:color/primary_text_dark"
                             android:textColorHint="@android:color/primary_text_dark"

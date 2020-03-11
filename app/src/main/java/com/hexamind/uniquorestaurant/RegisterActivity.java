@@ -68,7 +68,7 @@ public class RegisterActivity extends AppCompatActivity {
         termsConditions.setText(termsString + " ");
 
         Spannable termsSubstring = new SpannableString(getString(R.string.terms_and_conditions_check_substring));
-        termsSubstring.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimary, null)), 0, termsSubstring.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        termsSubstring.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorAccent, null)), 0, termsSubstring.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         termsConditions.append(termsSubstring);
 
         Spannable loginString = new SpannableString(getString(R.string.login_here_text));
@@ -77,7 +77,7 @@ public class RegisterActivity extends AppCompatActivity {
         loginHere.setText(loginString + " ");
 
         Spannable loginSubstring = new SpannableString(getString(R.string.login_here_substring_text));
-        loginSubstring.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimary, null)), 0, loginSubstring.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        loginSubstring.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorAccent, null)), 0, loginSubstring.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         loginHere.append(loginSubstring);
 
         name.addTextChangedListener(new TextWatcher() {
@@ -107,13 +107,15 @@ public class RegisterActivity extends AppCompatActivity {
                 call.enqueue(new Callback<GeneralError>() {
                     @Override
                     public void onResponse(Call<GeneralError> call, Response<GeneralError> response) {
-                        GeneralError emailExists = response.body();
-
-                        if (response.code() == 200) {
-                            emailExistsText.setVisibility(View.GONE);
-                        } else if (response.code() == 400) {
-                            emailExistsText.setText(getString(R.string.email_exists_message_string));
-                            emailExistsText.setVisibility(View.VISIBLE);
+                        if (email.getText().toString().isEmpty() || !isValidUsername(email.getText())) {
+                            Toast.makeText(RegisterActivity.this, getString(R.string.invalid_email_error_string), Toast.LENGTH_SHORT).show();
+                        } else {
+                            if (response.code() == 200) {
+                                emailExistsText.setVisibility(View.GONE);
+                            } else if (response.code() == 400) {
+                                emailExistsText.setText(getString(R.string.email_exists_message_string));
+                                emailExistsText.setVisibility(View.VISIBLE);
+                            }
                         }
                         progressBar.setVisibility(View.GONE);
                     }

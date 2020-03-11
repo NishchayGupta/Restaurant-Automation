@@ -9,13 +9,17 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.hexamind.uniquorestaurant.Data.CartFoodItems;
 import com.hexamind.uniquorestaurant.Data.ChefOrders;
 import com.hexamind.uniquorestaurant.Data.FoodItem;
 import com.hexamind.uniquorestaurant.Data.FoodItems;
 import com.hexamind.uniquorestaurant.Data.Order;
+import com.hexamind.uniquorestaurant.Data.Table;
 import com.hexamind.uniquorestaurant.R;
+import com.hexamind.uniquorestaurant.Retrofit.ApiService;
+import com.hexamind.uniquorestaurant.Retrofit.RetrofitClient;
 
 import java.util.List;
 
@@ -23,6 +27,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ChefOrdersAdapter extends RecyclerView.Adapter<ChefOrdersAdapter.ChefOrdersViewHolder> {
     private List<ChefOrders> orderList;
@@ -75,11 +82,31 @@ public class ChefOrdersAdapter extends RecyclerView.Adapter<ChefOrdersAdapter.Ch
             }
         });
 
+        holder.itemOrderList.setText("");
         for (CartFoodItems foodItem : order.getFoodItemOrder()) {
-            holder.itemOrderList.setText(context.getString(R.string.chef_orders_items_view, foodItem.getFoodItem().getFoodItemName(), String.valueOf(foodItem.getQuantity())));
+            holder.itemOrderList.append(context.getString(R.string.chef_orders_items_view, foodItem.getFoodItem().getFoodItemName(), String.valueOf(foodItem.getQuantity())));
         }
         holder.orderReady.setOnClickListener(view -> {
+            ApiService api = RetrofitClient.getApiService();
+            Call<Table> call = api.orderReady(order.getTable().getId());
 
+            call.enqueue(new Callback<Table>() {
+                @Override
+                public void onResponse(Call<Table> call, Response<Table> response) {
+                    if (response.code() == 200) {
+                        Toast.makeText(context, context.getString(R.string.order_ready_string), Toast.LENGTH_SHORT).show();
+                        int newPosition = holder.getAdapterPosition();
+                        delete(newPosition);
+                    } else {
+                        Toast.makeText(context, context.getString(R.string.order_ready_fail_message_string), Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Table> call, Throwable t) {
+                    Toast.makeText(context, t.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
         });
     }
 
@@ -91,6 +118,11 @@ public class ChefOrdersAdapter extends RecyclerView.Adapter<ChefOrdersAdapter.Ch
     private void closeCard(View view) {
         view.setVisibility(View.GONE);
         cardExpanded = false;
+    }
+
+    private void delete(int position) {
+        orderList.remove(position);
+        notifyDataSetChanged();
     }
 
     @Override

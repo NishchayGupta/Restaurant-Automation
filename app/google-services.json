@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "665550020264",
+    "firebase_url": "https://uniquorestaurant.firebaseio.com",
+    "project_id": "uniquorestaurant",
+    "storage_bucket": "uniquorestaurant.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:665550020264:android:03a2d56f96d94d7dd1ec9d",
+        "android_client_info": {
+          "package_name": "com.hexamind.uniquorestaurant"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "665550020264-54md75drpojgp8dqbumtfamdae96jl4m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hexamind.uniquorestaurant",
+            "certificate_hash": "451b2e26f30d7fb94ff36d43285f23a5572d275d"
+          }
+        },
+        {
+          "client_id": "665550020264-e694psnlt8c9q5tgune65cprc1u7797p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBtHa2U-2PPd9kcMtx1mseg7vC6PY-pY4M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "665550020264-e694psnlt8c9q5tgune65cprc1u7797p.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

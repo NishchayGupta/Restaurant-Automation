@@ -11,7 +11,7 @@
         android:id="@+id/circleImageView"
         android:layout_width="96dp"
         android:layout_height="96dp"
-        android:src="@drawable/ic_person_black_24dp"
+        android:src="@drawable/ic_account_circle_black_24dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"

@@ -6,18 +6,21 @@ import com.hexamind.uniquorestaurant.Data.ChefOrders;
 import com.hexamind.uniquorestaurant.Data.CustomerSuccess;
 import com.hexamind.uniquorestaurant.Data.FoodItem;
 import com.hexamind.uniquorestaurant.Data.FoodItems;
+import com.hexamind.uniquorestaurant.Data.FoodItemsManager;
 import com.hexamind.uniquorestaurant.Data.GeneralError;
 import com.hexamind.uniquorestaurant.Data.Order;
 import com.hexamind.uniquorestaurant.Data.OrderSuccess;
 import com.hexamind.uniquorestaurant.Data.Person;
 import com.hexamind.uniquorestaurant.Data.RegisterPost;
 import com.hexamind.uniquorestaurant.Data.RegisterSuccess;
+import com.hexamind.uniquorestaurant.Data.Table;
 
 import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
@@ -43,6 +46,9 @@ public interface ApiService {
     @GET("foodItems")
     Call<List<FoodItems>> getAllFoodItems();
 
+    @GET("foodItem/{foodItemId}")
+    Call<FoodItems> getSpecificFoodItem(@Path("foodItemId") Long foodItemId);
+
     @POST("orderFood")
     Call<OrderSuccess> createOrder(@Body Order order);
 
@@ -58,6 +64,24 @@ public interface ApiService {
     @GET("chef/existingOrders")
     Call<List<ChefOrders>> getAllOrdersForChef();
 
+    @PUT("chef/orderReady/{tableId}")
+    Call<Table> orderReady(@Path("tableId") Long tableId);
+
     @GET("order/customer/allOrders/{customerId}")
     Call<List<ChefOrders>> getAllOrders(@Path("customerId") Long customerId);
+
+    @POST("foodItem")
+    Call<GeneralError> addFoodItem(@Body FoodItemsManager foodItem);
+
+    @PUT("foodItem/{id}")
+    Call<GeneralError> updateFoodItem(@Path("id") Long id, @Body FoodItemsManager updatedFoodItems);
+
+    @DELETE("foodItem/{foodItemId}")
+    Call<GeneralError> deleteFoodItem(@Path("foodItemId") int foodItemId);
+
+    @GET("cashier/allExistingOrders")
+    Call<List<ChefOrders>> getAllOrdersCashier();
+
+    @PUT("customer/takeOut/{customerId}")
+    Call<RegisterSuccess> registedrForTakeout(@Path("customerId") Long customerId);
 }

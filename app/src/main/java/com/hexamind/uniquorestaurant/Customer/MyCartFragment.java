@@ -2,15 +2,15 @@ package com.hexamind.uniquorestaurant.Customer;
 
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.appcompat.widget.AppCompatButton;
-import androidx.appcompat.widget.AppCompatEditText;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,42 +18,36 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import android.os.CountDownTimer;
-import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
-import com.hexamind.uniquorestaurant.Data.BookTableSuccess;
 import com.hexamind.uniquorestaurant.Data.CartFoodItems;
-import com.hexamind.uniquorestaurant.Data.CheckAvailabilitySuccess;
 import com.hexamind.uniquorestaurant.Data.CustomerSuccess;
 import com.hexamind.uniquorestaurant.Data.GeneralError;
 import com.hexamind.uniquorestaurant.Data.Order;
 import com.hexamind.uniquorestaurant.Data.OrderCart;
 import com.hexamind.uniquorestaurant.Data.OrderSuccess;
-import com.hexamind.uniquorestaurant.Data.UserOrder;
-import com.hexamind.uniquorestaurant.LoginActivity;
 import com.hexamind.uniquorestaurant.R;
 import com.hexamind.uniquorestaurant.Retrofit.ApiService;
 import com.hexamind.uniquorestaurant.Retrofit.RetrofitClient;
 import com.hexamind.uniquorestaurant.Utils.SharedPreferencesUtils;
 import com.hexamind.uniquorestaurant.Utils.Constants;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 public class MyCartFragment extends Fragment implements OnTotalComputedListener {
     private View root;
@@ -99,21 +93,32 @@ public class MyCartFragment extends Fragment implements OnTotalComputedListener 
                 noItems.setVisibility(View.VISIBLE);
             } else {
                 foodItemList = cartItemsMap.get(customerID);
-                adapter = new MyCartAdapter(foodItemList, root.getContext(), this);
-                recyclerView.setLayoutManager(new LinearLayoutManager(root.getContext()));
-                recyclerView.setItemAnimator(new DefaultItemAnimator());
-                recyclerView.setAdapter(adapter);
+                if (foodItemList.isEmpty())
+                    noItems.setVisibility(View.VISIBLE);
+                else {
+                    adapter = new MyCartAdapter(foodItemList, root.getContext(), this);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(root.getContext()));
+                    recyclerView.setItemAnimator(new DefaultItemAnimator());
+                    recyclerView.setAdapter(adapter);
+                }
             }
         } else {
             noItems.setVisibility(View.VISIBLE);
         }
 
-        if ((SharedPreferencesUtils.getLongFromSharedPrefs(root.getContext(), Constants.TABLE_ID_CONST_STRING) != 12
+        /*if ((SharedPreferencesUtils.getLongFromSharedPrefs(root.getContext(), Constants.TABLE_ID_CONST_STRING) != 12
                 && SharedPreferencesUtils.getLongFromSharedPrefs(root.getContext(), Constants.TABLE_ID_CONST_STRING) != 0)
                 && isCustomerTableAlreadyExists) {
             Toast.makeText(root.getContext(), getString(R.string.payment_first_string), Toast.LENGTH_SHORT).show();
         } else
+            addOrder.setEnabled(true);*/
+
+        if (SharedPreferencesUtils.getLongFromSharedPrefs(root.getContext(), Constants.TABLE_ID_CONST_STRING) == 12 ||
+                SharedPreferencesUtils.getBooleanFromSharedPrefs(root.getContext(), Constants.TABLE_EXISTS_ALREADY_STRING)) {
+
+        } else {
             addOrder.setEnabled(true);
+        }
 
         paymentPrimaryLayout.setOnClickListener(view -> {
             if (layoutClicked) {
@@ -131,53 +136,60 @@ public class MyCartFragment extends Fragment implements OnTotalComputedListener 
         });
 
         addOrder.setOnClickListener(view -> {
-            Toast.makeText(root.getContext(), "Add Order", Toast.LENGTH_SHORT).show();
-            orderFromCartList.clear();
-            for (CartFoodItems foodItem : foodItemList) {
-                OrderCart  orderCart = new OrderCart(foodItem.getFoodItem().getFoodItemId(), foodItem.getQuantity());
-                orderFromCartList.add(orderCart);
-            }
-            CustomerSuccess customer = SharedPreferencesUtils.getCustomerFromSharedPrefs(root.getContext(), Constants.CUSTOMER_OBJ_NAME);
-            Long customerId = customer.getPerson().getCustomer().getCustomerId();
-            Long tableId = SharedPreferencesUtils.getLongFromSharedPrefs(root.getContext(), Constants.TABLE_ID_CONST_STRING);
-            System.out.println("My Cart Table ID: " + tableId);
-
-            Order order = new Order(customerId, orderFromCartList, tableId);
-            ApiService api = RetrofitClient.getApiService();
-            Call<OrderSuccess> orderCall = api.createOrder(order);
-            orderCall.enqueue(new Callback<OrderSuccess>() {
-                @Override
-                public void onResponse(Call<OrderSuccess> call, Response<OrderSuccess> response) {
-                    OrderSuccess orderSuccess = response.body();
-
-                    if (response.code() == 200) {
-                        /*new AlertDialog.Builder(root.getContext())
-                                .setMessage(getString(R.string.order_successful_message_string) +"\n" +
-                                        "Order Id " + orderSuccess.getId() + " was created successfully. " + "\n" +
-                                        "The total cost of the order is: " + (1.15 * orderSuccess.getTotalCost()))
-                                .setCancelable(true)
-                                .show();*/
-                        Toast.makeText(root.getContext(), getString(R.string.order_successful_message_string), Toast.LENGTH_SHORT).show();
-                        viewBookingDialog(orderSuccess.getId(), tableId);
-                        SharedPreferencesUtils.saveBooleanToSharedPrefs(root.getContext(), Constants.TABLE_EXISTS_ALREADY_STRING, true);
-                        cartItemsMap.remove(customerID);
-                        foodItemList.clear();
-                        adapter.notifyDataSetChanged();
-                        noItems.setVisibility(View.VISIBLE);
-                    } else {
-                        Toast.makeText(root.getContext(), root.getContext().getString(R.string.order_error_message_string), Toast.LENGTH_SHORT).show();
+            if (SharedPreferencesUtils.getLongFromSharedPrefs(root.getContext(), Constants.TABLE_ID_CONST_STRING) == 12 ||
+                    SharedPreferencesUtils.getBooleanFromSharedPrefs(root.getContext(), Constants.TABLE_EXISTS_ALREADY_STRING)) {
+                if (SharedPreferencesUtils.getLongFromSharedPrefs(root.getContext(), Constants.TABLE_ID_CONST_STRING) == 12)
+                    Toast.makeText(root.getContext(), getString(R.string.select_table_message_string), Toast.LENGTH_SHORT).show();
+                if (SharedPreferencesUtils.getBooleanFromSharedPrefs(root.getContext(), Constants.TABLE_EXISTS_ALREADY_STRING))
+                    Toast.makeText(root.getContext(), getString(R.string.payment_first_string), Toast.LENGTH_SHORT).show();
+            } else {
+                if (!foodItemList.isEmpty()) {
+                    orderFromCartList.clear();
+                    for (CartFoodItems foodItem : foodItemList) {
+                        OrderCart orderCart = new OrderCart(foodItem.getFoodItem().getFoodItemId(), foodItem.getQuantity());
+                        orderFromCartList.add(orderCart);
                     }
-                }
+                    foodItemList.clear();
+                    adapter.notifyDataSetChanged();
+                    noItems.setVisibility(View.VISIBLE);
+                    foodPrice.setText(getString(R.string.default_cart_price_string));
+                    cartItemsMap.remove(customerID);
+                    SharedPreferencesUtils.saveFoodItemsByCustomerToSharedPrefs(root.getContext(), Constants.FOOD_ITEM_MAP_STRING, cartItemsMap);
+                    CustomerSuccess customer = SharedPreferencesUtils.getCustomerFromSharedPrefs(root.getContext(), Constants.CUSTOMER_OBJ_NAME);
+                    Long customerId = customer.getPerson().getCustomer().getCustomerId();
+                    Long tableId = SharedPreferencesUtils.getLongFromSharedPrefs(root.getContext(), Constants.TABLE_ID_CONST_STRING);
+                    System.out.println("My Cart Table ID: " + tableId);
 
-                @Override
-                public void onFailure(Call<OrderSuccess> call, Throwable t) {
-                    new AlertDialog.Builder(root.getContext())
-                            .setMessage(getString(R.string.order_error_message_string) +"\n" +
-                                    t.getMessage())
-                            .setCancelable(true)
-                            .show();
+                    Order order = new Order(customerId, orderFromCartList, tableId);
+                    ApiService api = RetrofitClient.getApiService();
+                    Call<OrderSuccess> orderCall = api.createOrder(order);
+                    orderCall.enqueue(new Callback<OrderSuccess>() {
+                        @Override
+                        public void onResponse(Call<OrderSuccess> call, Response<OrderSuccess> response) {
+                            OrderSuccess orderSuccess = response.body();
+
+                            if (response.code() == 200) {
+                                SharedPreferencesUtils.saveBooleanToSharedPrefs(root.getContext(), Constants.TABLE_EXISTS_ALREADY_STRING, true);
+                                Toast.makeText(root.getContext(), getString(R.string.order_successful_message_string), Toast.LENGTH_SHORT).show();
+                                viewBookingDialog(orderSuccess.getId(), tableId);
+                            } else {
+                                Toast.makeText(root.getContext(), root.getContext().getString(R.string.order_error_message_string), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<OrderSuccess> call, Throwable t) {
+                            new AlertDialog.Builder(root.getContext())
+                                    .setMessage(getString(R.string.order_error_message_string) + "\n" +
+                                            t.getMessage())
+                                    .setCancelable(true)
+                                    .show();
+                        }
+                    });
+                } else {
+                    Toast.makeText(root.getContext(), getString(R.string.cart_empty_message_string), Toast.LENGTH_SHORT).show();
                 }
-            });
+            }
         });
 
         return root;
@@ -197,7 +209,7 @@ public class MyCartFragment extends Fragment implements OnTotalComputedListener 
         AppCompatButton card = tableBooking.findViewById(R.id.card);
         ConstraintLayout cashLayout = tableBooking.findViewById(R.id.cashLayout);
         ConstraintLayout cardLayout = tableBooking.findViewById(R.id.cardLayout);
-        TextInputEditText nameOnCard = tableBooking.findViewById(R.id.nameOnCard);
+        TextInputEditText nameOnCard = tableBooking.findViewById(R.id.cardNumber);
         TextInputEditText expiryDate = tableBooking.findViewById(R.id.expiryDate);
         TextInputEditText cvv = tableBooking.findViewById(R.id.cvv);
         TextInputEditText name = tableBooking.findViewById(R.id.name);
@@ -206,6 +218,20 @@ public class MyCartFragment extends Fragment implements OnTotalComputedListener 
         AppCompatButton payNow = tableBooking.findViewById(R.id.payNow);
 
         tableNumber.setText(String.valueOf(tableId));
+        Calendar cal = Calendar.getInstance();
+        DatePickerDialog.OnDateSetListener dateListener = (datePicker, year, month, day) -> {
+            cal.set(Calendar.YEAR, year);
+            cal.set(Calendar.MONTH, month);
+            cal.set(Calendar.DAY_OF_MONTH, day);
+
+            String myFormat = "yy/MM";
+            SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+
+            expiryDate.setText(sdf.format(cal.getTime()));
+        };
+        expiryDate.setOnClickListener(view -> new DatePickerDialog(root.getContext(), dateListener, cal
+                .get(Calendar.YEAR), cal.get(Calendar.MONTH),
+                cal.get(Calendar.DAY_OF_MONTH)).show());
         cash.setOnClickListener(view -> {
             cash.setBackgroundDrawable(ContextCompat.getDrawable(root.getContext(), R.drawable.drawable_table_booking_selected));
             cash.setTextColor(ContextCompat.getColor(root.getContext(), android.R.color.white));
@@ -236,7 +262,16 @@ public class MyCartFragment extends Fragment implements OnTotalComputedListener 
 
                         SharedPreferencesUtils.deleteLongFromSharedPrefs(root.getContext(), Constants.TABLE_ID_CONST_STRING);
                         SharedPreferencesUtils.deleteBooleanFromSharedPrefs(root.getContext(), Constants.TABLE_EXISTS_ALREADY_STRING);
+                        SharedPreferencesUtils.saveBooleanToSharedPrefs(root.getContext(), Constants.TABLE_EXISTS_ALREADY_STRING, true);
+                        cartItemsMap.remove(customerID);
+                        noItems.setVisibility(View.VISIBLE);
+                        foodItemList.clear();
+                        adapter.notifyDataSetChanged();
                         dialog.dismiss();
+
+                        startActivity(new Intent(getContext(), CustomerHomeActivity.class));
+                        getActivity().finish();
+                        //Navigation.findNavController(getActivity(), R.id.navHostFragment).navigate(R.id.action_menu_my_cart_to_menu_menu_card_repeat);
                     } else {
                         Toast.makeText(root.getContext(), getString(R.string.payment_failure_message_string), Toast.LENGTH_SHORT).show();
                         dialog.dismiss();
@@ -255,6 +290,10 @@ public class MyCartFragment extends Fragment implements OnTotalComputedListener 
     @Override
     public void onTotalComputed(Double total) {
         Double taxes = total / 1.15;
+
+        if (total == 0.0)
+            noItems.setVisibility(View.VISIBLE);
+
         foodPrice.setText(getString(R.string.default_price_string, df.format(total)));
 
         totalTxt.setText(df.format(total));

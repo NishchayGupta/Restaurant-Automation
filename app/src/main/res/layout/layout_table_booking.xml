@@ -6,89 +6,82 @@
     android:layout_height="wrap_content"
     android:background="@android:color/transparent">
 
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scrollbars="vertical">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="center"
+        android:padding="16dp"
+        android:background="@drawable/drawable_dialog_background"
+        android:animateLayoutChanges="true">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:text="@string/select_dining_type_string"
+                android:textColor="@android:color/primary_text_dark"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:fontFamily="@font/ubuntu_regular" />
+
+            <ImageView
+                android:id="@+id/close"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/ic_close_black_24dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true" />
+
+        </RelativeLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_gravity="center"
-            android:padding="16dp"
-            android:background="@drawable/drawable_dialog_background"
-            android:animateLayoutChanges="true">
+            android:layout_marginTop="32dp">
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:text="@string/select_dining_type_string"
-                    android:textColor="@android:color/primary_text_dark"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                    android:fontFamily="@font/ubuntu_regular" />
-
-                <ImageView
-                    android:id="@+id/close"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:src="@drawable/ic_close_black_24dp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true" />
-
-            </RelativeLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/dineIn"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="32dp">
+                android:layout_weight="1"
+                android:padding="16dp"
+                android:background="@drawable/drawable_table_booking"
+                android:text="@string/dine_in_string"
+                android:textColor="@android:color/primary_text_dark"
+                android:textAllCaps="true"
+                android:fontFamily="@font/ubuntu_regular"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:layout_marginEnd="8dp" />
 
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/dineIn"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:padding="16dp"
-                    android:background="@drawable/drawable_table_booking"
-                    android:text="@string/dine_in_string"
-                    android:textColor="@android:color/primary_text_dark"
-                    android:textAllCaps="true"
-                    android:fontFamily="@font/ubuntu_regular"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                    android:layout_marginEnd="8dp" />
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/takeOut"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:padding="16dp"
-                    android:background="@drawable/drawable_table_booking_unselected"
-                    android:textColor="@color/colorPrimaryDark"
-                    android:text="@string/take_out_string"
-                    android:textAllCaps="true"
-                    android:fontFamily="@font/ubuntu_regular"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                    android:layout_marginStart="8dp" />
-
-            </LinearLayout>
-
-            <include
-                android:id="@+id/dineInLayout"
-                layout="@layout/layout_table_booking_dine_in_option" />
-
-            <include
-                android:id="@+id/takeOutLayout"
-                layout="@layout/layout_table_booking_take_out_option"
-                android:visibility="gone" />
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/takeOut"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:padding="16dp"
+                android:background="@drawable/drawable_table_booking_unselected"
+                android:textColor="@color/colorPrimaryDark"
+                android:text="@string/take_out_string"
+                android:textAllCaps="true"
+                android:fontFamily="@font/ubuntu_regular"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:layout_marginStart="8dp" />
 
         </LinearLayout>
 
-    </ScrollView>
+        <include
+            android:id="@+id/dineInLayout"
+            layout="@layout/layout_table_booking_dine_in_option" />
+
+        <include
+            android:id="@+id/takeOutLayout"
+            layout="@layout/layout_table_booking_take_out_option"
+            android:visibility="gone" />
+
+    </LinearLayout>
 
 </LinearLayout>

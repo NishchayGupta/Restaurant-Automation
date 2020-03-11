@@ -10,11 +10,13 @@ import retrofit2.Response;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.hexamind.uniquorestaurant.Data.ChefOrders;
+import com.hexamind.uniquorestaurant.Data.CustomerSuccess;
 import com.hexamind.uniquorestaurant.Data.Order;
 import com.hexamind.uniquorestaurant.LoginActivity;
 import com.hexamind.uniquorestaurant.R;
@@ -31,7 +33,8 @@ public class ChefOrdersActivity extends AppCompatActivity {
     private ChefOrdersAdapter adapter;
     private List<ChefOrders> orderList = new ArrayList<>();
     private ImageView back;
-    private TextView title;
+    private TextView title, noOrders;
+    private CustomerSuccess customer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,8 +44,11 @@ public class ChefOrdersActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         back = findViewById(R.id.back);
         title = findViewById(R.id.title);
+        noOrders = findViewById(R.id.noOrders);
 
         title.setText(getString(R.string.chef_orders_title_string));
+        customer = SharedPreferencesUtils.getCustomerFromSharedPrefs(this, Constants.CUSTOMER_OBJ_NAME);
+
         ApiService apiService = RetrofitClient.getApiService();
         Call<List<ChefOrders>> call = apiService.getAllOrdersForChef();
         call.enqueue(new Callback<List<ChefOrders>>() {
@@ -50,10 +56,16 @@ public class ChefOrdersActivity extends AppCompatActivity {
             public void onResponse(Call<List<ChefOrders>> call, Response<List<ChefOrders>> response) {
                 orderList = response.body();
 
-                adapter = new ChefOrdersAdapter(orderList, ChefOrdersActivity.this);
-                recyclerView.setLayoutManager(new LinearLayoutManager(ChefOrdersActivity.this));
-                recyclerView.setItemAnimator(new DefaultItemAnimator());
-                recyclerView.setAdapter(adapter);
+                if (orderList.isEmpty()) {
+                    noOrders.setVisibility(View.VISIBLE);
+                    recyclerView.setVisibility(View.GONE);
+                } else {
+                    noOrders.setVisibility(View.GONE);
+                    adapter = new ChefOrdersAdapter(orderList, ChefOrdersActivity.this);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(ChefOrdersActivity.this));
+                    recyclerView.setItemAnimator(new DefaultItemAnimator());
+                    recyclerView.setAdapter(adapter);
+                }
             }
 
             @Override
@@ -67,5 +79,12 @@ public class ChefOrdersActivity extends AppCompatActivity {
             Toast.makeText(this, getString(R.string.logout_success_message_string), Toast.LENGTH_SHORT).show();
             finish();
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        startActivity(new Intent(ChefOrdersActivity.this, LoginActivity.class));
+        Toast.makeText(this, getString(R.string.logout_success_message_string), Toast.LENGTH_SHORT).show();
+        finish();
     }
 }

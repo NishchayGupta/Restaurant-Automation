@@ -8,6 +8,7 @@ import com.google.gson.reflect.TypeToken;
 import com.hexamind.uniquorestaurant.Data.CartFoodItems;
 import com.hexamind.uniquorestaurant.Data.ChefOrders;
 import com.hexamind.uniquorestaurant.Data.CustomerSuccess;
+import com.hexamind.uniquorestaurant.Data.Manager;
 import com.hexamind.uniquorestaurant.Data.UserOrder;
 
 import java.lang.reflect.Type;

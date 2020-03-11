@@ -5,23 +5,31 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.hexamind.uniquorestaurant.Data.CartFoodItems;
+import com.hexamind.uniquorestaurant.Data.ChefOrders;
+import com.hexamind.uniquorestaurant.Data.FoodItems;
 import com.hexamind.uniquorestaurant.Data.Order;
+import com.hexamind.uniquorestaurant.Manager.ManagerActivity;
 import com.hexamind.uniquorestaurant.R;
 
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class CashierPaymentAdapter extends RecyclerView.Adapter<CashierPaymentAdapter.CashierPaymentViewHolder> {
-    private List<Order> paymentList;
+    private List<ChefOrders> paymentList;
     private Context context;
+    private boolean expanded = false;
 
-    public CashierPaymentAdapter(List<Order> paymentList, Context context) {
+    public CashierPaymentAdapter(List<ChefOrders> paymentList, Context context) {
         this.paymentList = paymentList;
         this.context = context;
     }
@@ -30,7 +38,7 @@ public class CashierPaymentAdapter extends RecyclerView.Adapter<CashierPaymentAd
         TextView tableNumber, itemOrderList, totalAmount, paymentType;
         ImageView expand;
         AppCompatButton viewReceipt;
-        ConstraintLayout layout;
+        RelativeLayout layout;
         View view;
 
         public CashierPaymentViewHolder(@NonNull View itemView) {
@@ -56,7 +64,49 @@ public class CashierPaymentAdapter extends RecyclerView.Adapter<CashierPaymentAd
 
     @Override
     public void onBindViewHolder(@NonNull CashierPaymentViewHolder holder, int position) {
+        ChefOrders orders = paymentList.get(position);
 
+        holder.expand.setOnClickListener(view -> {
+            if (expanded)
+                holder.layout.setVisibility(View.GONE);
+            else
+                holder.layout.setVisibility(View.VISIBLE);
+        });
+        for (CartFoodItems items : orders.getFoodItemOrder()) {
+            holder.itemOrderList.append(items.getFoodItem() + " x " + items.getFoodItem() + "\n");
+        }
+        holder.totalAmount.setText(context.getString(R.string.default_price_string, String.valueOf(orders.getTotalCost())));
+        holder.tableNumber.setText(String.valueOf(orders.getTable().getId()));
+        holder.viewReceipt.setOnClickListener(view -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setCancelable(false);
+            LayoutInflater inflater = ((ManagerActivity) context).getLayoutInflater();
+            View confirm = inflater.inflate(R.layout.layout_invoice, null);
+            builder.setView(confirm);
+
+            AlertDialog dialog = builder.create();
+            dialog.show();
+
+            TextView invoiceDate = confirm.findViewById(R.id.invoiceDate);
+            TextView items = confirm.findViewById(R.id.items);
+            TextView subTotal = confirm.findViewById(R.id.subTotal);
+            TextView taxes = confirm.findViewById(R.id.taxes);
+            TextView total = confirm.findViewById(R.id.total);
+            AppCompatButton makePayment = confirm.findViewById(R.id.receivePayment);
+
+            invoiceDate.setText(orders.getTable().getBookingDateTime());
+            items.setText("");
+            for (CartFoodItems itemsOrdered : orders.getFoodItemOrder()) {
+                items.append(itemsOrdered.getFoodItem() + " x " + itemsOrdered.getQuantity() + "\n");
+            }
+            subTotal.setText(String.valueOf(orders.getTotalCost()));
+            taxes.setText(String.valueOf((orders.getTotalCost() * 1.15)));
+            total.setText(String.valueOf((orders.getTotalCost() + (orders.getTotalCost() * 1.15))));
+            makePayment.setOnClickListener(view1 -> {
+                Toast.makeText(context, context.getString(R.string.payment_received_message_string), Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
+            });
+        });
     }
 
     @Override

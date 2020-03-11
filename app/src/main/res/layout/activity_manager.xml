@@ -43,7 +43,7 @@
         android:background="@color/colorPrimaryDark"
         app:itemTextColor="@android:color/primary_text_dark"
         app:itemIconTint="@android:color/background_light"
-        app:menu="@menu/menu"
+        app:menu="@menu/menu_manager"
         android:layout_gravity="start"
         app:headerLayout="@layout/layout_header" />
 

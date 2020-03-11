@@ -3,190 +3,204 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:background="@android:color/transparent">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="40dp"
-        android:text="@string/enter_details_here_string"
-        android:textColor="@android:color/primary_text_dark"
-        android:textAppearance="@style/TextAppearance.AppCompat.Menu"
-        android:fontFamily="@font/ubuntu_regular" />
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/usernameInput"
-        android:layout_marginTop="16dp"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/drawable_table_booking_edittext_background"
-        app:boxStrokeColor="@android:color/primary_text_dark"
-        app:hintTextColor="@android:color/primary_text_dark"
-        android:textColorHint="@android:color/primary_text_dark"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        android:scrollbars="vertical">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/custName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/name_string"
-            android:textColorHint="@android:color/primary_text_dark"
-            android:textColor="@android:color/primary_text_dark"
-            app:hintTextColor="@android:color/primary_text_dark"
-            android:fontFamily="@font/ubuntu_regular"
-            android:inputType="textEmailAddress" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_marginTop="16dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:boxStrokeColor="@android:color/primary_text_dark"
-        android:background="@drawable/drawable_table_booking_edittext_background"
-        app:hintTextColor="@android:color/primary_text_dark"
-        android:textColorHint="@android:color/primary_text_dark"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/custPhoneNumber"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/phone_number_string"
-            android:maxLength="10"
-            android:textColorHint="@android:color/primary_text_dark"
-            android:textColor="@android:color/primary_text_dark"
-            app:hintTextColor="@android:color/primary_text_dark"
-            android:fontFamily="@font/ubuntu_regular"
-            android:inputType="phone" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/number_of_persons_string"
-        android:textAppearance="@style/TextAppearance.AppCompat.Small"
-        android:textColor="@android:color/primary_text_dark"
-        android:layout_marginTop="16dp" />
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingTop="4dp">
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/addPersons"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:text="@string/add_person_string"
-            android:background="@drawable/drawable_table_booking_unselected"
-            android:textAppearance="@style/TextAppearance.AppCompat.Title" />
-
-        <LinearLayout
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginStart="16dp"
-            android:background="@drawable/drawable_table_booking_persons_text">
-
-            <androidx.appcompat.widget.AppCompatEditText
-                android:id="@+id/quantity"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:text="1"
-                android:enabled="false"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="40dp"
+                android:text="@string/enter_details_here_string"
                 android:textColor="@android:color/primary_text_dark"
-                android:backgroundTint="@android:color/transparent"
-                android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                android:textAlignment="center" />
+                android:textAppearance="@style/TextAppearance.AppCompat.Menu"
+                android:fontFamily="@font/ubuntu_regular" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/usernameInput"
+                android:layout_marginTop="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/drawable_table_booking_edittext_background"
+                app:boxStrokeColor="@android:color/primary_text_dark"
+                app:hintTextColor="@android:color/primary_text_dark"
+                android:textColorHint="@android:color/primary_text_dark"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/custName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/name_string"
+                    android:textColorHint="@android:color/primary_text_dark"
+                    android:textColor="@android:color/primary_text_dark"
+                    app:hintTextColor="@android:color/primary_text_dark"
+                    android:fontFamily="@font/ubuntu_regular"
+                    android:inputType="textEmailAddress" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_marginTop="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:boxStrokeColor="@android:color/primary_text_dark"
+                android:background="@drawable/drawable_table_booking_edittext_background"
+                app:hintTextColor="@android:color/primary_text_dark"
+                android:textColorHint="@android:color/primary_text_dark"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/custPhoneNumber"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/phone_number_string"
+                    android:maxLength="10"
+                    android:textColorHint="@android:color/primary_text_dark"
+                    android:textColor="@android:color/primary_text_dark"
+                    app:hintTextColor="@android:color/primary_text_dark"
+                    android:fontFamily="@font/ubuntu_regular"
+                    android:inputType="phone" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/number_of_persons_string"
+                android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                android:textColor="@android:color/primary_text_dark"
+                android:layout_marginTop="16dp" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="4dp">
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/removePersons"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:text="@string/remove_person_string"
+                    android:background="@drawable/drawable_table_booking_unselected"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+                <LinearLayout
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="16dp"
+                    android:background="@drawable/drawable_table_booking_persons_text">
+
+                    <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/quantity"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:text="1"
+                        android:enabled="false"
+                        android:textColor="@android:color/primary_text_dark"
+                        android:backgroundTint="@android:color/transparent"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                        android:textAlignment="center" />
+
+                </LinearLayout>
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/addPersons"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:text="@string/add_person_string"
+                    android:background="@drawable/drawable_table_booking_unselected"
+                    android:layout_marginStart="16dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+            </LinearLayout>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/checkAvailability"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_gravity="center"
+                android:fontFamily="@font/ubuntu_regular"
+                android:text="@string/check_availability_string"
+                android:background="@drawable/drawable_table_booking_unselected"
+                android:padding="12dp" />
+
+            <LinearLayout
+                android:id="@+id/progress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone">
+
+                <ProgressBar
+                    android:layout_width="20dp"
+                    android:layout_height="20dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="@string/checking_table_availability_message_string"
+                    android:textColor="@android:color/primary_text_dark"
+                    android:fontFamily="@font/ubuntu_regular"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp">
+
+                <TextView
+                    android:id="@+id/tableAvailable"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/table_available_string"
+                    android:visibility="gone"
+                    android:textColor="@android:color/primary_text_dark"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Menu"
+                    android:fontFamily="@font/ubuntu_regular" />
+
+                <TextView
+                    android:id="@+id/timer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/table_available_string"
+                    android:layout_alignParentEnd="true"
+                    android:visibility="gone"
+                    android:textColor="@android:color/primary_text_dark"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Menu"
+                    android:fontFamily="@font/ubuntu_regular" />
+
+            </RelativeLayout>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/bookTable"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="64dp"
+                android:text="@string/book_table_string"
+                android:enabled="false"
+                android:fontFamily="@font/ubuntu_regular"
+                android:textColor="@android:color/primary_text_light"
+                android:background="@drawable/drawable_table_booking_unselected"
+                android:padding="16dp"
+                android:textAllCaps="true"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
         </LinearLayout>
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/removePersons"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:text="@string/remove_person_string"
-            android:background="@drawable/drawable_table_booking_unselected"
-            android:layout_marginStart="16dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Title" />
-
-    </LinearLayout>
-
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/checkAvailability"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:layout_gravity="center"
-        android:fontFamily="@font/ubuntu_regular"
-        android:text="@string/check_availability_string"
-        android:background="@drawable/drawable_table_booking_unselected"
-        android:padding="12dp" />
-
-    <LinearLayout
-        android:id="@+id/progress"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone">
-
-        <ProgressBar
-            android:layout_width="20dp"
-            android:layout_height="20dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="@string/checking_table_availability_message_string"
-            android:textColor="@android:color/primary_text_dark"
-            android:fontFamily="@font/ubuntu_regular"
-            android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
-
-    </LinearLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp">
-
-        <TextView
-            android:id="@+id/tableAvailable"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/table_available_string"
-            android:visibility="gone"
-            android:textColor="@android:color/primary_text_dark"
-            android:textAppearance="@style/TextAppearance.AppCompat.Menu"
-            android:fontFamily="@font/ubuntu_regular" />
-
-        <TextView
-            android:id="@+id/timer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/table_available_string"
-            android:layout_alignParentEnd="true"
-            android:visibility="gone"
-            android:textColor="@android:color/primary_text_dark"
-            android:textAppearance="@style/TextAppearance.AppCompat.Menu"
-            android:fontFamily="@font/ubuntu_regular" />
-
-    </RelativeLayout>
-
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/bookTable"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="64dp"
-        android:text="@string/book_table_string"
-        android:enabled="false"
-        android:fontFamily="@font/ubuntu_regular"
-        android:textColor="@android:color/primary_text_light"
-        android:background="@drawable/drawable_table_booking_unselected"
-        android:padding="16dp"
-        android:textAllCaps="true"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+    </ScrollView>
 
 </LinearLayout>

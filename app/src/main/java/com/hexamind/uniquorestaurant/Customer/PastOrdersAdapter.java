@@ -65,8 +65,9 @@ public class PastOrdersAdapter extends RecyclerView.Adapter<PastOrdersAdapter.Pa
     public void onBindViewHolder(@NonNull PastOrdersViewHolder holder, int position) {
         ChefOrders order = orderList.get(position);
 
+        holder.itemsOrdered.setText("");
         for (CartFoodItems foodItems: order.getFoodItemOrder()) {
-            holder.itemsOrdered.setText(context.getString(R.string.chef_orders_items_view, foodItems.getFoodItem().getFoodItemName(), String.valueOf(foodItems.getQuantity())));
+            holder.itemsOrdered.append(context.getString(R.string.chef_orders_items_view, foodItems.getFoodItem().getFoodItemName(), String.valueOf(foodItems.getQuantity())));
         }
         holder.dateOrdered.setText(order.getTable().getBookingDateTime());
         holder.amountPaid.setText(df.format((order.getTotalCost() * 1.15)));
@@ -120,7 +121,8 @@ public class PastOrdersAdapter extends RecyclerView.Adapter<PastOrdersAdapter.Pa
                         dialog.dismiss();
                     }
                 });*/
-                viewBookingDialog(order.getId().longValue(), order.getTable().getId());
+                viewBookingDialog(order.getId().longValue(), order.getTable().getId(), holder);
+                dialog.dismiss();
             });
             no.setOnClickListener(view1 -> {
                 dialog.dismiss();
@@ -133,7 +135,7 @@ public class PastOrdersAdapter extends RecyclerView.Adapter<PastOrdersAdapter.Pa
         return orderList.size();
     }
 
-    private void viewBookingDialog(Long orderId, Long tableId) {
+    private void viewBookingDialog(Long orderId, Long tableId, PastOrdersViewHolder holder) {
         androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(context);
         builder.setCancelable(true);
         LayoutInflater inflater = ((CustomerHomeActivity) context).getLayoutInflater();
@@ -147,7 +149,7 @@ public class PastOrdersAdapter extends RecyclerView.Adapter<PastOrdersAdapter.Pa
         AppCompatButton card = tableBooking.findViewById(R.id.card);
         ConstraintLayout cashLayout = tableBooking.findViewById(R.id.cashLayout);
         ConstraintLayout cardLayout = tableBooking.findViewById(R.id.cardLayout);
-        TextInputEditText nameOnCard = tableBooking.findViewById(R.id.nameOnCard);
+        TextInputEditText nameOnCard = tableBooking.findViewById(R.id.cardNumber);
         TextInputEditText expiryDate = tableBooking.findViewById(R.id.expiryDate);
         TextInputEditText cvv = tableBooking.findViewById(R.id.cvv);
         TextInputEditText name = tableBooking.findViewById(R.id.name);
@@ -186,6 +188,11 @@ public class PastOrdersAdapter extends RecyclerView.Adapter<PastOrdersAdapter.Pa
 
                         SharedPreferencesUtils.deleteLongFromSharedPrefs(context, Constants.TABLE_ID_CONST_STRING);
                         SharedPreferencesUtils.deleteBooleanFromSharedPrefs(context, Constants.TABLE_EXISTS_ALREADY_STRING);
+                        Toast.makeText(context, context.getString(R.string.payment_success_string), Toast.LENGTH_SHORT).show();
+
+                        holder.paidText.setText(context.getString(R.string.paid_string));
+                        holder.paidText.setTextColor(Color.parseColor("#4CAF50"));
+                        holder.paidText.setEnabled(false);
                         dialog.dismiss();
                     } else {
                         Toast.makeText(context, context.getString(R.string.payment_failure_message_string), Toast.LENGTH_SHORT).show();

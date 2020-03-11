@@ -35,6 +35,7 @@ import com.hexamind.uniquorestaurant.Data.CustomerSuccess;
 import com.hexamind.uniquorestaurant.Data.GeneralError;
 import com.hexamind.uniquorestaurant.Data.OrderSuccess;
 import com.hexamind.uniquorestaurant.Data.Person;
+import com.hexamind.uniquorestaurant.Data.RegisterSuccess;
 import com.hexamind.uniquorestaurant.LoginActivity;
 import com.hexamind.uniquorestaurant.R;
 import com.hexamind.uniquorestaurant.Retrofit.ApiService;
@@ -102,11 +103,15 @@ public class CustomerHomeActivity extends AppCompatActivity {
             }
         } else {
             viewBookingDialog();
-            SharedPreferencesUtils.deleteLongFromSharedPrefs(this, Constants.TABLE_ID_CONST_STRING);
+            SharedPreferencesUtils.saveLongToSharedPrefs(this, Constants.TABLE_ID_CONST_STRING, 12L);
             SharedPreferencesUtils.saveBooleanToSharedPrefs(this, Constants.TABLE_EXISTS_ALREADY_STRING, false);
         }
 
-        Toast.makeText(this, "Customer name: " + person.getName(), Toast.LENGTH_SHORT).show();
+        View headView = navView.getHeaderView(0);
+        TextView name = headView.findViewById(R.id.name);
+        TextView email = headView.findViewById(R.id.email);
+        name.setText(customer.getPerson().getName());
+        email.setText(customer.getPerson().getEmail());
     }
 
     private void viewBookingDialog() {
@@ -143,8 +148,6 @@ public class CustomerHomeActivity extends AppCompatActivity {
             takeOut.setTextColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
             dineInLayout.setVisibility(View.VISIBLE);
             takeOutLayout.setVisibility(View.GONE);
-            takeOutLayout.animate().alpha(0.0f);
-            dineInLayout.animate().alpha(1.0f);
         });
         takeOut.setOnClickListener(view -> {
             dineIn.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.drawable_table_booking_unselected));
@@ -153,8 +156,6 @@ public class CustomerHomeActivity extends AppCompatActivity {
             takeOut.setTextColor(ContextCompat.getColor(this, android.R.color.white));
             dineInLayout.setVisibility(View.GONE);
             takeOutLayout.setVisibility(View.VISIBLE);
-            dineInLayout.animate().alpha(0.0f);
-            takeOutLayout.animate().alpha(1.0f);
         });
         addPersons.setOnClickListener(view -> {
             int noOfPersons = Integer.parseInt(numberOfPersons.getText().toString());
@@ -175,7 +176,28 @@ public class CustomerHomeActivity extends AppCompatActivity {
             Toast.makeText(this, "The table has successfully been booked", Toast.LENGTH_SHORT).show();
             dialog.dismiss();
         });
-        reserveTakeout.setOnClickListener(view -> dialog.dismiss());
+        reserveTakeout.setOnClickListener(view -> {
+            ApiService apiService = RetrofitClient.getApiService();
+            Call<RegisterSuccess> call = apiService.registedrForTakeout(customer.getPerson().getCustomer().getCustomerId());
+
+            call.enqueue(new Callback<RegisterSuccess>() {
+                @Override
+                public void onResponse(Call<RegisterSuccess> call, Response<RegisterSuccess> response) {
+                    RegisterSuccess takeout = response.body();
+
+                    Toast.makeText(CustomerHomeActivity.this, getString(R.string.table_take_out_success_message_string), Toast.LENGTH_SHORT).show();
+                    tableId = 11L;
+                    SharedPreferencesUtils.saveBooleanToSharedPrefs(CustomerHomeActivity.this, Constants.IS_TABLE_BOOKED, true);
+                    SharedPreferencesUtils.saveLongToSharedPrefs(CustomerHomeActivity.this, Constants.TABLE_ID_CONST_STRING, tableId);
+                    dialog.dismiss();
+                }
+
+                @Override
+                public void onFailure(Call<RegisterSuccess> call, Throwable t) {
+                    Toast.makeText(CustomerHomeActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
         checkAvailability.setOnClickListener(view -> {
             progress.setVisibility(View.VISIBLE);
             ApiService apiService = RetrofitClient.getApiService();
@@ -257,7 +279,7 @@ public class CustomerHomeActivity extends AppCompatActivity {
                         SharedPreferencesUtils.saveLongToSharedPrefs(CustomerHomeActivity.this, Constants.TABLE_ID_CONST_STRING, tableId);
 
                         System.out.println("\n\n\n\n\nBooked Table ID: " + tableId);
-                        Toast.makeText(CustomerHomeActivity.this, tableId + " was booked successfully", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(CustomerHomeActivity.this, "Table No " + tableId + " was booked successfully", Toast.LENGTH_SHORT).show();
                         dialog.dismiss();
                     } else {
                         Toast.makeText(CustomerHomeActivity.this, getString(R.string.booking_table_error_string), Toast.LENGTH_SHORT).show();
@@ -331,6 +353,6 @@ public class CustomerHomeActivity extends AppCompatActivity {
         if (drawerLayout.isDrawerOpen(GravityCompat.START))
             drawerLayout.closeDrawer(GravityCompat.START);
         else
-            super.onBackPressed();
+            Toast.makeText(this, getString(R.string.back_press_diable_issue), Toast.LENGTH_SHORT).show();
     }
 }

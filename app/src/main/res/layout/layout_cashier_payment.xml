@@ -6,9 +6,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="16dp"
-    android:background="@drawable/drawable_chef_orders_background">
+    android:background="@drawable/drawable_chef_orders_background"
+    android:animateLayoutChanges="true">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <RelativeLayout
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -25,26 +26,20 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/ubuntu_regular"
             android:text="@string/table_number_string"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
             android:textAppearance="@style/TextAppearance.AppCompat.Menu"
-            android:textColor="@android:color/primary_text_dark"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0" />
+            android:textColor="@android:color/primary_text_dark" />
 
         <ImageView
             android:id="@+id/expand"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_chevron_right_black_24dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toEndOf="@+id/tableNumber"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0" />
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </RelativeLayout>
 
     <View
         android:id="@+id/view"
@@ -53,14 +48,14 @@
         android:background="@android:color/background_light"
         app:layout_constraintTop_toBottomOf="@+id/main" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <RelativeLayout
         android:id="@+id/layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/drawable_chef_orders_background"
         app:layout_constraintTop_toBottomOf="@+id/view">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="16dp"
@@ -68,7 +63,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <RelativeLayout
                 android:id="@+id/constraintLayout4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -99,6 +94,7 @@
                     android:layout_marginTop="4dp"
                     android:fontFamily="@font/ubuntu_regular"
                     android:text="@string/food_items_ordered_list"
+                    android:layout_below="@+id/textView8"
                     android:textAppearance="@style/TextAppearance.AppCompat.Menu"
                     android:textColor="@android:color/primary_text_dark"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -112,6 +108,8 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/ubuntu_regular"
                     android:text="@string/total_amount_string"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
                     android:textAppearance="@style/TextAppearance.AppCompat.Caption"
                     android:textColor="@android:color/primary_text_dark"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -124,6 +122,8 @@
                     android:layout_marginTop="4dp"
                     android:fontFamily="@font/ubuntu_regular"
                     android:text="@string/default_price_string"
+                    android:layout_below="@+id/textView9"
+                    android:layout_alignParentEnd="true"
                     android:textAppearance="@style/TextAppearance.AppCompat.Menu"
                     android:textColor="@android:color/primary_text_dark"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -136,6 +136,8 @@
                     android:layout_marginTop="24dp"
                     android:fontFamily="@font/ubuntu_regular"
                     android:text="@string/payment_type_string"
+                    android:layout_below="@+id/totalAmount"
+                    android:layout_alignParentEnd="true"
                     android:textAppearance="@style/TextAppearance.AppCompat.Caption"
                     android:textColor="@android:color/primary_text_dark"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -148,15 +150,18 @@
                     android:layout_marginTop="4dp"
                     android:fontFamily="@font/ubuntu_regular"
                     android:text="@string/payment_type_string"
+                    android:layout_below="@+id/textView10"
+                    android:layout_alignParentEnd="true"
                     android:textAppearance="@style/TextAppearance.AppCompat.Menu"
                     android:textColor="@android:color/primary_text_dark"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textView10" />
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            </RelativeLayout>
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/viewReceipt"
+                android:layout_below="@+id/constraintLayout4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -170,8 +175,8 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/constraintLayout4" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </RelativeLayout>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

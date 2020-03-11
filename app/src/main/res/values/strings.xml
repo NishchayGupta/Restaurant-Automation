@@ -91,7 +91,7 @@
     <string name="card_string">Card</string>
     <string name="cash_string">Cash</string>
     <string name="enter_card_details_string">Enter your card details</string>
-    <string name="name_on_card_string">Name on card</string>
+    <string name="card_number_string">Card Number</string>
     <string name="expiry_date_string">Expiry Date</string>
     <string name="cvv_string">CVV</string>
     <string name="pay_now_string">Pay Now</string>
@@ -120,7 +120,7 @@
     <string name="booking_table_error_string">There was some problem in booking the table. Please try again later...</string>
     <string name="add_to_cart_string">Add to cart</string>
     <string name="book_tabled_needed_string">You need to book a table before continuing</string>
-    <string name="item_add_success">1 item was added to the cart</string>
+    <string name="item_add_success">selected item(s) added to the cart</string>
     <string name="cart_empty_message_string">The cart is empty</string>
     <string name="delete_item_title_string">Delete Item</string>
     <string name="delete_item_message_string">Are you sure you want to delete the selected item?</string>
@@ -140,4 +140,21 @@
     <string name="payment_success_string">The payment was successful</string>
     <string name="confirm_payment_message_string">Are you sure you want to pay for the order?</string>
     <string name="pay_order_title_string">Pay for order</string>
+    <string name="food_item_image_unsuccess_string">Please reupload the food image.</string>
+    <string name="invalid_item_name">Invalid item name</string>
+    <string name="invalid_item_description">Invalid item description</string>
+    <string name="invalid_item_cost">Invalid food item cost</string>
+    <string name="image_load_error_string">There was an issue loading the image. Please try again later</string>
+    <string name="image_load_success_string">The image was loaded successfully</string>
+    <string name="confirm_delete_food_item_message_string">Are you sure you want to delete the selected food item?</string>
+    <string name="food_item_delete_title_string">Delete food item</string>
+    <string name="menu_update_individual_item">Update an item</string>
+    <string name="food_item_delete_failure_string">There was an issue in deleting the food item. Please try again later</string>
+    <string name="back_press_diable_issue">Please logout if you want to exit the app</string>
+    <string name="receive_payment_string">Receive payment</string>
+    <string name="payment_received_message_string">The intended payment for the order has been collected.</string>
+    <string name="table_take_out_success_message_string">Table reserved for takeout</string>
+    <string name="select_table_message_string">Select a table first before proceeding</string>
+    <string name="order_ready_fail_message_string">There was some problem making the order ready. Please try again later</string>
+    <string name="no_orders_message_string">No orders to prepare</string>
 </resources>

@@ -123,22 +123,44 @@ public class MenuItemViewActivity extends AppCompatActivity {
         }
 
         addToCart.setOnClickListener(view -> {
-            CartFoodItems cartFood = new CartFoodItems(foodItem, Integer.parseInt(quantity.getText().toString()));
             list = new ArrayList<>();
             if (SharedPreferencesUtils.getFoodItemsByCustomerFromSharedPrefs(MenuItemViewActivity.this, FOOD_ITEM_MAP_STRING) != null) {
                 if (SharedPreferencesUtils.getFoodItemsByCustomerFromSharedPrefs(MenuItemViewActivity.this, FOOD_ITEM_MAP_STRING).get(customer.getPerson().getCustomer().getCustomerId()) != null)
                     list = SharedPreferencesUtils.getFoodItemsByCustomerFromSharedPrefs(MenuItemViewActivity.this, FOOD_ITEM_MAP_STRING).get(customer.getPerson().getCustomer().getCustomerId());
             }
-            list.add(cartFood);
+            int quant = 0, position = 0;
+            boolean foodItemExists = false;
+            if (!list.isEmpty()) {
+                for (int i=0; i<list.size(); i++) {
+                    if (list.get(i).getFoodItem().getFoodItemId() == foodItem.getFoodItemId()) {
+                        quant = list.get(i).getQuantity() + Integer.parseInt(quantity.getText().toString());
+                        foodItemExists = true;
+                        position = i;
+                    } else {
+                        foodItemExists = false;
+                    }
+                }
+            }
+            CartFoodItems cartFood;
+            if (!foodItemExists) {
+                cartFood = new CartFoodItems(foodItem, Integer.parseInt(quantity.getText().toString()));
+                list.add(cartFood);
+            } else {
+                cartFood = new CartFoodItems(foodItem, quant);
+                list.set(position, cartFood);
+            }
             //SharedPreferencesUtils.saveFoodItemsToSharedPrefs(MenuItemViewActivity.this, FOOD_ITEM_STRING, list);
             Map<Long, List<CartFoodItems>> foodItemsInCart = new HashMap<>();
             foodItemsInCart.put(customer.getPerson().getCustomer().getCustomerId(), list);
             SharedPreferencesUtils.saveFoodItemsByCustomerToSharedPrefs(this, Constants.FOOD_ITEM_MAP_STRING, foodItemsInCart);
             Toast.makeText(this, getString(R.string.item_add_success), Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(MenuItemViewActivity.this, CustomerHomeActivity.class));
+            finish();
         });
-        back.setOnClickListener(view ->
-            startActivity(new Intent(MenuItemViewActivity.this, CustomerHomeActivity.class))
-        );
+        back.setOnClickListener(view -> {
+            startActivity(new Intent(MenuItemViewActivity.this, CustomerHomeActivity.class));
+            finish();
+        });
         foodItemName.setText(foodItem.getFoodItemName());
         if (foodItem.getFoodItemPrice() % 1 == 0)
             price.setText(getString(R.string.default_price_string, dfDoubleInt.format(foodItem.getFoodItemPrice())));

@@ -12,12 +12,24 @@
         tools:layout="@layout/fragment_add_item" />
     <fragment
         android:id="@id/menu_edit_item"
-        android:name="com.hexamind.uniquorestaurant.Manager.UpdateItemFragment"
+        android:name="com.hexamind.uniquorestaurant.Manager.UpdateParentItemFragment"
         android:label="@string/menu_edit_food_item_string"
-        tools:layout="@layout/fragment_update_item" />
+        tools:layout="@layout/fragment_parent_update_item" >
+        <action
+            android:id="@+id/action_menu_edit_item_to_updateItemFragment"
+            app:destination="@id/updateItemFragment" />
+    </fragment>
     <fragment
         android:id="@id/menu_delete_item"
         android:name="com.hexamind.uniquorestaurant.Manager.DeleteItemFragment"
         android:label="@string/menu_delete_food_item_string"
         tools:layout="@layout/fragment_delete_item" />
+    <fragment
+        android:id="@+id/updateItemFragment"
+        android:name="com.hexamind.uniquorestaurant.Manager.UpdateItemFragment"
+        android:label="@string/menu_update_individual_item" >
+        <action
+            android:id="@+id/action_updateItemFragment_to_menu_edit_item"
+            app:destination="@id/menu_edit_item" />
+    </fragment>
 </navigation>

@@ -20,7 +20,7 @@
             android:id="@+id/back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_arrow_back_black_24dp" />
+            android:src="@drawable/ic_exit_to_app_black_24dp" />
 
         <TextView
             android:id="@+id/title"
@@ -40,5 +40,13 @@
         android:layout_height="match_parent"
         android:layout_margin="8dp"
         android:layout_below="@+id/constraintLayout5"/>
+
+    <TextView
+        android:id="@+id/noOrders"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="@string/no_orders_message_string"
+        android:visibility="gone" />
 
 </RelativeLayout>

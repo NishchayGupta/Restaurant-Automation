@@ -10,14 +10,15 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="138dp"
         android:background="@drawable/drawable_past_orders_border">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <RelativeLayout
             android:id="@+id/constraintLayout8"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="138dp"
             android:padding="16dp"
+            android:layout_toStartOf="@+id/delete"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -39,6 +40,10 @@
                 android:layout_marginStart="16dp"
                 android:fontFamily="@font/ubuntu_regular"
                 android:text="@string/food_item_name_string"
+                android:layout_marginEnd="16dp"
+                android:layout_toStartOf="@+id/addRemove"
+                android:layout_toEndOf="@+id/foodItemImage"
+                android:layout_alignParentTop="true"
                 android:textAppearance="@style/TextAppearance.AppCompat.Menu"
                 android:textColor="@android:color/primary_text_light"
                 app:layout_constraintStart_toEndOf="@+id/foodItemImage"
@@ -50,6 +55,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="4dp"
+                android:layout_marginEnd="16dp"
+                android:layout_toStartOf="@+id/addRemove"
+                android:layout_toEndOf="@+id/foodItemImage"
+                android:layout_below="@+id/foodItemName"
                 android:fontFamily="@font/ubuntu_regular"
                 android:text="@string/food_item_desc_string"
                 android:textAppearance="@style/TextAppearance.AppCompat.Menu"
@@ -61,54 +70,66 @@
                 android:id="@+id/foodItemPrice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_toStartOf="@+id/addRemove"
                 android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 android:fontFamily="@font/ubuntu_regular"
                 android:text="@string/default_price_string"
                 android:textAppearance="@style/TextAppearance.AppCompat.Menu"
                 android:textColor="@android:color/primary_text_light"
+                android:layout_alignParentBottom="true"
+                android:layout_toEndOf="@+id/foodItemImage"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/foodItemImage" />
 
-            <TextView
-                android:id="@+id/addItem"
+            <RelativeLayout
+                android:id="@+id/addRemove"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="40dp"
-                android:text="@string/add_item_cart_string"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                android:textColor="@android:color/tertiary_text_light"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:layout_height="138dp"
+                android:layout_alignParentEnd="true">
 
-            <TextView
-                android:id="@+id/removeItem"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="40dp"
-                android:text="@string/remove_item_cart_string"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                android:textColor="@android:color/tertiary_text_light"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                <TextView
+                    android:id="@+id/addItem"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/add_item_cart_string"
+                    android:layout_alignParentTop="true"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:textColor="@android:color/tertiary_text_light"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/itemCount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="40dp"
-                android:text="@string/default_item_count_string"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                android:textColor="@android:color/primary_text_light"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toTopOf="@+id/removeItem"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/addItem" />
+                <TextView
+                    android:id="@+id/removeItem"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/remove_item_cart_string"
+                    android:layout_alignParentBottom="true"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:textColor="@android:color/tertiary_text_light"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                <TextView
+                    android:id="@+id/itemCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/default_item_count_string"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:textColor="@android:color/primary_text_light"
+                    android:textStyle="bold"
+                    android:layout_centerVertical="true"
+                    app:layout_constraintBottom_toTopOf="@+id/removeItem"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/addItem" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+        <RelativeLayout
             android:id="@+id/delete"
             android:layout_width="40dp"
             android:layout_height="138dp"
@@ -120,12 +141,13 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/ic_close_black_24dp"
+                android:layout_centerInParent="true"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </RelativeLayout>
 
     </RelativeLayout>
 

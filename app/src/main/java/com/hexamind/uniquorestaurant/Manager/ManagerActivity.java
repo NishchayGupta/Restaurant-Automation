@@ -1,6 +1,7 @@
 package com.hexamind.uniquorestaurant.Manager;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -11,12 +12,17 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.ArraySet;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
 import com.hexamind.uniquorestaurant.Customer.CustomerHomeActivity;
+import com.hexamind.uniquorestaurant.Data.CustomerSuccess;
 import com.hexamind.uniquorestaurant.LoginActivity;
 import com.hexamind.uniquorestaurant.R;
+import com.hexamind.uniquorestaurant.Utils.Constants;
+import com.hexamind.uniquorestaurant.Utils.SharedPreferencesUtils;
 
 import java.util.Set;
 
@@ -25,6 +31,7 @@ public class ManagerActivity extends AppCompatActivity {
     private AppBarConfiguration  appbarConfig;
     private NavController navController;
     private NavigationView navView;
+    private CustomerSuccess customer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,9 +51,15 @@ public class ManagerActivity extends AppCompatActivity {
                 .setDrawerLayout(drawerLayout)
                 .build();
 
-        navController = Navigation.findNavController(this, R.id.navHostFragment);
+        customer = SharedPreferencesUtils.getCustomerFromSharedPrefs(this, Constants.CUSTOMER_OBJ_NAME);
+        navController = Navigation.findNavController(this, R.id.managerNavHostFragment);
         NavigationUI.setupActionBarWithNavController(this, navController, appbarConfig);
         NavigationUI.setupWithNavController(navView, navController);
+        View headView = navView.getHeaderView(0);
+        TextView name = headView.findViewById(R.id.name);
+        TextView email = headView.findViewById(R.id.email);
+        name.setText(customer.getPerson().getName());
+        email.setText(customer.getPerson().getEmail());
 
         MenuItem logout = navView.getMenu().findItem(R.id.menu_logout);
         logout.setOnMenuItemClickListener(menuItem -> {
@@ -55,5 +68,19 @@ public class ManagerActivity extends AppCompatActivity {
             finish();
             return true;
         });
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        return NavigationUI.navigateUp(navController, appbarConfig) || super.onSupportNavigateUp();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            Toast.makeText(this, getString(R.string.back_press_diable_issue), Toast.LENGTH_SHORT).show();
+        }
     }
 }

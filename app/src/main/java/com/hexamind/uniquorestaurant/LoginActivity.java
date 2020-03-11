@@ -15,10 +15,13 @@ import android.widget.Toast;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
+import com.hexamind.uniquorestaurant.Cashier.CashierActivity;
 import com.hexamind.uniquorestaurant.Chef.ChefOrdersActivity;
 import com.hexamind.uniquorestaurant.Customer.CustomerHomeActivity;
 import com.hexamind.uniquorestaurant.Data.CustomerSuccess;
 import com.hexamind.uniquorestaurant.Data.GeneralError;
+import com.hexamind.uniquorestaurant.Data.Manager;
+import com.hexamind.uniquorestaurant.Manager.ManagerActivity;
 import com.hexamind.uniquorestaurant.Retrofit.ApiService;
 import com.hexamind.uniquorestaurant.Retrofit.RetrofitClient;
 import com.hexamind.uniquorestaurant.Utils.SharedPreferencesUtils;
@@ -68,12 +71,17 @@ public class LoginActivity extends AppCompatActivity {
                                 startActivity(new Intent(LoginActivity.this, CustomerHomeActivity.class));
                                 finish();
                             } else if (customer.getPerson().getChef() != null) {
+                                SharedPreferencesUtils.saveCustomerToSharedPrefs(LoginActivity.this, Constants.CUSTOMER_OBJ_NAME, customer);
                                 startActivity(new Intent(LoginActivity.this, ChefOrdersActivity.class));
                                 finish();
                             }  else if (customer.getPerson().getCashier() != null) {
-
+                                SharedPreferencesUtils.saveCustomerToSharedPrefs(LoginActivity.this, Constants.CUSTOMER_OBJ_NAME, customer);
+                                startActivity(new Intent(LoginActivity.this, CashierActivity.class));
+                                finish();
                             }  else if (customer.getPerson().getManager() != null) {
-
+                                SharedPreferencesUtils.saveCustomerToSharedPrefs(LoginActivity.this, Constants.CUSTOMER_OBJ_NAME, customer);
+                                startActivity(new Intent(LoginActivity.this, ManagerActivity.class));
+                                finish();
                             } else
                                 Toast.makeText(LoginActivity.this, getString(R.string.problem_getting_customer_details_string), Toast.LENGTH_SHORT).show();
                         } else if (response.code() == 404) {
