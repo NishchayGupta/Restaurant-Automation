@@ -94,18 +94,16 @@ public class CustomerHomeActivity extends AppCompatActivity {
 
         customer = SharedPreferencesUtils.getCustomerFromSharedPrefs(this, Constants.CUSTOMER_OBJ_NAME);
         person = customer.getPerson();
-        if (SharedPreferencesUtils.getLongFromSharedPrefs(this, Constants.TABLE_ID_CONST_STRING) != 12
+        /*if (SharedPreferencesUtils.getLongFromSharedPrefs(this, Constants.TABLE_ID_CONST_STRING) != 12
                 && SharedPreferencesUtils.getLongFromSharedPrefs(this, Constants.TABLE_ID_CONST_STRING) != 0) {
-            if (SharedPreferencesUtils.getBooleanFromSharedPrefs(this, Constants.TABLE_EXISTS_ALREADY_STRING)) {
-                if (!getCustomerTableAlreadyExists()) {
-
-                }
+            if (!SharedPreferencesUtils.getBooleanFromSharedPrefs(this, Constants.TABLE_EXISTS_ALREADY_STRING)) {
+                //viewBookingDialog();
             }
         } else {
             viewBookingDialog();
-            SharedPreferencesUtils.saveLongToSharedPrefs(this, Constants.TABLE_ID_CONST_STRING, 12L);
-            SharedPreferencesUtils.saveBooleanToSharedPrefs(this, Constants.TABLE_EXISTS_ALREADY_STRING, false);
-        }
+            //SharedPreferencesUtils.saveLongToSharedPrefs(this, Constants.TABLE_ID_CONST_STRING, 12L);
+            //SharedPreferencesUtils.saveBooleanToSharedPrefs(this, Constants.TABLE_EXISTS_ALREADY_STRING, false);
+        }*/
 
         View headView = navView.getHeaderView(0);
         TextView name = headView.findViewById(R.id.name);
@@ -114,7 +112,7 @@ public class CustomerHomeActivity extends AppCompatActivity {
         email.setText(customer.getPerson().getEmail());
     }
 
-    private void viewBookingDialog() {
+    public void viewBookingDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setCancelable(false);
         LayoutInflater inflater = this.getLayoutInflater();

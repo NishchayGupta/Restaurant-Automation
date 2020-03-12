@@ -58,7 +58,7 @@ public class PastOrdersFragment extends Fragment {
                 recyclerView = root.findViewById(R.id.recyclerView);
                 recyclerView.setLayoutManager(new LinearLayoutManager(root.getContext()));
                 recyclerView.setItemAnimator(new DefaultItemAnimator());
-                adapter = new PastOrdersAdapter(root.getContext(), orderList);
+                adapter = new PastOrdersAdapter(root.getContext(), orderList, customer);
                 recyclerView.setAdapter(adapter);
             }
 

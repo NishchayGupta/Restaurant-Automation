@@ -93,7 +93,7 @@ public class CashierPaymentAdapter extends RecyclerView.Adapter<CashierPaymentAd
             TextView subTotal = confirm.findViewById(R.id.subTotal);
             TextView taxes = confirm.findViewById(R.id.taxes);
             TextView total = confirm.findViewById(R.id.total);
-            AppCompatButton makePayment = confirm.findViewById(R.id.receivePayment);
+            AppCompatButton receivePayment = confirm.findViewById(R.id.receivePayment);
 
             Calendar cal = Calendar.getInstance();
             cal.setTime(orders.getTable().getBookingDateTime());
@@ -106,7 +106,7 @@ public class CashierPaymentAdapter extends RecyclerView.Adapter<CashierPaymentAd
             subTotal.setText(String.valueOf(orders.getTotalCost()));
             taxes.setText(String.valueOf((orders.getTotalCost() * 1.15)));
             total.setText(String.valueOf((orders.getTotalCost() + (orders.getTotalCost() * 1.15))));
-            makePayment.setOnClickListener(view1 -> {
+            receivePayment.setOnClickListener(view1 -> {
                 Toast.makeText(context, context.getString(R.string.payment_received_message_string), Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
             });

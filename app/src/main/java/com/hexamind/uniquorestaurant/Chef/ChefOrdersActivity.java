@@ -61,7 +61,7 @@ public class ChefOrdersActivity extends AppCompatActivity {
                     recyclerView.setVisibility(View.GONE);
                 } else {
                     noOrders.setVisibility(View.GONE);
-                    adapter = new ChefOrdersAdapter(orderList, ChefOrdersActivity.this);
+                    adapter = new ChefOrdersAdapter(orderList, ChefOrdersActivity.this, customer);
                     recyclerView.setLayoutManager(new LinearLayoutManager(ChefOrdersActivity.this));
                     recyclerView.setItemAnimator(new DefaultItemAnimator());
                     recyclerView.setAdapter(adapter);

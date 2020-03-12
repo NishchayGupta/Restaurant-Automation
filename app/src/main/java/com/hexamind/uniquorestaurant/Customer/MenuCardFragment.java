@@ -22,6 +22,8 @@ import com.hexamind.uniquorestaurant.Data.FoodItems;
 import com.hexamind.uniquorestaurant.R;
 import com.hexamind.uniquorestaurant.Retrofit.ApiService;
 import com.hexamind.uniquorestaurant.Retrofit.RetrofitClient;
+import com.hexamind.uniquorestaurant.Utils.Constants;
+import com.hexamind.uniquorestaurant.Utils.SharedPreferencesUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +43,13 @@ public class MenuCardFragment extends Fragment {
 
         progress = root.findViewById(R.id.progress);
         progress.setVisibility(View.VISIBLE);
+        if (SharedPreferencesUtils.getLongFromSharedPrefs(getActivity(), Constants.TABLE_ID_CONST_STRING) != 12
+                && SharedPreferencesUtils.getLongFromSharedPrefs(getActivity(), Constants.TABLE_ID_CONST_STRING) != 0) {
+            if (!SharedPreferencesUtils.getBooleanFromSharedPrefs(getActivity(), Constants.TABLE_EXISTS_ALREADY_STRING)) {
+                //((CustomerHomeActivity) getActivity()).viewBookingDialog();
+            }
+        } else
+            ((CustomerHomeActivity) getActivity()).viewBookingDialog();
         ApiService api = RetrofitClient.getApiService();
         Call<List<FoodItems>> call = api.getAllFoodItems();
 

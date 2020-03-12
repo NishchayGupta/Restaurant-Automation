@@ -57,12 +57,14 @@ public class MenuItemViewActivity extends AppCompatActivity {
     private CustomerSuccess customer;
     private AppCompatButton addPersons, removePersons, addToCart;
     private AppCompatEditText quantity;
-    private TextView foodItemName, price;
+    private TextView foodItemName, price, title;
     private Boolean isTabledBooked = false;
     private FoodItems foodItem;
     private List<CartFoodItems> list = new ArrayList<>();
     private ImageView back;
     private Boolean isCustomerTableAlreadyExists = false;
+    private Boolean isTableOccupied = false;
+    private boolean paymentRemaining = false;
     private DecimalFormat dfDoubleInt = new DecimalFormat("#");
 
     @Override
@@ -83,10 +85,12 @@ public class MenuItemViewActivity extends AppCompatActivity {
         addPersons = findViewById(R.id.addPersons);
         removePersons = findViewById(R.id.removePersons);
         addToCart = findViewById(R.id.addToCart);
+        title = findViewById(R.id.title);
         foodItemName = findViewById(R.id.foodItemName);
         price = findViewById(R.id.price);
         quantity = findViewById(R.id.quantity);
 
+        title.setText(foodItem.getFoodItemName());
         addPersons.setOnClickListener(view -> {
             int quantityInt = Integer.parseInt(this.quantity.getText().toString());
 
@@ -112,51 +116,61 @@ public class MenuItemViewActivity extends AppCompatActivity {
             }
         });
 
-        if (SharedPreferencesUtils.getLongFromSharedPrefs(this, Constants.TABLE_ID_CONST_STRING) == 12
-                && SharedPreferencesUtils.getLongFromSharedPrefs(this, Constants.TABLE_ID_CONST_STRING) == 0)
-            viewBookingDialog();
-        else {
-            if (isCustomerTableAlreadyExists) {
-                Toast.makeText(this, getString(R.string.payment_first_string), Toast.LENGTH_SHORT).show();
-            } else
-                addToCart.setEnabled(true);
+        if (SharedPreferencesUtils.getLongFromSharedPrefs(this, Constants.TABLE_ID_CONST_STRING) != 12
+                && SharedPreferencesUtils.getLongFromSharedPrefs(this, Constants.TABLE_ID_CONST_STRING) != 0) {
+            if (SharedPreferencesUtils.getBooleanFromSharedPrefs(this, Constants.TABLE_EXISTS_ALREADY_STRING))
+                paymentRemaining = true;
+            else
+                paymentRemaining = false;
+        } else {
+            paymentRemaining = true;
+            isTableOccupied = true;
         }
 
         addToCart.setOnClickListener(view -> {
-            list = new ArrayList<>();
-            if (SharedPreferencesUtils.getFoodItemsByCustomerFromSharedPrefs(MenuItemViewActivity.this, FOOD_ITEM_MAP_STRING) != null) {
-                if (SharedPreferencesUtils.getFoodItemsByCustomerFromSharedPrefs(MenuItemViewActivity.this, FOOD_ITEM_MAP_STRING).get(customer.getPerson().getCustomer().getCustomerId()) != null)
-                    list = SharedPreferencesUtils.getFoodItemsByCustomerFromSharedPrefs(MenuItemViewActivity.this, FOOD_ITEM_MAP_STRING).get(customer.getPerson().getCustomer().getCustomerId());
-            }
-            int quant = 0, position = 0;
-            boolean foodItemExists = false;
-            if (!list.isEmpty()) {
-                for (int i=0; i<list.size(); i++) {
-                    if (list.get(i).getFoodItem().getFoodItemId() == foodItem.getFoodItemId()) {
-                        quant = list.get(i).getQuantity() + Integer.parseInt(quantity.getText().toString());
-                        foodItemExists = true;
-                        position = i;
-                        break;
-                    } else {
-                        foodItemExists = false;
+            if (SharedPreferencesUtils.getLongFromSharedPrefs(this, Constants.TABLE_ID_CONST_STRING) != 12
+                    && SharedPreferencesUtils.getLongFromSharedPrefs(this, Constants.TABLE_ID_CONST_STRING) != 0) {
+                if (!paymentRemaining) {
+                    list = new ArrayList<>();
+                    if (SharedPreferencesUtils.getFoodItemsByCustomerFromSharedPrefs(MenuItemViewActivity.this, FOOD_ITEM_MAP_STRING) != null) {
+                        if (SharedPreferencesUtils.getFoodItemsByCustomerFromSharedPrefs(MenuItemViewActivity.this, FOOD_ITEM_MAP_STRING).get(customer.getPerson().getCustomer().getCustomerId()) != null)
+                            list = SharedPreferencesUtils.getFoodItemsByCustomerFromSharedPrefs(MenuItemViewActivity.this, FOOD_ITEM_MAP_STRING).get(customer.getPerson().getCustomer().getCustomerId());
                     }
+                    int quant = 0, position = 0;
+                    boolean foodItemExists = false;
+                    if (!list.isEmpty()) {
+                        for (int i = 0; i < list.size(); i++) {
+                            if (list.get(i).getFoodItem().getFoodItemId() == foodItem.getFoodItemId()) {
+                                quant = list.get(i).getQuantity() + Integer.parseInt(quantity.getText().toString());
+                                foodItemExists = true;
+                                position = i;
+                                break;
+                            } else {
+                                foodItemExists = false;
+                            }
+                        }
+                    }
+                    CartFoodItems cartFood;
+                    if (!foodItemExists) {
+                        cartFood = new CartFoodItems(foodItem, Integer.parseInt(quantity.getText().toString()));
+                        list.add(cartFood);
+                    } else {
+                        cartFood = new CartFoodItems(foodItem, quant);
+                        list.set(position, cartFood);
+                    }
+                    //SharedPreferencesUtils.saveFoodItemsToSharedPrefs(MenuItemViewActivity.this, FOOD_ITEM_STRING, list);
+                    Map<Long, List<CartFoodItems>> foodItemsInCart = new HashMap<>();
+                    foodItemsInCart.put(customer.getPerson().getCustomer().getCustomerId(), list);
+                    SharedPreferencesUtils.saveFoodItemsByCustomerToSharedPrefs(this, Constants.FOOD_ITEM_MAP_STRING, foodItemsInCart);
+                    Toast.makeText(this, getString(R.string.item_add_success), Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(MenuItemViewActivity.this, CustomerHomeActivity.class));
+                    finish();
+                } else {
+                    Toast.makeText(this, getString(R.string.payment_first_string), Toast.LENGTH_SHORT).show();
                 }
-            }
-            CartFoodItems cartFood;
-            if (!foodItemExists) {
-                cartFood = new CartFoodItems(foodItem, Integer.parseInt(quantity.getText().toString()));
-                list.add(cartFood);
-            } else {
-                cartFood = new CartFoodItems(foodItem, quant);
-                list.set(position, cartFood);
-            }
-            //SharedPreferencesUtils.saveFoodItemsToSharedPrefs(MenuItemViewActivity.this, FOOD_ITEM_STRING, list);
-            Map<Long, List<CartFoodItems>> foodItemsInCart = new HashMap<>();
-            foodItemsInCart.put(customer.getPerson().getCustomer().getCustomerId(), list);
-            SharedPreferencesUtils.saveFoodItemsByCustomerToSharedPrefs(this, Constants.FOOD_ITEM_MAP_STRING, foodItemsInCart);
-            Toast.makeText(this, getString(R.string.item_add_success), Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(MenuItemViewActivity.this, CustomerHomeActivity.class));
-            finish();
+            } else
+                if (isTableOccupied)
+                    viewBookingDialog();
         });
         back.setOnClickListener(view -> {
             startActivity(new Intent(MenuItemViewActivity.this, CustomerHomeActivity.class));
@@ -329,5 +343,11 @@ public class MenuItemViewActivity extends AppCompatActivity {
 
     private long getMillis(Long minutes) {
         return minutes * 60 * 1000;
+    }
+
+    @Override
+    public void onBackPressed() {
+        startActivity(new Intent(MenuItemViewActivity.this, CustomerHomeActivity.class));
+        finish();
     }
 }

@@ -24,6 +24,7 @@ import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,14 +58,16 @@ public class MyCartFragment extends Fragment implements OnTotalComputedListener 
     private TextView foodPrice, totalCost, totalTax, totalTxt, noItems;
     private DecimalFormat df = new DecimalFormat("#.##");
     private ConstraintLayout paymentSecondaryLayout;
-    private LinearLayout paymentPrimaryLayout;
-    private boolean layoutClicked = false;
+    private RelativeLayout paymentPrimaryLayout;
+    private boolean layoutClicked = true;
     private AppCompatButton addOrder;
     private List<OrderCart> orderFromCartList = new ArrayList<>();
-    private ImageView closeDialog;
     private Boolean isCustomerTableAlreadyExists = false;
     private Map<Long, List<CartFoodItems>> cartItemsMap;
     private Long customerID;
+    private ImageView up;
+    private boolean paymentRemaining = false;
+    private boolean isTableOccupied = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -78,8 +81,8 @@ public class MyCartFragment extends Fragment implements OnTotalComputedListener 
         totalCost = root.findViewById(R.id.totalCost);
         totalTax = root.findViewById(R.id.totalTax);
         totalTxt = root.findViewById(R.id.total);
+        up = root.findViewById(R.id.up);
         addOrder = root.findViewById(R.id.addOrder);
-        closeDialog = root.findViewById(R.id.closeDialog);
         noItems = root.findViewById(R.id.noItems);
         customerID = SharedPreferencesUtils.getCustomerFromSharedPrefs(root.getContext(), Constants.CUSTOMER_OBJ_NAME).getPerson().getCustomer().getCustomerId();
         isCustomerTableAlreadyExists = SharedPreferencesUtils.getBooleanFromSharedPrefs(root.getContext(), Constants.TABLE_EXISTS_ALREADY_STRING);
@@ -124,71 +127,78 @@ public class MyCartFragment extends Fragment implements OnTotalComputedListener 
             if (layoutClicked) {
                 paymentSecondaryLayout.setVisibility(View.VISIBLE);
                 layoutClicked = false;
+                up.setImageDrawable(ContextCompat.getDrawable(root.getContext(), R.drawable.ic_keyboard_arrow_down_black_24dp));
             } else {
                 paymentSecondaryLayout.setVisibility(View.GONE);
                 layoutClicked = true;
+                up.setImageDrawable(ContextCompat.getDrawable(root.getContext(), R.drawable.ic_keyboard_arrow_up_black_24dp));
             }
         });
 
-        closeDialog.setOnClickListener(view -> {
-            paymentSecondaryLayout.setVisibility(View.GONE);
-            foodPrice.setVisibility(View.VISIBLE);
-        });
+        if (SharedPreferencesUtils.getLongFromSharedPrefs(root.getContext(), Constants.TABLE_ID_CONST_STRING) != 12
+                && SharedPreferencesUtils.getLongFromSharedPrefs(root.getContext(), Constants.TABLE_ID_CONST_STRING) != 0) {
+            if (SharedPreferencesUtils.getBooleanFromSharedPrefs(root.getContext(), Constants.TABLE_EXISTS_ALREADY_STRING))
+                paymentRemaining = true;
+            else
+                paymentRemaining = false;
+        } else {
+            paymentRemaining = true;
+            isTableOccupied = true;
+        }
 
         addOrder.setOnClickListener(view -> {
-            if (SharedPreferencesUtils.getLongFromSharedPrefs(root.getContext(), Constants.TABLE_ID_CONST_STRING) == 12 ||
-                    SharedPreferencesUtils.getBooleanFromSharedPrefs(root.getContext(), Constants.TABLE_EXISTS_ALREADY_STRING)) {
-                if (SharedPreferencesUtils.getLongFromSharedPrefs(root.getContext(), Constants.TABLE_ID_CONST_STRING) == 12)
-                    Toast.makeText(root.getContext(), getString(R.string.select_table_message_string), Toast.LENGTH_SHORT).show();
-                if (SharedPreferencesUtils.getBooleanFromSharedPrefs(root.getContext(), Constants.TABLE_EXISTS_ALREADY_STRING))
+            if (SharedPreferencesUtils.getLongFromSharedPrefs(root.getContext(), Constants.TABLE_ID_CONST_STRING) != 12
+                    && SharedPreferencesUtils.getLongFromSharedPrefs(root.getContext(), Constants.TABLE_ID_CONST_STRING) != 0) {
+                if (paymentRemaining) {
                     Toast.makeText(root.getContext(), getString(R.string.payment_first_string), Toast.LENGTH_SHORT).show();
-            } else {
-                if (!foodItemList.isEmpty()) {
-                    orderFromCartList.clear();
-                    for (CartFoodItems foodItem : foodItemList) {
-                        OrderCart orderCart = new OrderCart(foodItem.getFoodItem().getFoodItemId(), foodItem.getQuantity());
-                        orderFromCartList.add(orderCart);
-                    }
-                    foodItemList.clear();
-                    adapter.notifyDataSetChanged();
-                    noItems.setVisibility(View.VISIBLE);
-                    foodPrice.setText(getString(R.string.default_cart_price_string));
-                    cartItemsMap.remove(customerID);
-                    SharedPreferencesUtils.saveFoodItemsByCustomerToSharedPrefs(root.getContext(), Constants.FOOD_ITEM_MAP_STRING, cartItemsMap);
-                    CustomerSuccess customer = SharedPreferencesUtils.getCustomerFromSharedPrefs(root.getContext(), Constants.CUSTOMER_OBJ_NAME);
-                    Long customerId = customer.getPerson().getCustomer().getCustomerId();
-                    Long tableId = SharedPreferencesUtils.getLongFromSharedPrefs(root.getContext(), Constants.TABLE_ID_CONST_STRING);
-                    System.out.println("My Cart Table ID: " + tableId);
-
-                    Order order = new Order(customerId, orderFromCartList, tableId);
-                    ApiService api = RetrofitClient.getApiService();
-                    Call<OrderSuccess> orderCall = api.createOrder(order);
-                    orderCall.enqueue(new Callback<OrderSuccess>() {
-                        @Override
-                        public void onResponse(Call<OrderSuccess> call, Response<OrderSuccess> response) {
-                            OrderSuccess orderSuccess = response.body();
-
-                            if (response.code() == 200) {
-                                SharedPreferencesUtils.saveBooleanToSharedPrefs(root.getContext(), Constants.TABLE_EXISTS_ALREADY_STRING, true);
-                                Toast.makeText(root.getContext(), getString(R.string.order_successful_message_string), Toast.LENGTH_SHORT).show();
-                                viewBookingDialog(orderSuccess.getId(), tableId);
-                            } else {
-                                Toast.makeText(root.getContext(), root.getContext().getString(R.string.order_error_message_string), Toast.LENGTH_SHORT).show();
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<OrderSuccess> call, Throwable t) {
-                            new AlertDialog.Builder(root.getContext())
-                                    .setMessage(getString(R.string.order_error_message_string) + "\n" +
-                                            t.getMessage())
-                                    .setCancelable(true)
-                                    .show();
-                        }
-                    });
                 } else {
-                    Toast.makeText(root.getContext(), getString(R.string.cart_empty_message_string), Toast.LENGTH_SHORT).show();
+                    if (!foodItemList.isEmpty()) {
+                        orderFromCartList.clear();
+                        for (CartFoodItems foodItem : foodItemList) {
+                            OrderCart orderCart = new OrderCart(foodItem.getFoodItem().getFoodItemId(), foodItem.getQuantity());
+                            orderFromCartList.add(orderCart);
+                        }
+                        SharedPreferencesUtils.saveFoodItemsByCustomerToSharedPrefs(root.getContext(), Constants.FOOD_ITEM_MAP_STRING, cartItemsMap);
+                        CustomerSuccess customer = SharedPreferencesUtils.getCustomerFromSharedPrefs(root.getContext(), Constants.CUSTOMER_OBJ_NAME);
+                        Long customerId = customer.getPerson().getCustomer().getCustomerId();
+                        Long tableId = SharedPreferencesUtils.getLongFromSharedPrefs(root.getContext(), Constants.TABLE_ID_CONST_STRING);
+                        System.out.println("My Cart Table ID: " + tableId);
+                        SharedPreferencesUtils.deleteBooleanFromSharedPrefs(root.getContext(), Constants.TABLE_EXISTS_ALREADY_STRING);
+                        SharedPreferencesUtils.saveBooleanToSharedPrefs(root.getContext(), Constants.TABLE_EXISTS_ALREADY_STRING, true);
+
+                        Order order = new Order(customerId, orderFromCartList, tableId);
+                        ApiService api = RetrofitClient.getApiService();
+                        Call<OrderSuccess> orderCall = api.createOrder(order);
+                        orderCall.enqueue(new Callback<OrderSuccess>() {
+                            @Override
+                            public void onResponse(Call<OrderSuccess> call, Response<OrderSuccess> response) {
+                                OrderSuccess orderSuccess = response.body();
+
+                                if (response.code() == 200) {
+                                    SharedPreferencesUtils.saveBooleanToSharedPrefs(root.getContext(), Constants.TABLE_EXISTS_ALREADY_STRING, true);
+                                    Toast.makeText(root.getContext(), getString(R.string.order_successful_message_string), Toast.LENGTH_SHORT).show();
+                                    viewBookingDialog(orderSuccess.getId(), tableId);
+                                } else {
+                                    Toast.makeText(root.getContext(), root.getContext().getString(R.string.order_error_message_string), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<OrderSuccess> call, Throwable t) {
+                                new AlertDialog.Builder(root.getContext())
+                                        .setMessage(getString(R.string.order_error_message_string) + "\n" +
+                                                t.getMessage())
+                                        .setCancelable(true)
+                                        .show();
+                            }
+                        });
+                    } else {
+                        Toast.makeText(root.getContext(), getString(R.string.cart_empty_message_string), Toast.LENGTH_SHORT).show();
+                    }
                 }
+            } else {
+                if (isTableOccupied)
+                    ((CustomerHomeActivity) getActivity()).viewBookingDialog();
             }
         });
 
@@ -262,11 +272,14 @@ public class MyCartFragment extends Fragment implements OnTotalComputedListener 
 
                         SharedPreferencesUtils.deleteLongFromSharedPrefs(root.getContext(), Constants.TABLE_ID_CONST_STRING);
                         SharedPreferencesUtils.deleteBooleanFromSharedPrefs(root.getContext(), Constants.TABLE_EXISTS_ALREADY_STRING);
-                        SharedPreferencesUtils.saveBooleanToSharedPrefs(root.getContext(), Constants.TABLE_EXISTS_ALREADY_STRING, true);
+                        SharedPreferencesUtils.saveBooleanToSharedPrefs(root.getContext(), Constants.TABLE_EXISTS_ALREADY_STRING, false);
                         cartItemsMap.remove(customerID);
-                        noItems.setVisibility(View.VISIBLE);
                         foodItemList.clear();
                         adapter.notifyDataSetChanged();
+                        noItems.setVisibility(View.VISIBLE);
+                        foodPrice.setText(getString(R.string.default_cart_price_string));
+                        SharedPreferencesUtils.removeCartItems(root.getContext(), Constants.FOOD_ITEM_MAP_STRING);
+                        SharedPreferencesUtils.saveFoodItemsByCustomerToSharedPrefs(root.getContext(), Constants.FOOD_ITEM_MAP_STRING, cartItemsMap);
                         dialog.dismiss();
 
                         startActivity(new Intent(getContext(), CustomerHomeActivity.class));

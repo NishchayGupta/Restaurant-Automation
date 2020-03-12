@@ -160,4 +160,6 @@
     <string name="four_error_message_string">The requested results were not available. Please try again later..</string>
     <string name="five_error_message_string">There was some issue in getting the requested results. Please try again after a while..</string>
     <string name="general_error_message_string">There was an issue in viewing the requested results. Please try again later..</string>
+    <string name="confirm_payment_title_string">Pay existing order</string>
+    <string name="close_dialog_string">Close dialog</string>
 </resources>

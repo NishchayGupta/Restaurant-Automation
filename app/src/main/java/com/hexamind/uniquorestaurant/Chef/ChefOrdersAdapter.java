@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.hexamind.uniquorestaurant.Data.CartFoodItems;
 import com.hexamind.uniquorestaurant.Data.ChefOrders;
+import com.hexamind.uniquorestaurant.Data.CustomerSuccess;
 import com.hexamind.uniquorestaurant.Data.FoodItem;
 import com.hexamind.uniquorestaurant.Data.FoodItems;
 import com.hexamind.uniquorestaurant.Data.Order;
@@ -35,10 +36,13 @@ public class ChefOrdersAdapter extends RecyclerView.Adapter<ChefOrdersAdapter.Ch
     private List<ChefOrders> orderList;
     private Context context;
     private boolean cardExpanded = false;
+    private CustomerSuccess customer;
+    private static int takoutNumber = 0;
 
-    public ChefOrdersAdapter(List<ChefOrders> orderList, Context context) {
+    public ChefOrdersAdapter(List<ChefOrders> orderList, Context context, CustomerSuccess customer) {
         this.orderList = orderList;
         this.context = context;
+        this.customer = customer;
     }
 
     class ChefOrdersViewHolder extends RecyclerView.ViewHolder {
@@ -71,7 +75,11 @@ public class ChefOrdersAdapter extends RecyclerView.Adapter<ChefOrdersAdapter.Ch
     public void onBindViewHolder(@NonNull ChefOrdersViewHolder holder, int position) {
         ChefOrders order = orderList.get(position);
 
-        holder.tableNumber.setText(context.getString(R.string.default_table_string, String.valueOf(order.getTable().getId())));
+        if (order.getTable().getId() == 11) {
+            takoutNumber++;
+            holder.tableNumber.setText(context.getString(R.string.take_out_string) + " " + takoutNumber);
+        } else
+            holder.tableNumber.setText(context.getString(R.string.default_table_string, String.valueOf(order.getTable().getId())));
         holder.expand.setOnClickListener(view -> {
             if (!cardExpanded) {
                 openCard(holder.layout);

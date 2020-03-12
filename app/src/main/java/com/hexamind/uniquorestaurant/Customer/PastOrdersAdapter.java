@@ -11,6 +11,8 @@ import android.widget.Toast;
 import com.google.android.material.textfield.TextInputEditText;
 import com.hexamind.uniquorestaurant.Data.CartFoodItems;
 import com.hexamind.uniquorestaurant.Data.ChefOrders;
+import com.hexamind.uniquorestaurant.Data.Customer;
+import com.hexamind.uniquorestaurant.Data.CustomerSuccess;
 import com.hexamind.uniquorestaurant.Data.GeneralError;
 import com.hexamind.uniquorestaurant.R;
 import com.hexamind.uniquorestaurant.Retrofit.ApiService;
@@ -23,10 +25,12 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
 
 import androidx.annotation.NonNull;
@@ -42,11 +46,13 @@ import retrofit2.Response;
 public class PastOrdersAdapter extends RecyclerView.Adapter<PastOrdersAdapter.PastOrdersViewHolder> {
     private Context context;
     private List<ChefOrders> orderList;
+    private CustomerSuccess customer;
     private DecimalFormat df = new DecimalFormat("#.##");
 
-    public PastOrdersAdapter(Context context, List<ChefOrders> orderList) {
+    public PastOrdersAdapter(Context context, List<ChefOrders> orderList, CustomerSuccess customer) {
         this.context = context;
         this.orderList = orderList;
+        this.customer = customer;
     }
 
     public class PastOrdersViewHolder extends RecyclerView.ViewHolder {
@@ -77,19 +83,10 @@ public class PastOrdersAdapter extends RecyclerView.Adapter<PastOrdersAdapter.Pa
         for (CartFoodItems foodItems: order.getFoodItemOrder()) {
             holder.itemsOrdered.append(context.getString(R.string.chef_orders_items_view, foodItems.getFoodItem().getFoodItemName(), String.valueOf(foodItems.getQuantity())));
         }
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.getDefault());
-        sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-        /*try {
-            OffsetDateTime odt = OffsetDateTime.parse(order.getTable().getBookingDateTime(), DateTimeFormatter.ISO_OFFSET_DATE_TIME);
-            holder.dateOrdered.setText(odt.getMonth() + " " + odt.getDayOfMonth() + ", " + odt.getYear());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
-        //holder.dateOrdered.setText(order.getTable().getBookingDateTime().getDate());
         Calendar cal = Calendar.getInstance();
         cal.setTime(order.getTable().getBookingDateTime());
 
-        String dateString = cal.get(Calendar.DATE) + " " + getMonth(cal.get(Calendar.MONTH)) + ", " + cal.get(Calendar.YEAR);
+        String dateString = cal.get(Calendar.DATE) + " " + getMonth(cal.get(Calendar.MONTH)+1) + ", " + cal.get(Calendar.YEAR);
         holder.dateOrdered.setText(dateString);
         holder.amountPaid.setText(df.format((order.getTotalCost() * 1.15)));
         if (order.getExistingOrder()) {
@@ -102,52 +99,70 @@ public class PastOrdersAdapter extends RecyclerView.Adapter<PastOrdersAdapter.Pa
             holder.paidText.setEnabled(false);
         }
         holder.paidText.setOnClickListener(view -> {
-            AlertDialog.Builder builder = new AlertDialog.Builder(context);
-            builder.setCancelable(false);
-            LayoutInflater inflater = ((CustomerHomeActivity) context).getLayoutInflater();
-            View confirm = inflater.inflate(R.layout.layout_confirm_dialog, null);
-            builder.setView(confirm);
+            if (holder.paidText.getText().toString().equals(context.getString(R.string.not_paid_string))) {
+                showPayExistingOrderDialog(order, holder);
+            } else {
+                showInvoiceDialog(order);
+            }
+        });
+    }
 
-            AlertDialog dialog = builder.create();
-            dialog.show();
+    private void showInvoiceDialog(ChefOrders order) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setCancelable(false);
+        LayoutInflater inflater = ((CustomerHomeActivity) context).getLayoutInflater();
+        View invoice = inflater.inflate(R.layout.layout_invoice, null);
+        builder.setView(invoice);
 
-            TextView title = confirm.findViewById(R.id.title);
-            TextView message = confirm.findViewById(R.id.message);
-            AppCompatButton yes = confirm.findViewById(R.id.confirmBtn);
-            AppCompatButton no = confirm.findViewById(R.id.cancelBtn);
+        AlertDialog dialog = builder.create();
+        dialog.show();
 
-            message.setText(context.getString(R.string.confirm_payment_message_string));
-            yes.setOnClickListener(view1 -> {
-                /*ApiService apiService = RetrofitClient.getApiService();
-                Call<GeneralError> call = apiService.getPaymentConfirmation(order.getId().longValue());
+        TextView invoiceDate = invoice.findViewById(R.id.invoiceDate);
+        TextView items = invoice.findViewById(R.id.items);
+        TextView subTotal = invoice.findViewById(R.id.subTotal);
+        TextView taxes = invoice.findViewById(R.id.taxes);
+        TextView total = invoice.findViewById(R.id.total);
+        TextView receivePayment = invoice.findViewById(R.id.receivePayment);
 
-                call.enqueue(new Callback<GeneralError>() {
-                    @Override
-                    public void onResponse(Call<GeneralError> call, Response<GeneralError> response) {
-                        GeneralError success = response.body();
+        receivePayment.setText(context.getString(R.string.close_dialog_string));
+        receivePayment.setOnClickListener(view -> dialog.dismiss());
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(order.getTable().getBookingDateTime());
 
-                        if (success.getMessage().equals("OK")) {
-                            Toast.makeText(context, context.getString(R.string.payment_success_string), Toast.LENGTH_SHORT).show();
+        String dateString = cal.get(Calendar.DATE) + " " + getMonth(cal.get(Calendar.MONTH)+1) + ", " + cal.get(Calendar.YEAR);
+        invoiceDate.setText(dateString);
+        items.setText("");
+        for (CartFoodItems orderedItems : order.getFoodItemOrder()) {
+            items.append(context.getString(R.string.chef_orders_items_view, orderedItems.getFoodItem(), String.valueOf(orderedItems.getQuantity())));
+        }
+        subTotal.setText(String.valueOf(order.getTotalCost()));
+        taxes.setText(String.valueOf((order.getTotalCost() * 1.15)));
+        total.setText(String.valueOf((order.getTotalCost() - (order.getTotalCost() - 1.15))));
+    }
 
-                            holder.paidText.setText(context.getString(R.string.paid_string));
-                            holder.paidText.setTextColor(Color.parseColor("#4CAF50"));
-                            holder.paidText.setEnabled(false);
-                            dialog.dismiss();
-                        }
-                    }
+    private void showPayExistingOrderDialog(ChefOrders order, PastOrdersViewHolder holder) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setCancelable(false);
+        LayoutInflater inflater = ((CustomerHomeActivity) context).getLayoutInflater();
+        View confirm = inflater.inflate(R.layout.layout_confirm_dialog, null);
+        builder.setView(confirm);
 
-                    @Override
-                    public void onFailure(Call<GeneralError> call, Throwable t) {
-                        Toast.makeText(context, t.getMessage(), Toast.LENGTH_SHORT).show();
-                        dialog.dismiss();
-                    }
-                });*/
-                viewBookingDialog(order.getId().longValue(), order.getTable().getId(), holder);
-                dialog.dismiss();
-            });
-            no.setOnClickListener(view1 -> {
-                dialog.dismiss();
-            });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        TextView title = confirm.findViewById(R.id.title);
+        TextView message = confirm.findViewById(R.id.message);
+        AppCompatButton yes = confirm.findViewById(R.id.confirmBtn);
+        AppCompatButton no = confirm.findViewById(R.id.cancelBtn);
+
+        title.setText(context.getString(R.string.confirm_payment_title_string));
+        message.setText(context.getString(R.string.confirm_payment_message_string));
+        yes.setOnClickListener(view1 -> {
+            viewBookingDialog(order, order.getId().longValue(), order.getTable().getId(), holder);
+            dialog.dismiss();
+        });
+        no.setOnClickListener(view1 -> {
+            dialog.dismiss();
         });
     }
 
@@ -203,7 +218,7 @@ public class PastOrdersAdapter extends RecyclerView.Adapter<PastOrdersAdapter.Pa
         return orderList.size();
     }
 
-    private void viewBookingDialog(Long orderId, Long tableId, PastOrdersViewHolder holder) {
+    private void viewBookingDialog(ChefOrders order, Long orderId, Long tableId, PastOrdersViewHolder holder) {
         androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(context);
         builder.setCancelable(true);
         LayoutInflater inflater = ((CustomerHomeActivity) context).getLayoutInflater();
@@ -258,6 +273,14 @@ public class PastOrdersAdapter extends RecyclerView.Adapter<PastOrdersAdapter.Pa
                         SharedPreferencesUtils.deleteBooleanFromSharedPrefs(context, Constants.TABLE_EXISTS_ALREADY_STRING);
                         Toast.makeText(context, context.getString(R.string.payment_success_string), Toast.LENGTH_SHORT).show();
 
+                        Map<Long, List<CartFoodItems>> cartItemsMap = SharedPreferencesUtils.getFoodItemsByCustomerFromSharedPrefs(context, Constants.FOOD_ITEM_MAP_STRING);
+                        List<CartFoodItems> cartItems = cartItemsMap.get(customer.getPerson().getCustomer().getCustomerId());
+                        if (cartItems != null) {
+                            cartItemsMap.remove(customer.getPerson().getCustomer().getCustomerId());
+                            SharedPreferencesUtils.removeCartItems(context, Constants.FOOD_ITEM_MAP_STRING);
+                            SharedPreferencesUtils.saveFoodItemsByCustomerToSharedPrefs(context, Constants.FOOD_ITEM_MAP_STRING, cartItemsMap);
+                        }
+                        order.setExistingOrder(false);
                         holder.paidText.setText(context.getString(R.string.paid_string));
                         holder.paidText.setTextColor(Color.parseColor("#4CAF50"));
                         holder.paidText.setEnabled(false);
