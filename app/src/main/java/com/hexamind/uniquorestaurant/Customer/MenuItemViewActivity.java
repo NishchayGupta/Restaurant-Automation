@@ -52,8 +52,8 @@ import static com.hexamind.uniquorestaurant.Utils.Constants.IS_TABLE_BOOKED;
 
 public class MenuItemViewActivity extends AppCompatActivity {
     private CountDownTimer countDownTimer = null;
-    private Long tableId;
     private Person person;
+    private static Long tableId;
     private CustomerSuccess customer;
     private AppCompatButton addPersons, removePersons, addToCart;
     private AppCompatEditText quantity;
@@ -82,6 +82,9 @@ public class MenuItemViewActivity extends AppCompatActivity {
         back = findViewById(R.id.back);
         isCustomerTableAlreadyExists = SharedPreferencesUtils.getBooleanFromSharedPrefs(this, Constants.TABLE_EXISTS_ALREADY_STRING);
 
+        /*Map<Long, Long> tableIdMap = SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(this,Constants.TABLE_ID_MAP_CONST_STRING);
+        tableIdMap.put(customer.getPerson().getCustomer().getCustomerId(), 2L);
+        SharedPreferencesUtils.saveTableIdByCustomerToSharedPrefs(this, Constants.TABLE_ID_MAP_CONST_STRING, tableIdMap);*/
         addPersons = findViewById(R.id.addPersons);
         removePersons = findViewById(R.id.removePersons);
         addToCart = findViewById(R.id.addToCart);
@@ -116,61 +119,75 @@ public class MenuItemViewActivity extends AppCompatActivity {
             }
         });
 
-        if (SharedPreferencesUtils.getLongFromSharedPrefs(this, Constants.TABLE_ID_CONST_STRING) != 12
-                && SharedPreferencesUtils.getLongFromSharedPrefs(this, Constants.TABLE_ID_CONST_STRING) != 0) {
-            if (SharedPreferencesUtils.getBooleanFromSharedPrefs(this, Constants.TABLE_EXISTS_ALREADY_STRING))
-                paymentRemaining = true;
-            else
-                paymentRemaining = false;
+        if (SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(this, Constants.TABLE_ID_MAP_CONST_STRING) != null) {
+            if (SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(this, Constants.TABLE_ID_MAP_CONST_STRING).get(customer.getPerson().getCustomer().getCustomerId()) != null) {
+                tableId = SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(this, Constants.TABLE_ID_MAP_CONST_STRING).get(customer.getPerson().getCustomer().getCustomerId());
+                if (tableId != 12
+                        && tableId != 0) {
+                    if (SharedPreferencesUtils.getBooleanFromSharedPrefs(this, Constants.TABLE_EXISTS_ALREADY_STRING))
+                        paymentRemaining = true;
+                    else
+                        paymentRemaining = false;
+                } else {
+                    isTableOccupied = true;
+                }
+            } else {
+                isTableOccupied = true;
+            }
         } else {
-            paymentRemaining = true;
             isTableOccupied = true;
         }
 
         addToCart.setOnClickListener(view -> {
-            if (SharedPreferencesUtils.getLongFromSharedPrefs(this, Constants.TABLE_ID_CONST_STRING) != 12
-                    && SharedPreferencesUtils.getLongFromSharedPrefs(this, Constants.TABLE_ID_CONST_STRING) != 0) {
-                if (!paymentRemaining) {
-                    list = new ArrayList<>();
-                    if (SharedPreferencesUtils.getFoodItemsByCustomerFromSharedPrefs(MenuItemViewActivity.this, FOOD_ITEM_MAP_STRING) != null) {
-                        if (SharedPreferencesUtils.getFoodItemsByCustomerFromSharedPrefs(MenuItemViewActivity.this, FOOD_ITEM_MAP_STRING).get(customer.getPerson().getCustomer().getCustomerId()) != null)
-                            list = SharedPreferencesUtils.getFoodItemsByCustomerFromSharedPrefs(MenuItemViewActivity.this, FOOD_ITEM_MAP_STRING).get(customer.getPerson().getCustomer().getCustomerId());
-                    }
-                    int quant = 0, position = 0;
-                    boolean foodItemExists = false;
-                    if (!list.isEmpty()) {
-                        for (int i = 0; i < list.size(); i++) {
-                            if (list.get(i).getFoodItem().getFoodItemId() == foodItem.getFoodItemId()) {
-                                quant = list.get(i).getQuantity() + Integer.parseInt(quantity.getText().toString());
-                                foodItemExists = true;
-                                position = i;
-                                break;
-                            } else {
-                                foodItemExists = false;
+            if (SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(this, Constants.TABLE_ID_MAP_CONST_STRING) != null) {
+                if (SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(this, Constants.TABLE_ID_MAP_CONST_STRING).get(customer.getPerson().getCustomer().getCustomerId()) != null) {
+                    tableId = SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(this, Constants.TABLE_ID_MAP_CONST_STRING).get(customer.getPerson().getCustomer().getCustomerId());
+                    if (tableId != 12
+                            && tableId != 0) {
+                        if (!paymentRemaining) {
+                            list = new ArrayList<>();
+                            if (SharedPreferencesUtils.getFoodItemsByCustomerFromSharedPrefs(MenuItemViewActivity.this, FOOD_ITEM_MAP_STRING) != null) {
+                                if (SharedPreferencesUtils.getFoodItemsByCustomerFromSharedPrefs(MenuItemViewActivity.this, FOOD_ITEM_MAP_STRING).get(customer.getPerson().getCustomer().getCustomerId()) != null)
+                                    list = SharedPreferencesUtils.getFoodItemsByCustomerFromSharedPrefs(MenuItemViewActivity.this, FOOD_ITEM_MAP_STRING).get(customer.getPerson().getCustomer().getCustomerId());
                             }
+                            int quant = 0, position = 0;
+                            boolean foodItemExists = false;
+                            if (!list.isEmpty()) {
+                                for (int i = 0; i < list.size(); i++) {
+                                    if (list.get(i).getFoodItem().getFoodItemId() == foodItem.getFoodItemId()) {
+                                        quant = list.get(i).getQuantity() + Integer.parseInt(quantity.getText().toString());
+                                        foodItemExists = true;
+                                        position = i;
+                                        break;
+                                    } else {
+                                        foodItemExists = false;
+                                    }
+                                }
+                            }
+                            CartFoodItems cartFood;
+                            if (!foodItemExists) {
+                                cartFood = new CartFoodItems(foodItem, Integer.parseInt(quantity.getText().toString()));
+                                list.add(cartFood);
+                            } else {
+                                cartFood = new CartFoodItems(foodItem, quant);
+                                list.set(position, cartFood);
+                            }
+                            //SharedPreferencesUtils.saveFoodItemsToSharedPrefs(MenuItemViewActivity.this, FOOD_ITEM_STRING, list);
+                            Map<Long, List<CartFoodItems>> foodItemsInCart = new HashMap<>();
+                            foodItemsInCart.put(customer.getPerson().getCustomer().getCustomerId(), list);
+                            SharedPreferencesUtils.saveFoodItemsByCustomerToSharedPrefs(this, Constants.FOOD_ITEM_MAP_STRING, foodItemsInCart);
+                            Toast.makeText(this, getString(R.string.item_add_success), Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(MenuItemViewActivity.this, CustomerHomeActivity.class));
+                            finish();
+                        } else {
+                            Toast.makeText(this, getString(R.string.payment_first_string), Toast.LENGTH_SHORT).show();
                         }
-                    }
-                    CartFoodItems cartFood;
-                    if (!foodItemExists) {
-                        cartFood = new CartFoodItems(foodItem, Integer.parseInt(quantity.getText().toString()));
-                        list.add(cartFood);
-                    } else {
-                        cartFood = new CartFoodItems(foodItem, quant);
-                        list.set(position, cartFood);
-                    }
-                    //SharedPreferencesUtils.saveFoodItemsToSharedPrefs(MenuItemViewActivity.this, FOOD_ITEM_STRING, list);
-                    Map<Long, List<CartFoodItems>> foodItemsInCart = new HashMap<>();
-                    foodItemsInCart.put(customer.getPerson().getCustomer().getCustomerId(), list);
-                    SharedPreferencesUtils.saveFoodItemsByCustomerToSharedPrefs(this, Constants.FOOD_ITEM_MAP_STRING, foodItemsInCart);
-                    Toast.makeText(this, getString(R.string.item_add_success), Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(MenuItemViewActivity.this, CustomerHomeActivity.class));
-                    finish();
-                } else {
-                    Toast.makeText(this, getString(R.string.payment_first_string), Toast.LENGTH_SHORT).show();
-                }
-            } else
-                if (isTableOccupied)
+                    } else if (isTableOccupied)
+                        viewBookingDialog();
+                } else if (isTableOccupied)
                     viewBookingDialog();
+            } else if (isTableOccupied)
+                viewBookingDialog();
         });
         back.setOnClickListener(view -> {
             startActivity(new Intent(MenuItemViewActivity.this, CustomerHomeActivity.class));
@@ -270,7 +287,9 @@ public class MenuItemViewActivity extends AppCompatActivity {
                                     countDownTimer.cancel();
                                 tableAvailable.setVisibility(View.VISIBLE);
                                 timer.setVisibility(View.VISIBLE);
-                                tableId = checkAvailability.getTableNumber();
+                                Map<Long, Long> tableIdMap = SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(MenuItemViewActivity.this, Constants.TABLE_ID_MAP_CONST_STRING);
+                                tableIdMap.put(customer.getPerson().getCustomer().getCustomerId(), checkAvailability.getTableNumber());
+                                //tableId = checkAvailability.getTableNumber();
                                 if (checkAvailability.getWaitingTimeInMinutes() == 0) {
                                     tableAvailable.setText(getResources().getString(R.string.table_available_string, checkAvailability.getTableNumber()));
                                     timer.setVisibility(View.GONE);
@@ -322,6 +341,12 @@ public class MenuItemViewActivity extends AppCompatActivity {
                     BookTableSuccess bookTable = response.body();
 
                     if (response.code() == 200) {
+                        Map<Long, Long> tableIdMap = new HashMap<>();
+                        if (SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(MenuItemViewActivity.this, Constants.TABLE_ID_MAP_CONST_STRING) != null) {
+                            tableIdMap = SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(MenuItemViewActivity.this, Constants.TABLE_ID_MAP_CONST_STRING);
+                        }
+                        tableIdMap.put(customer.getPerson().getCustomer().getCustomerId(), tableId);
+                        SharedPreferencesUtils.saveTableIdByCustomerToSharedPrefs(MenuItemViewActivity.this, Constants.TABLE_ID_MAP_CONST_STRING, tableIdMap);
                         Toast.makeText(MenuItemViewActivity.this, tableId + " was booked successfully", Toast.LENGTH_SHORT).show();
                         dialog.dismiss();
                     } else {

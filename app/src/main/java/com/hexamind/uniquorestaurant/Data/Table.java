@@ -37,7 +37,7 @@ public class Table {
         this.customers = customers;
     }
 
-    public Object getEndDateTime() {
+    public Date getEndDateTime() {
         return endDateTime;
     }
 
@@ -57,11 +57,11 @@ public class Table {
         return orderFood;
     }
 
-    public void setOrderFood(Object orderFood) {
+    public void setOrderFood(Date orderFood) {
         this.orderFood = orderFood;
     }
 
-    public Object getStartDateTime() {
+    public Date getStartDateTime() {
         return startDateTime;
     }
 

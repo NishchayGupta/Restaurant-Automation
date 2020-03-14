@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.hexamind.uniquorestaurant.Data.CustomerSuccess;
 import com.hexamind.uniquorestaurant.Data.FoodItem;
 import com.hexamind.uniquorestaurant.Data.FoodItems;
 import com.hexamind.uniquorestaurant.R;
@@ -26,7 +27,9 @@ import com.hexamind.uniquorestaurant.Utils.Constants;
 import com.hexamind.uniquorestaurant.Utils.SharedPreferencesUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MenuCardFragment extends Fragment {
 
@@ -35,6 +38,7 @@ public class MenuCardFragment extends Fragment {
     private MenuCardAdapter adapter;
     private ArrayList<FoodItems> foodItemList = new ArrayList<>();
     private ProgressBar progress;
+    private CustomerSuccess customer;
     
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -43,11 +47,20 @@ public class MenuCardFragment extends Fragment {
 
         progress = root.findViewById(R.id.progress);
         progress.setVisibility(View.VISIBLE);
-        if (SharedPreferencesUtils.getLongFromSharedPrefs(getActivity(), Constants.TABLE_ID_CONST_STRING) != 12
-                && SharedPreferencesUtils.getLongFromSharedPrefs(getActivity(), Constants.TABLE_ID_CONST_STRING) != 0) {
-            if (!SharedPreferencesUtils.getBooleanFromSharedPrefs(getActivity(), Constants.TABLE_EXISTS_ALREADY_STRING)) {
-                //((CustomerHomeActivity) getActivity()).viewBookingDialog();
-            }
+        customer = SharedPreferencesUtils.getCustomerFromSharedPrefs(root.getContext(), Constants.CUSTOMER_OBJ_NAME);
+
+        if (SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(root.getContext(), Constants.TABLE_ID_MAP_CONST_STRING) != null) {
+            if (SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(root.getContext(), Constants.TABLE_ID_MAP_CONST_STRING).get(customer.getPerson().getCustomer().getCustomerId()) != null) {
+                Long tableId = SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(root.getContext(), Constants.TABLE_ID_MAP_CONST_STRING).get(customer.getPerson().getCustomer().getCustomerId());
+                if (tableId != 12
+                        && tableId != 0) {
+                    if (!SharedPreferencesUtils.getBooleanFromSharedPrefs(getActivity(), Constants.TABLE_EXISTS_ALREADY_STRING)) {
+                        //((CustomerHomeActivity) getActivity()).viewBookingDialog();
+                    }
+                } else
+                    ((CustomerHomeActivity) getActivity()).viewBookingDialog();
+            } else
+                ((CustomerHomeActivity) getActivity()).viewBookingDialog();
         } else
             ((CustomerHomeActivity) getActivity()).viewBookingDialog();
         ApiService api = RetrofitClient.getApiService();

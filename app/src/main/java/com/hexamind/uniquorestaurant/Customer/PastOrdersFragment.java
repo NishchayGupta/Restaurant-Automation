@@ -17,6 +17,7 @@ import retrofit2.Response;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
@@ -30,6 +31,7 @@ import com.hexamind.uniquorestaurant.Utils.Constants;
 import com.hexamind.uniquorestaurant.Utils.SharedPreferencesUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class PastOrdersFragment extends Fragment {
@@ -39,6 +41,7 @@ public class PastOrdersFragment extends Fragment {
     private List<ChefOrders> orderList = new ArrayList<>();
     private CustomerSuccess customer;
     private Long customerId;
+    private TextView noPastOrders;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -47,24 +50,32 @@ public class PastOrdersFragment extends Fragment {
 
         customer = SharedPreferencesUtils.getCustomerFromSharedPrefs(root.getContext(), Constants.CUSTOMER_OBJ_NAME);
         customerId = customer.getPerson().getCustomer().getCustomerId();
+        noPastOrders = root.findViewById(R.id.noPastOrders);
 
         ApiService apiService = RetrofitClient.getApiService();
         Call<List<ChefOrders>> callOrders = apiService.getAllOrders(customerId);
         callOrders.enqueue(new Callback<List<ChefOrders>>() {
             @Override
             public void onResponse(Call<List<ChefOrders>> call, Response<List<ChefOrders>> response) {
-                orderList  = response.body();
+                orderList = response.body();
 
-                recyclerView = root.findViewById(R.id.recyclerView);
-                recyclerView.setLayoutManager(new LinearLayoutManager(root.getContext()));
-                recyclerView.setItemAnimator(new DefaultItemAnimator());
-                adapter = new PastOrdersAdapter(root.getContext(), orderList, customer);
-                recyclerView.setAdapter(adapter);
+                if (orderList != null) {
+                    noPastOrders.setVisibility(View.GONE);
+                    Collections.reverse(orderList);
+                    recyclerView = root.findViewById(R.id.recyclerView);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(root.getContext()));
+                    recyclerView.setItemAnimator(new DefaultItemAnimator());
+                    adapter = new PastOrdersAdapter(root.getContext(), orderList, customer);
+                    recyclerView.setAdapter(adapter);
+                } else {
+                    noPastOrders.setVisibility(View.VISIBLE);
+                }
             }
 
             @Override
             public void onFailure(Call<List<ChefOrders>> call, Throwable t) {
                 Toast.makeText(root.getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                noPastOrders.setVisibility(View.VISIBLE);
             }
         });
 

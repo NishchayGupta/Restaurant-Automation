@@ -29,6 +29,7 @@ import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.textfield.TextInputEditText;
+import com.hexamind.uniquorestaurant.CoverActivity;
 import com.hexamind.uniquorestaurant.Data.BookTableSuccess;
 import com.hexamind.uniquorestaurant.Data.CheckAvailabilitySuccess;
 import com.hexamind.uniquorestaurant.Data.CustomerSuccess;
@@ -45,7 +46,9 @@ import com.hexamind.uniquorestaurant.Utils.Constants;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -86,8 +89,8 @@ public class CustomerHomeActivity extends AppCompatActivity {
 
         MenuItem logout = navView.getMenu().findItem(R.id.menu_logout);
         logout.setOnMenuItemClickListener(menuItem -> {
-                    startActivity(new Intent(CustomerHomeActivity.this, LoginActivity.class));
-                    Toast.makeText(CustomerHomeActivity.this, getString(R.string.logout_success_message_string), Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, CoverActivity.class));
+            Toast.makeText(CustomerHomeActivity.this, getString(R.string.logout_success_message_string), Toast.LENGTH_SHORT).show();
                     finish();
                     return true;
                 });
@@ -186,7 +189,12 @@ public class CustomerHomeActivity extends AppCompatActivity {
                     Toast.makeText(CustomerHomeActivity.this, getString(R.string.table_take_out_success_message_string), Toast.LENGTH_SHORT).show();
                     tableId = 11L;
                     SharedPreferencesUtils.saveBooleanToSharedPrefs(CustomerHomeActivity.this, Constants.IS_TABLE_BOOKED, true);
-                    SharedPreferencesUtils.saveLongToSharedPrefs(CustomerHomeActivity.this, Constants.TABLE_ID_CONST_STRING, tableId);
+                    Map<Long, Long> tableIdMap = new HashMap<>();
+                    if (SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(CustomerHomeActivity.this, Constants.TABLE_ID_MAP_CONST_STRING) != null) {
+                        tableIdMap = SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(CustomerHomeActivity.this, Constants.TABLE_ID_MAP_CONST_STRING);
+                    }
+                    tableIdMap.put(customer.getPerson().getCustomer().getCustomerId(), tableId);
+                    SharedPreferencesUtils.saveTableIdByCustomerToSharedPrefs(CustomerHomeActivity.this, Constants.TABLE_ID_MAP_CONST_STRING, tableIdMap);
                     dialog.dismiss();
                 }
 
@@ -274,8 +282,13 @@ public class CustomerHomeActivity extends AppCompatActivity {
 
                     if (response.code() == 200) {
                         SharedPreferencesUtils.saveBooleanToSharedPrefs(CustomerHomeActivity.this, Constants.IS_TABLE_BOOKED, true);
-                        SharedPreferencesUtils.saveLongToSharedPrefs(CustomerHomeActivity.this, Constants.TABLE_ID_CONST_STRING, tableId);
-
+                        //SharedPreferencesUtils.saveLongToSharedPrefs(CustomerHomeActivity.this, Constants.TABLE_ID_CONST_STRING, tableId);
+                        Map<Long, Long> tableIdMap = new HashMap<>();
+                        if (SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(CustomerHomeActivity.this, Constants.TABLE_ID_MAP_CONST_STRING) != null) {
+                            tableIdMap = SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(CustomerHomeActivity.this, Constants.TABLE_ID_MAP_CONST_STRING);
+                        }
+                        tableIdMap.put(customer.getPerson().getCustomer().getCustomerId(), tableId);
+                        SharedPreferencesUtils.saveTableIdByCustomerToSharedPrefs(CustomerHomeActivity.this, Constants.TABLE_ID_MAP_CONST_STRING, tableIdMap);
                         System.out.println("\n\n\n\n\nBooked Table ID: " + tableId);
                         Toast.makeText(CustomerHomeActivity.this, "Table No " + tableId + " was booked successfully", Toast.LENGTH_SHORT).show();
                         dialog.dismiss();

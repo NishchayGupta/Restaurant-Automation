@@ -98,35 +98,39 @@ public class RegisterActivity extends AppCompatActivity {
         });
 
         email.setOnFocusChangeListener((view, hasFocus) -> {
-            if (!hasFocus) {
-                progressBar.setVisibility(View.VISIBLE);
+            if (!email.getText().toString().isEmpty()) {
+                if (!hasFocus) {
+                    if  (isValidUsername(email.getText().toString())) {
+                        progressBar.setVisibility(View.VISIBLE);
 
-                ApiService api = RetrofitClient.getApiService();
-                Call<GeneralError> call = api.checkEmailExists(email.getText().toString());
+                        ApiService api = RetrofitClient.getApiService();
+                        Call<GeneralError> call = api.checkEmailExists(email.getText().toString());
 
-                call.enqueue(new Callback<GeneralError>() {
-                    @Override
-                    public void onResponse(Call<GeneralError> call, Response<GeneralError> response) {
-                        if (email.getText().toString().isEmpty() || !isValidUsername(email.getText())) {
-                            Toast.makeText(RegisterActivity.this, getString(R.string.invalid_email_error_string), Toast.LENGTH_SHORT).show();
-                        } else {
-                            if (response.code() == 200) {
-                                emailExistsText.setVisibility(View.GONE);
-                            } else if (response.code() == 400) {
-                                emailExistsText.setText(getString(R.string.email_exists_message_string));
-                                emailExistsText.setVisibility(View.VISIBLE);
+                        call.enqueue(new Callback<GeneralError>() {
+                            @Override
+                            public void onResponse(Call<GeneralError> call, Response<GeneralError> response) {
+                                if (email.getText().toString().isEmpty() || !isValidUsername(email.getText())) {
+                                    Toast.makeText(RegisterActivity.this, getString(R.string.invalid_email_error_string), Toast.LENGTH_SHORT).show();
+                                } else {
+                                    if (response.code() == 200) {
+                                        emailExistsText.setVisibility(View.GONE);
+                                    } else if (response.code() == 400) {
+                                        emailExistsText.setText(getString(R.string.email_exists_message_string));
+                                        emailExistsText.setVisibility(View.VISIBLE);
+                                    }
+                                }
+                                progressBar.setVisibility(View.GONE);
                             }
-                        }
-                        progressBar.setVisibility(View.GONE);
-                    }
 
-                    @Override
-                    public void onFailure(Call<GeneralError> call, Throwable t) {
-                        progressBar.setVisibility(View.GONE);
+                            @Override
+                            public void onFailure(Call<GeneralError> call, Throwable t) {
+                                progressBar.setVisibility(View.GONE);
+                            }
+                        });
+                    }  else {
+                        Toast.makeText(this, getString(R.string.invalid_email_error_string), Toast.LENGTH_SHORT).show();
                     }
-                });
-            } else {
-                emailExistsText.setVisibility(View.GONE);
+                }
             }
         });
 

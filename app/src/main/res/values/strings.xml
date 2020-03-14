@@ -162,4 +162,6 @@
     <string name="general_error_message_string">There was an issue in viewing the requested results. Please try again later..</string>
     <string name="confirm_payment_title_string">Pay existing order</string>
     <string name="close_dialog_string">Close dialog</string>
+    <string name="no_past_orders_message_string">No previous orders found</string>
+    <string name="mo_orders_received_cashier_string">No orders exist</string>
 </resources>

@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -64,8 +65,8 @@ public class AddItemFragment extends Fragment {
         ref = FirebaseStorage.getInstance().getReference();
         addFoodImage.setOnClickListener(view -> pickFromGallery());
         addFoodItem.setOnClickListener(view -> {
-            if (mainPath.isEmpty() || itemName.getText().toString().isEmpty() || itemCost.getText().toString().isEmpty()){
-                if (mainPath.isEmpty()) {
+            if (addFoodImage.getVisibility() == View.VISIBLE || itemName.getText().toString().isEmpty() || itemCost.getText().toString().isEmpty()){
+                if (addFoodImage.getVisibility() == View.VISIBLE) {
                     Toast.makeText(root.getContext(), getString(R.string.food_item_image_unsuccess_string), Toast.LENGTH_SHORT).show();
                 } else if (itemName.getText().toString().isEmpty()) {
                     itemName.setError(getString(R.string.invalid_item_name));
@@ -83,6 +84,7 @@ public class AddItemFragment extends Fragment {
                         GeneralError success = response.body();
 
                         Toast.makeText(root.getContext(), success.getMessage(), Toast.LENGTH_SHORT).show();
+                        Navigation.findNavController(getActivity(), R.id.managerNavHostFragment).navigate(R.id.action_menu_add_item_to_menu_add_item_success);
                     }
 
                     @Override

@@ -11,5 +11,6 @@ public class Constants {
     public static final String USER_ORDERS_STRING = "UserOrders";
     public static final String FOOD_ITEM_ID = "FoodItemId";
     public static final String MANAGER_OBJ_NAME = "ManagerObjName";
+    public static final String TABLE_ID_MAP_CONST_STRING = "tableIdMap";
     public static String CUSTOMER_STRING = "customer";
 }

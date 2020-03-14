@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
+import com.hexamind.uniquorestaurant.CoverActivity;
 import com.hexamind.uniquorestaurant.Customer.CustomerHomeActivity;
 import com.hexamind.uniquorestaurant.Data.CustomerSuccess;
 import com.hexamind.uniquorestaurant.LoginActivity;
@@ -63,7 +64,7 @@ public class ManagerActivity extends AppCompatActivity {
 
         MenuItem logout = navView.getMenu().findItem(R.id.menu_logout);
         logout.setOnMenuItemClickListener(menuItem -> {
-            startActivity(new Intent(ManagerActivity.this, LoginActivity.class));
+            startActivity(new Intent(this, CoverActivity.class));
             Toast.makeText(ManagerActivity.this, getString(R.string.logout_success_message_string), Toast.LENGTH_SHORT).show();
             finish();
             return true;

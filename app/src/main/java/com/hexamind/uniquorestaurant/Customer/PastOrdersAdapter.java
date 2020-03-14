@@ -2,6 +2,8 @@ package com.hexamind.uniquorestaurant.Customer;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.text.TextUtils;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -84,7 +86,10 @@ public class PastOrdersAdapter extends RecyclerView.Adapter<PastOrdersAdapter.Pa
             holder.itemsOrdered.append(context.getString(R.string.chef_orders_items_view, foodItems.getFoodItem().getFoodItemName(), String.valueOf(foodItems.getQuantity())));
         }
         Calendar cal = Calendar.getInstance();
-        cal.setTime(order.getTable().getBookingDateTime());
+        if (order.getTable().getId() != 11)
+            cal.setTime(order.getTable().getBookingDateTime());
+        else
+            cal.setTime(order.getTable().getStartDateTime());
 
         String dateString = cal.get(Calendar.DATE) + " " + getMonth(cal.get(Calendar.MONTH)+1) + ", " + cal.get(Calendar.YEAR);
         holder.dateOrdered.setText(dateString);
@@ -92,11 +97,9 @@ public class PastOrdersAdapter extends RecyclerView.Adapter<PastOrdersAdapter.Pa
         if (order.getExistingOrder()) {
             holder.paidText.setText(context.getString(R.string.not_paid_string));
             holder.paidText.setTextColor(ContextCompat.getColor(context, android.R.color.holo_red_dark));
-            holder.paidText.setEnabled(true);
         } else {
             holder.paidText.setText(context.getString(R.string.paid_string));
             holder.paidText.setTextColor(Color.parseColor("#4CAF50"));
-            holder.paidText.setEnabled(false);
         }
         holder.paidText.setOnClickListener(view -> {
             if (holder.paidText.getText().toString().equals(context.getString(R.string.not_paid_string))) {
@@ -122,22 +125,25 @@ public class PastOrdersAdapter extends RecyclerView.Adapter<PastOrdersAdapter.Pa
         TextView subTotal = invoice.findViewById(R.id.subTotal);
         TextView taxes = invoice.findViewById(R.id.taxes);
         TextView total = invoice.findViewById(R.id.total);
-        TextView receivePayment = invoice.findViewById(R.id.receivePayment);
+        TextView close = invoice.findViewById(R.id.close);
 
-        receivePayment.setText(context.getString(R.string.close_dialog_string));
-        receivePayment.setOnClickListener(view -> dialog.dismiss());
+        close.setText(context.getString(R.string.close_dialog_string));
+        close.setOnClickListener(view -> dialog.dismiss());
         Calendar cal = Calendar.getInstance();
-        cal.setTime(order.getTable().getBookingDateTime());
-
+        if (order.getTable().getId() == 11) {
+            cal.setTime(order.getTable().getStartDateTime());
+        } else {
+            cal.setTime(order.getTable().getBookingDateTime());
+        }
         String dateString = cal.get(Calendar.DATE) + " " + getMonth(cal.get(Calendar.MONTH)+1) + ", " + cal.get(Calendar.YEAR);
         invoiceDate.setText(dateString);
         items.setText("");
         for (CartFoodItems orderedItems : order.getFoodItemOrder()) {
-            items.append(context.getString(R.string.chef_orders_items_view, orderedItems.getFoodItem(), String.valueOf(orderedItems.getQuantity())));
+            items.append(context.getString(R.string.chef_orders_items_view, orderedItems.getFoodItem().getFoodItemName(), String.valueOf(orderedItems.getQuantity())));
         }
-        subTotal.setText(String.valueOf(order.getTotalCost()));
-        taxes.setText(String.valueOf((order.getTotalCost() * 1.15)));
-        total.setText(String.valueOf((order.getTotalCost() - (order.getTotalCost() - 1.15))));
+        subTotal.setText(df.format(order.getTotalCost()));
+        taxes.setText(df.format((order.getTotalCost() * 1.15)));
+        total.setText(df.format((order.getTotalCost() - (order.getTotalCost() - 1.15))));
     }
 
     private void showPayExistingOrderDialog(ChefOrders order, PastOrdersViewHolder holder) {
@@ -258,45 +264,60 @@ public class PastOrdersAdapter extends RecyclerView.Adapter<PastOrdersAdapter.Pa
             cashLayout.setVisibility(View.GONE);
         });
         payNow.setOnClickListener(view -> {
-            ApiService api = RetrofitClient.getApiService();
-            Call<GeneralError> call = api.getPaymentConfirmation(orderId);
+            if (name.getText().toString().isEmpty() || email.getText().toString().isEmpty() || isValidUsername(email.getText().toString())) {
+                if (name.getText().toString().isEmpty()) {
+                    name.setError(context.getString(R.string.invalid_name_error_string));
+                } else if (email.getText().toString().isEmpty()) {
+                    name.setError(context.getString(R.string.invalid_email_error_string));
+                } else if (isValidUsername(email.getText().toString())) {
+                    name.setError(context.getString(R.string.invalid_email_error_string));
+                }
+            } else {
+                ApiService api = RetrofitClient.getApiService();
+                Call<GeneralError> call = api.getPaymentConfirmation(orderId);
 
-            call.enqueue(new Callback<GeneralError>() {
-                @Override
-                public void onResponse(Call<GeneralError> call, Response<GeneralError> response) {
-                    GeneralError payment = response.body();
+                call.enqueue(new Callback<GeneralError>() {
+                    @Override
+                    public void onResponse(Call<GeneralError> call, Response<GeneralError> response) {
+                        GeneralError payment = response.body();
 
-                    if (response.code() == 200) {
-                        Toast.makeText(context, payment.getMessage(), Toast.LENGTH_SHORT).show();
+                        if (response.code() == 200) {
+                            Toast.makeText(context, payment.getMessage(), Toast.LENGTH_SHORT).show();
+                            Map<Long, Long> tableIdMap = SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(context, Constants.TABLE_ID_MAP_CONST_STRING);
+                            tableIdMap.remove(customer.getPerson().getCustomer().getCustomerId());
+                            SharedPreferencesUtils.saveTableIdByCustomerToSharedPrefs(context, Constants.TABLE_ID_MAP_CONST_STRING, tableIdMap);
+                            SharedPreferencesUtils.deleteBooleanFromSharedPrefs(context, Constants.TABLE_EXISTS_ALREADY_STRING);
+                            Toast.makeText(context, context.getString(R.string.payment_success_string), Toast.LENGTH_SHORT).show();
 
-                        SharedPreferencesUtils.deleteLongFromSharedPrefs(context, Constants.TABLE_ID_CONST_STRING);
-                        SharedPreferencesUtils.deleteBooleanFromSharedPrefs(context, Constants.TABLE_EXISTS_ALREADY_STRING);
-                        Toast.makeText(context, context.getString(R.string.payment_success_string), Toast.LENGTH_SHORT).show();
-
-                        Map<Long, List<CartFoodItems>> cartItemsMap = SharedPreferencesUtils.getFoodItemsByCustomerFromSharedPrefs(context, Constants.FOOD_ITEM_MAP_STRING);
-                        List<CartFoodItems> cartItems = cartItemsMap.get(customer.getPerson().getCustomer().getCustomerId());
-                        if (cartItems != null) {
-                            cartItemsMap.remove(customer.getPerson().getCustomer().getCustomerId());
-                            SharedPreferencesUtils.removeCartItems(context, Constants.FOOD_ITEM_MAP_STRING);
-                            SharedPreferencesUtils.saveFoodItemsByCustomerToSharedPrefs(context, Constants.FOOD_ITEM_MAP_STRING, cartItemsMap);
+                            Map<Long, List<CartFoodItems>> cartItemsMap = SharedPreferencesUtils.getFoodItemsByCustomerFromSharedPrefs(context, Constants.FOOD_ITEM_MAP_STRING);
+                            List<CartFoodItems> cartItems = cartItemsMap.get(customer.getPerson().getCustomer().getCustomerId());
+                            if (cartItems != null) {
+                                cartItemsMap.remove(customer.getPerson().getCustomer().getCustomerId());
+                                SharedPreferencesUtils.removeCartItems(context, Constants.FOOD_ITEM_MAP_STRING);
+                                SharedPreferencesUtils.saveFoodItemsByCustomerToSharedPrefs(context, Constants.FOOD_ITEM_MAP_STRING, cartItemsMap);
+                            }
+                            order.setExistingOrder(false);
+                            holder.paidText.setText(context.getString(R.string.paid_string));
+                            holder.paidText.setTextColor(Color.parseColor("#4CAF50"));
+                            holder.paidText.setEnabled(false);
+                            dialog.dismiss();
+                        } else {
+                            Toast.makeText(context, context.getString(R.string.payment_failure_message_string), Toast.LENGTH_SHORT).show();
+                            dialog.dismiss();
                         }
-                        order.setExistingOrder(false);
-                        holder.paidText.setText(context.getString(R.string.paid_string));
-                        holder.paidText.setTextColor(Color.parseColor("#4CAF50"));
-                        holder.paidText.setEnabled(false);
-                        dialog.dismiss();
-                    } else {
-                        Toast.makeText(context, context.getString(R.string.payment_failure_message_string), Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onFailure(Call<GeneralError> call, Throwable t) {
+                        Toast.makeText(context, t.getMessage(), Toast.LENGTH_SHORT).show();
                         dialog.dismiss();
                     }
-                }
-
-                @Override
-                public void onFailure(Call<GeneralError> call, Throwable t) {
-                    Toast.makeText(context, t.getMessage(), Toast.LENGTH_SHORT).show();
-                    dialog.dismiss();
-                }
-            });
+                });
+            }
         });
+    }
+
+    private boolean isValidUsername(CharSequence username)  {
+        return (!TextUtils.isEmpty(username) && Patterns.EMAIL_ADDRESS.matcher(username).matches());
     }
 }

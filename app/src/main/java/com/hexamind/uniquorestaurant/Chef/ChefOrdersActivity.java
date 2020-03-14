@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.hexamind.uniquorestaurant.CoverActivity;
 import com.hexamind.uniquorestaurant.Data.ChefOrders;
 import com.hexamind.uniquorestaurant.Data.CustomerSuccess;
 import com.hexamind.uniquorestaurant.Data.Order;
@@ -75,7 +76,7 @@ public class ChefOrdersActivity extends AppCompatActivity {
         });
 
         back.setOnClickListener(view -> {
-            startActivity(new Intent(ChefOrdersActivity.this, LoginActivity.class));
+            startActivity(new Intent(this, CoverActivity.class));
             Toast.makeText(this, getString(R.string.logout_success_message_string), Toast.LENGTH_SHORT).show();
             finish();
         });

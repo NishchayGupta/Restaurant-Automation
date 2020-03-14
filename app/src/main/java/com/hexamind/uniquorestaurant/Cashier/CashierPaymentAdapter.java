@@ -16,6 +16,7 @@ import com.hexamind.uniquorestaurant.Data.Order;
 import com.hexamind.uniquorestaurant.Manager.ManagerActivity;
 import com.hexamind.uniquorestaurant.R;
 
+import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.List;
 
@@ -29,6 +30,7 @@ public class CashierPaymentAdapter extends RecyclerView.Adapter<CashierPaymentAd
     private List<ChefOrders> paymentList;
     private Context context;
     private boolean expanded = false;
+    private DecimalFormat df = new DecimalFormat("#.##");
 
     public CashierPaymentAdapter(List<ChefOrders> paymentList, Context context) {
         this.paymentList = paymentList;
@@ -68,20 +70,26 @@ public class CashierPaymentAdapter extends RecyclerView.Adapter<CashierPaymentAd
         ChefOrders orders = paymentList.get(position);
 
         holder.expand.setOnClickListener(view -> {
-            if (expanded)
+            if (expanded) {
                 holder.layout.setVisibility(View.GONE);
-            else
+                holder.view.setVisibility(View.GONE);
+                expanded = false;
+            } else {
                 holder.layout.setVisibility(View.VISIBLE);
+                holder.view.setVisibility(View.VISIBLE);
+                expanded = true;
+            }
         });
+        holder.itemOrderList.setText("");
         for (CartFoodItems items : orders.getFoodItemOrder()) {
-            holder.itemOrderList.append(items.getFoodItem() + " x " + items.getFoodItem() + "\n");
+            holder.itemOrderList.append(items.getFoodItem().getFoodItemName() + " x " + items.getQuantity() + "\n");
         }
         holder.totalAmount.setText(context.getString(R.string.default_price_string, String.valueOf(orders.getTotalCost())));
-        holder.tableNumber.setText(String.valueOf(orders.getTable().getId()));
+        holder.tableNumber.setText(context.getString(R.string.default_table_string, String.valueOf(orders.getTable().getId())));
         holder.viewReceipt.setOnClickListener(view -> {
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
             builder.setCancelable(false);
-            LayoutInflater inflater = ((ManagerActivity) context).getLayoutInflater();
+            LayoutInflater inflater = ((CashierActivity) context).getLayoutInflater();
             View confirm = inflater.inflate(R.layout.layout_invoice, null);
             builder.setView(confirm);
 
@@ -93,21 +101,20 @@ public class CashierPaymentAdapter extends RecyclerView.Adapter<CashierPaymentAd
             TextView subTotal = confirm.findViewById(R.id.subTotal);
             TextView taxes = confirm.findViewById(R.id.taxes);
             TextView total = confirm.findViewById(R.id.total);
-            AppCompatButton receivePayment = confirm.findViewById(R.id.receivePayment);
+            AppCompatButton close = confirm.findViewById(R.id.close);
 
             Calendar cal = Calendar.getInstance();
             cal.setTime(orders.getTable().getBookingDateTime());
-            String dateString = cal.get(Calendar.DATE) + " " + getMonth(cal.get(Calendar.MONTH)) + ", " + cal.get(Calendar.YEAR);
+            String dateString = cal.get(Calendar.DATE) + " " + getMonth(cal.get(Calendar.MONTH) + 1) + ", " + cal.get(Calendar.YEAR);
             invoiceDate.setText(dateString);
             items.setText("");
             for (CartFoodItems itemsOrdered : orders.getFoodItemOrder()) {
-                items.append(itemsOrdered.getFoodItem() + " x " + itemsOrdered.getQuantity() + "\n");
+                items.append(itemsOrdered.getFoodItem().getFoodItemName() + " x " + itemsOrdered.getQuantity() + "\n");
             }
-            subTotal.setText(String.valueOf(orders.getTotalCost()));
-            taxes.setText(String.valueOf((orders.getTotalCost() * 1.15)));
-            total.setText(String.valueOf((orders.getTotalCost() + (orders.getTotalCost() * 1.15))));
-            receivePayment.setOnClickListener(view1 -> {
-                Toast.makeText(context, context.getString(R.string.payment_received_message_string), Toast.LENGTH_SHORT).show();
+            subTotal.setText(df.format(orders.getTotalCost()));
+            taxes.setText((df.format(orders.getTotalCost() * 1.15)));
+            total.setText((df.format(orders.getTotalCost() + (orders.getTotalCost() * 1.15))));
+            close.setOnClickListener(view1 -> {
                 dialog.dismiss();
             });
         });

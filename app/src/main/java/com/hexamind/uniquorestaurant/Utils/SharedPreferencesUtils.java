@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import androidx.core.content.ContextCompat;
+
 import static com.hexamind.uniquorestaurant.Utils.Constants.SHARED_PREFS_NAME;
 
 public class SharedPreferencesUtils {
@@ -76,6 +78,27 @@ public class SharedPreferencesUtils {
         String object = getSharedPreference(context).getString(objectName, "");
 
         return gson.fromJson(object, type);
+    }
+
+    public static void saveTableIdByCustomerToSharedPrefs(Context context, String objectName, Map<Long, Long> tableIdMap) {
+        SharedPreferences.Editor editor = getSharedPreference(context).edit();
+        Gson gson = new Gson();
+        String object = gson.toJson(tableIdMap);
+        editor.putString(objectName, object);
+        editor.apply();
+    }
+
+    public static HashMap<Long, Long> getTableIdByCustomerFromSharedPrefs(Context context, String objectName) {
+        Gson gson = new Gson();
+        Type type = new TypeToken<Map<Long, Long>>(){}.getType();
+
+        String object = getSharedPreference(context).getString(objectName, "");
+
+        return gson.fromJson(object, type);
+    }
+
+    public static void removeTableId(Context context, String name) {
+        getSharedPreference(context).edit().remove(name).apply();
     }
 
     public static void saveFoodItemsByCustomerToSharedPrefs(Context context, String objectName, Map<Long, List<CartFoodItems>> foodItemsMap) {
