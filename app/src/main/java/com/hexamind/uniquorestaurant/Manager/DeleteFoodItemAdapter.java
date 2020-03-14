@@ -69,11 +69,6 @@ public class DeleteFoodItemAdapter extends RecyclerView.Adapter<DeleteFoodItemAd
         Glide.with(context)
                 .load(foodItem.getFoodItemPicture())
                 .into(holder.foodItemImage);
-        holder.foodItemView.setOnClickListener(view -> {
-            Intent intent = new Intent(context, UpdateItemFragment.class);
-            intent.putExtra(Constants.FOOD_ITEM_ID, foodItem.getFoodItemId());
-            context.startActivity(intent);
-        });
         holder.foodItemPrice.setText(context.getString(R.string.default_price_string, String.valueOf(foodItem.getFoodItemPrice())));
         holder.foodItemName.setText(foodItem.getFoodItemName());
         holder.deleteItem.setOnClickListener(view -> {

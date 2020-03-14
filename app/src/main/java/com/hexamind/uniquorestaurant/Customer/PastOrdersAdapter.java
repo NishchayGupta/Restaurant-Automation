@@ -1,5 +1,6 @@
 package com.hexamind.uniquorestaurant.Customer;
 
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.text.TextUtils;
@@ -7,10 +8,12 @@ import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.DatePicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.hexamind.uniquorestaurant.Data.CartFoodItems;
 import com.hexamind.uniquorestaurant.Data.ChefOrders;
 import com.hexamind.uniquorestaurant.Data.Customer;
@@ -141,9 +144,9 @@ public class PastOrdersAdapter extends RecyclerView.Adapter<PastOrdersAdapter.Pa
         for (CartFoodItems orderedItems : order.getFoodItemOrder()) {
             items.append(context.getString(R.string.chef_orders_items_view, orderedItems.getFoodItem().getFoodItemName(), String.valueOf(orderedItems.getQuantity())));
         }
-        subTotal.setText(df.format(order.getTotalCost()));
-        taxes.setText(df.format((order.getTotalCost() * 1.15)));
-        total.setText(df.format((order.getTotalCost() - (order.getTotalCost() - 1.15))));
+        subTotal.setText(context.getString(R.string.default_price_string, df.format(order.getTotalCost())));
+        total.setText(context.getString(R.string.default_price_string, df.format((order.getTotalCost() * 1.15))));
+        taxes.setText(context.getString(R.string.default_price_string, df.format(((order.getTotalCost() * 1.15) - order.getTotalCost()))));
     }
 
     private void showPayExistingOrderDialog(ChefOrders order, PastOrdersViewHolder holder) {
@@ -238,13 +241,14 @@ public class PastOrdersAdapter extends RecyclerView.Adapter<PastOrdersAdapter.Pa
         AppCompatButton card = tableBooking.findViewById(R.id.card);
         ConstraintLayout cashLayout = tableBooking.findViewById(R.id.cashLayout);
         ConstraintLayout cardLayout = tableBooking.findViewById(R.id.cardLayout);
-        TextInputEditText nameOnCard = tableBooking.findViewById(R.id.cardNumber);
+        TextInputEditText cardNumber = tableBooking.findViewById(R.id.cardNumber);
         TextInputEditText expiryDate = tableBooking.findViewById(R.id.expiryDate);
         TextInputEditText cvv = tableBooking.findViewById(R.id.cvv);
         TextInputEditText name = tableBooking.findViewById(R.id.name);
         TextInputEditText email = tableBooking.findViewById(R.id.email);
         TextInputEditText tableNumber = tableBooking.findViewById(R.id.tableNumber);
         AppCompatButton payNow = tableBooking.findViewById(R.id.payNow);
+        TextInputLayout tableNumberInput = tableBooking.findViewById(R.id.tableNumberInput);
 
         tableNumber.setText(String.valueOf(tableId));
         cash.setOnClickListener(view -> {
@@ -263,56 +267,127 @@ public class PastOrdersAdapter extends RecyclerView.Adapter<PastOrdersAdapter.Pa
             cardLayout.setVisibility(View.VISIBLE);
             cashLayout.setVisibility(View.GONE);
         });
+        Calendar cal = Calendar.getInstance();
+        DatePickerDialog.OnDateSetListener date = (view, year, monthOfYear, dayOfMonth) -> {
+            cal.set(Calendar.YEAR, year);
+            cal.set(Calendar.MONTH, monthOfYear);
+            cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+            String myFormat = "MM/dd/yy"; //In which you need put here
+            SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+            expiryDate.setText(sdf.format(cal.getTime()));
+        };
+        if (order.getTable().getId() == 11)
+            tableNumberInput.setVisibility(View.GONE);
+        else
+            tableNumberInput.setVisibility(View.VISIBLE);
+        expiryDate.setOnClickListener(view -> {
+            new DatePickerDialog(context, date, cal
+                    .get(Calendar.YEAR), cal.get(Calendar.MONTH),
+                    cal.get(Calendar.DAY_OF_MONTH)).show();
+        });
         payNow.setOnClickListener(view -> {
-            if (name.getText().toString().isEmpty() || email.getText().toString().isEmpty() || isValidUsername(email.getText().toString())) {
-                if (name.getText().toString().isEmpty()) {
-                    name.setError(context.getString(R.string.invalid_name_error_string));
-                } else if (email.getText().toString().isEmpty()) {
-                    name.setError(context.getString(R.string.invalid_email_error_string));
-                } else if (isValidUsername(email.getText().toString())) {
-                    name.setError(context.getString(R.string.invalid_email_error_string));
-                }
-            } else {
-                ApiService api = RetrofitClient.getApiService();
-                Call<GeneralError> call = api.getPaymentConfirmation(orderId);
+            if (cashLayout.getVisibility() == View.VISIBLE) {
+                if (name.getText().toString().isEmpty() || email.getText().toString().isEmpty() || !isValidUsername(email.getText().toString())) {
+                    if (name.getText().toString().isEmpty()) {
+                        name.setError(context.getString(R.string.invalid_name_error_string));
+                    } else if (email.getText().toString().isEmpty()) {
+                        email.setError(context.getString(R.string.invalid_email_error_string));
+                    } else if (isValidUsername(email.getText().toString())) {
+                        email.setError(context.getString(R.string.invalid_email_error_string));
+                    }
+                } else {
+                    ApiService api = RetrofitClient.getApiService();
+                    Call<GeneralError> call = api.getPaymentConfirmation(orderId);
 
-                call.enqueue(new Callback<GeneralError>() {
-                    @Override
-                    public void onResponse(Call<GeneralError> call, Response<GeneralError> response) {
-                        GeneralError payment = response.body();
+                    call.enqueue(new Callback<GeneralError>() {
+                        @Override
+                        public void onResponse(Call<GeneralError> call, Response<GeneralError> response) {
+                            GeneralError payment = response.body();
 
-                        if (response.code() == 200) {
-                            Toast.makeText(context, payment.getMessage(), Toast.LENGTH_SHORT).show();
-                            Map<Long, Long> tableIdMap = SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(context, Constants.TABLE_ID_MAP_CONST_STRING);
-                            tableIdMap.remove(customer.getPerson().getCustomer().getCustomerId());
-                            SharedPreferencesUtils.saveTableIdByCustomerToSharedPrefs(context, Constants.TABLE_ID_MAP_CONST_STRING, tableIdMap);
-                            SharedPreferencesUtils.deleteBooleanFromSharedPrefs(context, Constants.TABLE_EXISTS_ALREADY_STRING);
-                            Toast.makeText(context, context.getString(R.string.payment_success_string), Toast.LENGTH_SHORT).show();
+                            if (response.code() == 200) {
+                                Toast.makeText(context, payment.getMessage(), Toast.LENGTH_SHORT).show();
+                                Map<Long, Long> tableIdMap = SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(context, Constants.TABLE_ID_MAP_CONST_STRING);
+                                tableIdMap.remove(customer.getPerson().getCustomer().getCustomerId());
+                                SharedPreferencesUtils.saveTableIdByCustomerToSharedPrefs(context, Constants.TABLE_ID_MAP_CONST_STRING, tableIdMap);
+                                SharedPreferencesUtils.deleteBooleanFromSharedPrefs(context, Constants.TABLE_EXISTS_ALREADY_STRING);
+                                Toast.makeText(context, context.getString(R.string.payment_success_string), Toast.LENGTH_SHORT).show();
 
-                            Map<Long, List<CartFoodItems>> cartItemsMap = SharedPreferencesUtils.getFoodItemsByCustomerFromSharedPrefs(context, Constants.FOOD_ITEM_MAP_STRING);
-                            List<CartFoodItems> cartItems = cartItemsMap.get(customer.getPerson().getCustomer().getCustomerId());
-                            if (cartItems != null) {
-                                cartItemsMap.remove(customer.getPerson().getCustomer().getCustomerId());
-                                SharedPreferencesUtils.removeCartItems(context, Constants.FOOD_ITEM_MAP_STRING);
-                                SharedPreferencesUtils.saveFoodItemsByCustomerToSharedPrefs(context, Constants.FOOD_ITEM_MAP_STRING, cartItemsMap);
+                                Map<Long, List<CartFoodItems>> cartItemsMap = SharedPreferencesUtils.getFoodItemsByCustomerFromSharedPrefs(context, Constants.FOOD_ITEM_MAP_STRING);
+                                List<CartFoodItems> cartItems = cartItemsMap.get(customer.getPerson().getCustomer().getCustomerId());
+                                if (cartItems != null) {
+                                    cartItemsMap.remove(customer.getPerson().getCustomer().getCustomerId());
+                                    SharedPreferencesUtils.removeCartItems(context, Constants.FOOD_ITEM_MAP_STRING);
+                                    SharedPreferencesUtils.saveFoodItemsByCustomerToSharedPrefs(context, Constants.FOOD_ITEM_MAP_STRING, cartItemsMap);
+                                }
+                                order.setExistingOrder(false);
+                                holder.paidText.setText(context.getString(R.string.paid_string));
+                                holder.paidText.setTextColor(Color.parseColor("#4CAF50"));
+                                holder.paidText.setEnabled(false);
+                                dialog.dismiss();
+                            } else {
+                                Toast.makeText(context, context.getString(R.string.payment_failure_message_string), Toast.LENGTH_SHORT).show();
+                                dialog.dismiss();
                             }
-                            order.setExistingOrder(false);
-                            holder.paidText.setText(context.getString(R.string.paid_string));
-                            holder.paidText.setTextColor(Color.parseColor("#4CAF50"));
-                            holder.paidText.setEnabled(false);
-                            dialog.dismiss();
-                        } else {
-                            Toast.makeText(context, context.getString(R.string.payment_failure_message_string), Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onFailure(Call<GeneralError> call, Throwable t) {
+                            Toast.makeText(context, t.getMessage(), Toast.LENGTH_SHORT).show();
                             dialog.dismiss();
                         }
+                    });
+                }
+            } else if (cardLayout.getVisibility() == View.VISIBLE) {
+                if (cardNumber.getText().toString().isEmpty() || expiryDate.getText().toString().isEmpty() || cvv.getText().toString().isEmpty()) {
+                    if (cardNumber.getText().toString().isEmpty()) {
+                        cardNumber.setError(context.getString(R.string.invalid_card_number_error_string));
+                    } else if (expiryDate.getText().toString().isEmpty()) {
+                        expiryDate.setError(context.getString(R.string.invalid_date_error_string));
+                    } else if (cvv.getText().toString().isEmpty()) {
+                        cvv.setError(context.getString(R.string.invalid_cvv_error_string));
                     }
+                } else {
+                    ApiService api = RetrofitClient.getApiService();
+                    Call<GeneralError> call = api.getPaymentConfirmation(orderId);
 
-                    @Override
-                    public void onFailure(Call<GeneralError> call, Throwable t) {
-                        Toast.makeText(context, t.getMessage(), Toast.LENGTH_SHORT).show();
-                        dialog.dismiss();
-                    }
-                });
+                    call.enqueue(new Callback<GeneralError>() {
+                        @Override
+                        public void onResponse(Call<GeneralError> call, Response<GeneralError> response) {
+                            GeneralError payment = response.body();
+
+                            if (response.code() == 200) {
+                                Toast.makeText(context, payment.getMessage(), Toast.LENGTH_SHORT).show();
+                                Map<Long, Long> tableIdMap = SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(context, Constants.TABLE_ID_MAP_CONST_STRING);
+                                tableIdMap.remove(customer.getPerson().getCustomer().getCustomerId());
+                                SharedPreferencesUtils.saveTableIdByCustomerToSharedPrefs(context, Constants.TABLE_ID_MAP_CONST_STRING, tableIdMap);
+                                SharedPreferencesUtils.deleteBooleanFromSharedPrefs(context, Constants.TABLE_EXISTS_ALREADY_STRING);
+                                Toast.makeText(context, context.getString(R.string.payment_success_string), Toast.LENGTH_SHORT).show();
+
+                                Map<Long, List<CartFoodItems>> cartItemsMap = SharedPreferencesUtils.getFoodItemsByCustomerFromSharedPrefs(context, Constants.FOOD_ITEM_MAP_STRING);
+                                List<CartFoodItems> cartItems = cartItemsMap.get(customer.getPerson().getCustomer().getCustomerId());
+                                if (cartItems != null) {
+                                    cartItemsMap.remove(customer.getPerson().getCustomer().getCustomerId());
+                                    SharedPreferencesUtils.removeCartItems(context, Constants.FOOD_ITEM_MAP_STRING);
+                                    SharedPreferencesUtils.saveFoodItemsByCustomerToSharedPrefs(context, Constants.FOOD_ITEM_MAP_STRING, cartItemsMap);
+                                }
+                                order.setExistingOrder(false);
+                                holder.paidText.setText(context.getString(R.string.paid_string));
+                                holder.paidText.setTextColor(Color.parseColor("#4CAF50"));
+                                holder.paidText.setEnabled(false);
+                                dialog.dismiss();
+                            } else {
+                                Toast.makeText(context, context.getString(R.string.payment_failure_message_string), Toast.LENGTH_SHORT).show();
+                                dialog.dismiss();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<GeneralError> call, Throwable t) {
+                            Toast.makeText(context, t.getMessage(), Toast.LENGTH_SHORT).show();
+                            dialog.dismiss();
+                        }
+                    });
+                }
             }
         });
     }

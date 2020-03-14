@@ -32,6 +32,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.hexamind.uniquorestaurant.CoverActivity;
 import com.hexamind.uniquorestaurant.Data.BookTableSuccess;
 import com.hexamind.uniquorestaurant.Data.CheckAvailabilitySuccess;
+import com.hexamind.uniquorestaurant.Data.ChefOrders;
 import com.hexamind.uniquorestaurant.Data.CustomerSuccess;
 import com.hexamind.uniquorestaurant.Data.GeneralError;
 import com.hexamind.uniquorestaurant.Data.OrderSuccess;
@@ -76,8 +77,6 @@ public class CustomerHomeActivity extends AppCompatActivity {
         menuItems.add(R.id.menu_menu_card);
         menuItems.add(R.id.menu_past_orders);
         menuItems.add(R.id.menu_my_cart);
-        menuItems.add(R.id.menu_notifications);
-        menuItems.add(R.id.menu_profile);
 
         appbarConfig = new AppBarConfiguration.Builder(menuItems)
                 .setDrawerLayout(drawerLayout)
@@ -97,16 +96,6 @@ public class CustomerHomeActivity extends AppCompatActivity {
 
         customer = SharedPreferencesUtils.getCustomerFromSharedPrefs(this, Constants.CUSTOMER_OBJ_NAME);
         person = customer.getPerson();
-        /*if (SharedPreferencesUtils.getLongFromSharedPrefs(this, Constants.TABLE_ID_CONST_STRING) != 12
-                && SharedPreferencesUtils.getLongFromSharedPrefs(this, Constants.TABLE_ID_CONST_STRING) != 0) {
-            if (!SharedPreferencesUtils.getBooleanFromSharedPrefs(this, Constants.TABLE_EXISTS_ALREADY_STRING)) {
-                //viewBookingDialog();
-            }
-        } else {
-            viewBookingDialog();
-            //SharedPreferencesUtils.saveLongToSharedPrefs(this, Constants.TABLE_ID_CONST_STRING, 12L);
-            //SharedPreferencesUtils.saveBooleanToSharedPrefs(this, Constants.TABLE_EXISTS_ALREADY_STRING, false);
-        }*/
 
         View headView = navView.getHeaderView(0);
         TextView name = headView.findViewById(R.id.name);
@@ -223,36 +212,45 @@ public class CustomerHomeActivity extends AppCompatActivity {
                             public void onResponse(Call<CheckAvailabilitySuccess> call, Response<CheckAvailabilitySuccess> response) {
                                 CheckAvailabilitySuccess checkAvailability = response.body();
 
-                                if (countDownTimer != null)
-                                    countDownTimer.cancel();
-                                progress.setVisibility(View.GONE);
-                                tableAvailable.setVisibility(View.VISIBLE);
-                                timer.setVisibility(View.VISIBLE);
-                                tableId = checkAvailability.getTableNumber();
-                                System.out.println("\n\n\n\n\nTable ID: " + tableId);
-                                if (checkAvailability.getWaitingTimeInMinutes() == 0) {
-                                    tableAvailable.setText(getResources().getString(R.string.table_available_string, checkAvailability.getTableNumber()));
-                                    timer.setVisibility(View.GONE);
-                                    bookTable.setEnabled(true);
+                                if (response.code() == 200)
+                                {
+                                    if (countDownTimer != null)
+                                        countDownTimer.cancel();
+                                    progress.setVisibility(View.GONE);
+                                    tableAvailable.setVisibility(View.VISIBLE);
+                                    timer.setVisibility(View.VISIBLE);
+                                    tableId = checkAvailability.getTableNumber();
+                                    System.out.println("\n\n\n\n\nTable ID: " + tableId);
+                                    if (checkAvailability.getWaitingTimeInMinutes() == 0) {
+                                        tableAvailable.setText(getResources().getString(R.string.table_available_string, checkAvailability.getTableNumber()));
+                                        timer.setVisibility(View.GONE);
+                                        bookTable.setEnabled(true);
+                                    } else {
+                                        tableAvailable.setText(getResources().getString(R.string.table_available_string, checkAvailability.getTableNumber()));
+
+                                        countDownTimer = new CountDownTimer(getMillis(checkAvailability.getWaitingTimeInMinutes()), 1000) {
+                                            @Override
+                                            public void onTick(long l) {
+                                                timer.setText(getResources().getString(R.string.table_available_waiting_time_string, String.format(Locale.getDefault(),
+                                                        "%d:%d", TimeUnit.MILLISECONDS.toMinutes(l), TimeUnit.MILLISECONDS.toSeconds(l) -
+                                                                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(l)))));
+                                            }
+
+                                            @Override
+                                            public void onFinish() {
+                                                Toast.makeText(CustomerHomeActivity.this, "Table no. " + checkAvailability.getTableNumber() + " is now available!!!", Toast.LENGTH_SHORT).show();
+                                                bookTable.setEnabled(true);
+                                            }
+                                        }.start();
+
+                                        bookTable.setEnabled(false);
+                                    }
+                                } else if (response.code() == 400 || response.code() == 401 || response.code() == 404) {
+                                    Toast.makeText(CustomerHomeActivity.this, getString(R.string.four_error_message_string), Toast.LENGTH_SHORT).show();
+                                } else if(response.code() == 500 || response.code() == 501 || response.code() == 502) {
+                                    Toast.makeText(CustomerHomeActivity.this, getString(R.string.five_error_message_string), Toast.LENGTH_SHORT).show();
                                 } else {
-                                    tableAvailable.setText(getResources().getString(R.string.table_available_string, checkAvailability.getTableNumber()));
-
-                                    countDownTimer = new CountDownTimer(getMillis(checkAvailability.getWaitingTimeInMinutes()), 1000) {
-                                        @Override
-                                        public void onTick(long l) {
-                                            timer.setText(getResources().getString(R.string.table_available_waiting_time_string, String.format(Locale.getDefault(),
-                                                    "%d:%d", TimeUnit.MILLISECONDS.toMinutes(l), TimeUnit.MILLISECONDS.toSeconds(l) -
-                                                            TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(l)))));
-                                        }
-
-                                        @Override
-                                        public void onFinish() {
-                                            Toast.makeText(CustomerHomeActivity.this, "Table no. " + checkAvailability.getTableNumber() + " is now available!!!", Toast.LENGTH_SHORT).show();
-                                            bookTable.setEnabled(true);
-                                        }
-                                    }.start();
-
-                                    bookTable.setEnabled(false);
+                                    Toast.makeText(CustomerHomeActivity.this, getString(R.string.general_error_message_string), Toast.LENGTH_SHORT).show();
                                 }
                             }
 
@@ -282,7 +280,6 @@ public class CustomerHomeActivity extends AppCompatActivity {
 
                     if (response.code() == 200) {
                         SharedPreferencesUtils.saveBooleanToSharedPrefs(CustomerHomeActivity.this, Constants.IS_TABLE_BOOKED, true);
-                        //SharedPreferencesUtils.saveLongToSharedPrefs(CustomerHomeActivity.this, Constants.TABLE_ID_CONST_STRING, tableId);
                         Map<Long, Long> tableIdMap = new HashMap<>();
                         if (SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(CustomerHomeActivity.this, Constants.TABLE_ID_MAP_CONST_STRING) != null) {
                             tableIdMap = SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(CustomerHomeActivity.this, Constants.TABLE_ID_MAP_CONST_STRING);
@@ -316,47 +313,6 @@ public class CustomerHomeActivity extends AppCompatActivity {
     @Override
     public boolean onSupportNavigateUp() {
         return NavigationUI.navigateUp(navController, appbarConfig) || super.onSupportNavigateUp();
-    }
-
-    private boolean getCustomerTableAlreadyExists() {
-        ApiService api = RetrofitClient.getApiService();
-        Call<OrderSuccess> callTableExists = api.getCustomerTableExists(customer.getPerson().getCustomer().getCustomerId());
-        callTableExists.enqueue(new Callback<OrderSuccess>() {
-            @Override
-            public void onResponse(Call<OrderSuccess> call, Response<OrderSuccess> response) {
-                OrderSuccess order = response.body();
-
-                if (response.code() == 200) {
-                    Long id = order.getId();
-
-                    if (id != 12)
-                        tableExistsAlready = true;
-                    else {
-                        if (order.getTable() != null && order.isOrderPrepared())
-                            tableExistsAlready = false;
-                        else
-                            tableExistsAlready = true;
-                    }
-
-                    SharedPreferencesUtils.saveBooleanToSharedPrefs(CustomerHomeActivity.this, Constants.TABLE_EXISTS_ALREADY_STRING, tableExistsAlready);
-                } else {
-                    Toast.makeText(CustomerHomeActivity.this, getString(R.string.customer_table_exist_error_message_string), Toast.LENGTH_SHORT).show();
-                    tableExistsAlready = false;
-
-                    SharedPreferencesUtils.saveBooleanToSharedPrefs(CustomerHomeActivity.this, Constants.TABLE_EXISTS_ALREADY_STRING, tableExistsAlready);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<OrderSuccess> call, Throwable t) {
-                Toast.makeText(CustomerHomeActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
-                tableExistsAlready = false;
-
-                SharedPreferencesUtils.saveBooleanToSharedPrefs(CustomerHomeActivity.this, Constants.TABLE_EXISTS_ALREADY_STRING, tableExistsAlready);
-            }
-        });
-
-        return tableExistsAlready;
     }
 
     @Override

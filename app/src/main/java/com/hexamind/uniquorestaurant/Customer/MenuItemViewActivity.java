@@ -24,6 +24,7 @@ import com.google.gson.Gson;
 import com.hexamind.uniquorestaurant.Data.BookTableSuccess;
 import com.hexamind.uniquorestaurant.Data.CartFoodItems;
 import com.hexamind.uniquorestaurant.Data.CheckAvailabilitySuccess;
+import com.hexamind.uniquorestaurant.Data.ChefOrders;
 import com.hexamind.uniquorestaurant.Data.CustomerSuccess;
 import com.hexamind.uniquorestaurant.Data.FoodItems;
 import com.hexamind.uniquorestaurant.Data.GeneralError;
@@ -66,6 +67,7 @@ public class MenuItemViewActivity extends AppCompatActivity {
     private Boolean isTableOccupied = false;
     private boolean paymentRemaining = false;
     private DecimalFormat dfDoubleInt = new DecimalFormat("#");
+    private static boolean tableExistsAlready = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,19 +124,21 @@ public class MenuItemViewActivity extends AppCompatActivity {
         if (SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(this, Constants.TABLE_ID_MAP_CONST_STRING) != null) {
             if (SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(this, Constants.TABLE_ID_MAP_CONST_STRING).get(customer.getPerson().getCustomer().getCustomerId()) != null) {
                 tableId = SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(this, Constants.TABLE_ID_MAP_CONST_STRING).get(customer.getPerson().getCustomer().getCustomerId());
-                if (tableId != 12
-                        && tableId != 0) {
-                    if (SharedPreferencesUtils.getBooleanFromSharedPrefs(this, Constants.TABLE_EXISTS_ALREADY_STRING))
+                if (tableId != 12 && tableId != 0) {
+                    if (getCustomerTableAlreadyExists())
                         paymentRemaining = true;
                     else
                         paymentRemaining = false;
                 } else {
+                    paymentRemaining = false;
                     isTableOccupied = true;
                 }
             } else {
+                paymentRemaining = false;
                 isTableOccupied = true;
             }
         } else {
+            paymentRemaining = false;
             isTableOccupied = true;
         }
 
@@ -142,9 +146,8 @@ public class MenuItemViewActivity extends AppCompatActivity {
             if (SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(this, Constants.TABLE_ID_MAP_CONST_STRING) != null) {
                 if (SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(this, Constants.TABLE_ID_MAP_CONST_STRING).get(customer.getPerson().getCustomer().getCustomerId()) != null) {
                     tableId = SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(this, Constants.TABLE_ID_MAP_CONST_STRING).get(customer.getPerson().getCustomer().getCustomerId());
-                    if (tableId != 12
-                            && tableId != 0) {
-                        if (!paymentRemaining) {
+                    if (tableId != 12 && tableId != 0) {
+                        if (paymentRemaining) {
                             list = new ArrayList<>();
                             if (SharedPreferencesUtils.getFoodItemsByCustomerFromSharedPrefs(MenuItemViewActivity.this, FOOD_ITEM_MAP_STRING) != null) {
                                 if (SharedPreferencesUtils.getFoodItemsByCustomerFromSharedPrefs(MenuItemViewActivity.this, FOOD_ITEM_MAP_STRING).get(customer.getPerson().getCustomer().getCustomerId()) != null)
@@ -374,5 +377,33 @@ public class MenuItemViewActivity extends AppCompatActivity {
     public void onBackPressed() {
         startActivity(new Intent(MenuItemViewActivity.this, CustomerHomeActivity.class));
         finish();
+    }
+
+    private boolean getCustomerTableAlreadyExists() {
+        ApiService api = RetrofitClient.getApiService();
+        Call<ChefOrders> callTableExists = api.getCustomerTableExists(customer.getPerson().getCustomer().getCustomerId());
+        callTableExists.enqueue(new Callback<ChefOrders>() {
+            @Override
+            public void onResponse(Call<ChefOrders> call, Response<ChefOrders> response) {
+                ChefOrders order = response.body();
+
+                if (response.code() == 200) {
+                    tableExistsAlready = order.getExistingOrder();
+                } else {
+                    Toast.makeText(MenuItemViewActivity.this, getString(R.string.customer_table_exist_error_message_string), Toast.LENGTH_SHORT).show();
+                    tableExistsAlready = false;
+
+                    SharedPreferencesUtils.saveBooleanToSharedPrefs(MenuItemViewActivity.this, Constants.TABLE_EXISTS_ALREADY_STRING, tableExistsAlready);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ChefOrders> call, Throwable t) {
+                Toast.makeText(MenuItemViewActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                tableExistsAlready = false;
+            }
+        });
+
+        return tableExistsAlready;
     }
 }

@@ -53,7 +53,7 @@ public interface ApiService {
     Call<OrderSuccess> createOrder(@Body Order order);
 
     @GET("order/customer/{customerId}")
-    Call<OrderSuccess> getCustomerTableExists(@Path("customerId") Long customerId);
+    Call<ChefOrders> getCustomerTableExists(@Path("customerId") Long customerId);
 
     @PUT("customer/payment/{orderId}")
     Call<GeneralError> getPaymentConfirmation(@Path("orderId") Long orderId);

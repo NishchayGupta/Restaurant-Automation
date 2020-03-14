@@ -35,6 +35,23 @@ public class SharedPreferencesUtils {
         return getSharedPreference(context).getBoolean(name, false);
     }
 
+    public static void saveBooleanMapToSharedPrefs(Context context, String objectName, Map<Long, Boolean> boolMap) {
+        SharedPreferences.Editor editor = getSharedPreference(context).edit();
+        Gson gson = new Gson();
+        String object = gson.toJson(boolMap);
+        editor.putString(objectName, object);
+        editor.apply();
+    }
+
+    public static HashMap<Long, Boolean> getBooleanMapFromSharedPrefs(Context context, String objectName) {
+        Gson gson = new Gson();
+        Type type = new TypeToken<Map<Long, Boolean>>(){}.getType();
+
+        String object = getSharedPreference(context).getString(objectName, "");
+
+        return gson.fromJson(object, type);
+    }
+
     public static void saveLongToSharedPrefs(Context context, String name, Long value) {
         SharedPreferences.Editor editor = getSharedPreference(context).edit();
         editor.putLong(name, value);

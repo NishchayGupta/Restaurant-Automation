@@ -115,6 +115,7 @@ public class UpdateItemFragment extends Fragment {
                         GeneralError success = response.body();
 
                         Toast.makeText(root.getContext(), success.getMessage(), Toast.LENGTH_SHORT).show();
+                        Navigation.findNavController(getActivity(), R.id.managerNavHostFragment).navigate(R.id.action_updateItemFragment_to_menu_edit_item);
                     }
 
                     @Override

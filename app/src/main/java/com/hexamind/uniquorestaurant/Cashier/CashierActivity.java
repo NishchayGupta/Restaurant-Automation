@@ -53,14 +53,14 @@ public class CashierActivity extends AppCompatActivity {
                 orderList = response.body();
 
                 if (orderList != null) {
-                    noOrders.setVisibility(View.VISIBLE);
+                    noOrders.setVisibility(View.GONE);
                     recyclerView = findViewById(R.id.recyclerView);
                     recyclerView.setLayoutManager(new LinearLayoutManager(CashierActivity.this));
                     recyclerView.setItemAnimator(new DefaultItemAnimator());
                     adapter = new CashierPaymentAdapter(orderList, CashierActivity.this);
                     recyclerView.setAdapter(adapter);
                 } else {
-                    noOrders.setVisibility(View.GONE);
+                    noOrders.setVisibility(View.VISIBLE);
                 }
             }
 
@@ -75,5 +75,10 @@ public class CashierActivity extends AppCompatActivity {
             startActivity(new Intent(this, CoverActivity.class));
             Toast.makeText(this, getString(R.string.logout_success_message_string), Toast.LENGTH_SHORT).show();
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        Toast.makeText(this, getString(R.string.back_press_diable_issue), Toast.LENGTH_SHORT).show();
     }
 }

@@ -85,7 +85,11 @@ public class CashierPaymentAdapter extends RecyclerView.Adapter<CashierPaymentAd
             holder.itemOrderList.append(items.getFoodItem().getFoodItemName() + " x " + items.getQuantity() + "\n");
         }
         holder.totalAmount.setText(context.getString(R.string.default_price_string, String.valueOf(orders.getTotalCost())));
-        holder.tableNumber.setText(context.getString(R.string.default_table_string, String.valueOf(orders.getTable().getId())));
+        if (orders.getTable().getId() == 11)
+            holder.tableNumber.setText(context.getString(R.string.take_out_string));
+        else
+            holder.tableNumber.setText(context.getString(R.string.default_table_string, String.valueOf(orders.getTable().getId())));
+        holder.paymentType.setText(context.getString(R.string.not_paid_string));
         holder.viewReceipt.setOnClickListener(view -> {
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
             builder.setCancelable(false);
@@ -111,9 +115,9 @@ public class CashierPaymentAdapter extends RecyclerView.Adapter<CashierPaymentAd
             for (CartFoodItems itemsOrdered : orders.getFoodItemOrder()) {
                 items.append(itemsOrdered.getFoodItem().getFoodItemName() + " x " + itemsOrdered.getQuantity() + "\n");
             }
-            subTotal.setText(df.format(orders.getTotalCost()));
-            taxes.setText((df.format(orders.getTotalCost() * 1.15)));
-            total.setText((df.format(orders.getTotalCost() + (orders.getTotalCost() * 1.15))));
+            subTotal.setText(context.getString(R.string.default_price_string, df.format(orders.getTotalCost())));
+            total.setText(context.getString(R.string.default_price_string, df.format((orders.getTotalCost() * 1.15))));
+            taxes.setText(context.getString(R.string.default_price_string, df.format(((orders.getTotalCost() * 1.15) - orders.getTotalCost()))));
             close.setOnClickListener(view1 -> {
                 dialog.dismiss();
             });

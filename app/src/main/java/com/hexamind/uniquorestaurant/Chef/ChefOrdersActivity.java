@@ -84,8 +84,6 @@ public class ChefOrdersActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        startActivity(new Intent(ChefOrdersActivity.this, LoginActivity.class));
-        Toast.makeText(this, getString(R.string.logout_success_message_string), Toast.LENGTH_SHORT).show();
-        finish();
+        Toast.makeText(this, getString(R.string.back_press_diable_issue), Toast.LENGTH_SHORT).show();
     }
 }

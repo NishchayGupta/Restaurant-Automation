@@ -23,17 +23,10 @@
         <action
             android:id="@+id/action_menu_my_cart_to_menu_menu_card_repeat"
             app:destination="@id/menu_menu_card_repeat" />
+        <action
+            android:id="@+id/action_menu_my_cart_to_menu_past_orders"
+            app:destination="@id/menu_past_orders" />
     </fragment>
-    <fragment
-        android:id="@id/menu_notifications"
-        android:name="com.hexamind.uniquorestaurant.Customer.NotificationsFragment"
-        android:label="@string/menu_item_notifications_string"
-        tools:layout="@layout/fragment_notifications" />
-    <fragment
-        android:id="@id/menu_profile"
-        android:name="com.hexamind.uniquorestaurant.Customer.ProfileFragment"
-        android:label="@string/menu_item_profile_string"
-        tools:layout="@layout/fragment_profile" />
 
     <fragment
         android:id="@+id/menu_menu_card_repeat"

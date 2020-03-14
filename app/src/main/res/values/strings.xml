@@ -127,7 +127,7 @@
     <string name="order_successful_message_string">The order was successfully placed</string>
     <string name="order_error_message_string">There was an issue in creating the order at this moment. Please try again later.</string>
     <string name="checking_table_availability_message_string">Checking table availability</string>
-    <string name="customer_table_exist_error_message_string">The check for the table existance for a customer can\'t be executed now. Please try again later...</string>
+    <string name="customer_table_exist_error_message_string">Order doesn\'t exist</string>
     <string name="payment_failure_message_string">There was an issue in proceeding with the payment. Please try again later</string>
     <string name="no_items_added_cart_string">No Items added</string>
     <string name="email_exists_message_string">Email already exists</string>
@@ -153,7 +153,7 @@
     <string name="back_press_diable_issue">Please logout if you want to exit the app</string>
     <string name="receive_payment_string">Receive payment</string>
     <string name="payment_received_message_string">The intended payment for the order has been collected.</string>
-    <string name="table_take_out_success_message_string">Table reserved for takeout</string>
+    <string name="table_take_out_success_message_string">Please place an order for takeout</string>
     <string name="select_table_message_string">Select a table first before proceeding</string>
     <string name="order_ready_fail_message_string">There was some problem making the order ready. Please try again later</string>
     <string name="no_orders_message_string">No orders to prepare</string>
@@ -164,4 +164,7 @@
     <string name="close_dialog_string">Close dialog</string>
     <string name="no_past_orders_message_string">No previous orders found</string>
     <string name="mo_orders_received_cashier_string">No orders exist</string>
+    <string name="invalid_cvv_error_string">Invalid cvv entered</string>
+    <string name="invalid_date_error_string">Invalid date entered</string>
+    <string name="invalid_card_number_error_string">Invalid card number entered</string>
 </resources>

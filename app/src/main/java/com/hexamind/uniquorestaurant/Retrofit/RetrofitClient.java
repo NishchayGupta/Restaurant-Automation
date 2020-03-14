@@ -4,7 +4,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitClient {
-    private static final String BASE_URL = "http://192.168.1.130:8080/uniquo/";
+    private static final String BASE_URL = "http://192.168.0.105:8080/uniquo/";
 
     private static Retrofit getInstance() {
         return new Retrofit.Builder()
