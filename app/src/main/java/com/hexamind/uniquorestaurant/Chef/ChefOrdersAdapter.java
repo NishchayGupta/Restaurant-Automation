@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,6 +52,7 @@ public class ChefOrdersAdapter extends RecyclerView.Adapter<ChefOrdersAdapter.Ch
         AppCompatButton orderReady;
         LinearLayout layout;
         View view;
+        RelativeLayout main;
 
         public ChefOrdersViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -61,6 +63,7 @@ public class ChefOrdersAdapter extends RecyclerView.Adapter<ChefOrdersAdapter.Ch
             itemOrderList =  itemView.findViewById(R.id.itemsOrderList);
             expand =  itemView.findViewById(R.id.expand);
             orderReady =  itemView.findViewById(R.id.orderReady);
+            main = itemView.findViewById(R.id.main);
         }
     }
 
@@ -80,7 +83,7 @@ public class ChefOrdersAdapter extends RecyclerView.Adapter<ChefOrdersAdapter.Ch
             holder.tableNumber.setText(context.getString(R.string.take_out_string) + " " + takoutNumber);
         } else
             holder.tableNumber.setText(context.getString(R.string.default_table_string, String.valueOf(order.getTable().getId())));
-        holder.expand.setOnClickListener(view -> {
+        holder.main.setOnClickListener(view -> {
             if (!cardExpanded) {
                 openCard(holder.layout);
                 holder.view.setVisibility(View.VISIBLE);
@@ -105,6 +108,7 @@ public class ChefOrdersAdapter extends RecyclerView.Adapter<ChefOrdersAdapter.Ch
                         Toast.makeText(context, context.getString(R.string.order_ready_string), Toast.LENGTH_SHORT).show();
                         int newPosition = holder.getAdapterPosition();
                         delete(newPosition);
+                        ((ChefOrdersActivity) context).viewNoOrders();
                     } else {
                         Toast.makeText(context, context.getString(R.string.order_ready_fail_message_string), Toast.LENGTH_SHORT).show();
                     }

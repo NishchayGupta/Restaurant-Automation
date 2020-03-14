@@ -112,6 +112,7 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.MyCartView
                 } else {
                     Toast.makeText(context, context.getString(R.string.customer_table_exist_error_message_string), Toast.LENGTH_SHORT).show();
                     tableExistsAlready = false;
+                    paymentRemaining = false;
 
                     SharedPreferencesUtils.saveBooleanToSharedPrefs(context, Constants.TABLE_EXISTS_ALREADY_STRING, tableExistsAlready);
                 }

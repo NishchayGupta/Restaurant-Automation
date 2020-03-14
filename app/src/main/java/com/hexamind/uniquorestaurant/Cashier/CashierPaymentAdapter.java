@@ -41,7 +41,7 @@ public class CashierPaymentAdapter extends RecyclerView.Adapter<CashierPaymentAd
         TextView tableNumber, itemOrderList, totalAmount, paymentType;
         ImageView expand;
         AppCompatButton viewReceipt;
-        RelativeLayout layout;
+        RelativeLayout layout, main;
         View view;
 
         public CashierPaymentViewHolder(@NonNull View itemView) {
@@ -55,6 +55,7 @@ public class CashierPaymentAdapter extends RecyclerView.Adapter<CashierPaymentAd
             viewReceipt = itemView.findViewById(R.id.viewReceipt);
             layout = itemView.findViewById(R.id.layout);
             view = itemView.findViewById(R.id.view);
+            main = itemView.findViewById(R.id.main);
         }
     }
 
@@ -69,7 +70,7 @@ public class CashierPaymentAdapter extends RecyclerView.Adapter<CashierPaymentAd
     public void onBindViewHolder(@NonNull CashierPaymentViewHolder holder, int position) {
         ChefOrders orders = paymentList.get(position);
 
-        holder.expand.setOnClickListener(view -> {
+        holder.main.setOnClickListener(view -> {
             if (expanded) {
                 holder.layout.setVisibility(View.GONE);
                 holder.view.setVisibility(View.GONE);

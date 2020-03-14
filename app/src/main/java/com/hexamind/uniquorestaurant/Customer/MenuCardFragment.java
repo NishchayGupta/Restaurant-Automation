@@ -41,6 +41,7 @@ public class MenuCardFragment extends Fragment {
     private ProgressBar progress;
     private CustomerSuccess customer;
     private static boolean tableExistsAlready = false;
+    private static Long tableId;
     
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -61,7 +62,7 @@ public class MenuCardFragment extends Fragment {
                     tableExistsAlready = order.getExistingOrder();
                     if (SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(root.getContext(), Constants.TABLE_ID_MAP_CONST_STRING) != null) {
                         if (SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(root.getContext(), Constants.TABLE_ID_MAP_CONST_STRING).get(customer.getPerson().getCustomer().getCustomerId()) != null) {
-                            Long tableId = SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(root.getContext(), Constants.TABLE_ID_MAP_CONST_STRING).get(customer.getPerson().getCustomer().getCustomerId());
+                            tableId = SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(root.getContext(), Constants.TABLE_ID_MAP_CONST_STRING).get(customer.getPerson().getCustomer().getCustomerId());
                             if (tableId != 12 && tableId != 0) {
                                 if (tableExistsAlready == false)
                                     ((CustomerHomeActivity) getActivity()).viewBookingDialog();
@@ -72,8 +73,18 @@ public class MenuCardFragment extends Fragment {
                     } else
                         ((CustomerHomeActivity) getActivity()).viewBookingDialog();
                 } else {
-                    Toast.makeText(root.getContext(), getString(R.string.customer_table_exist_error_message_string), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(root.getContext(), getString(R.string.customer_table_exist_error_message_string), Toast.LENGTH_SHORT).show();
                     tableExistsAlready = false;
+                    if (SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(root.getContext(), Constants.TABLE_ID_MAP_CONST_STRING) != null) {
+                        if (SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(root.getContext(), Constants.TABLE_ID_MAP_CONST_STRING).get(customer.getPerson().getCustomer().getCustomerId()) != null) {
+                            tableId = SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(root.getContext(), Constants.TABLE_ID_MAP_CONST_STRING).get(customer.getPerson().getCustomer().getCustomerId());
+                            if (tableId == 12 || tableId == 0)
+                                //((CustomerHomeActivity) getActivity()).viewBookingDialog();
+                            //else
+                                ((CustomerHomeActivity) getActivity()).viewBookingDialog();
+                        } else
+                            ((CustomerHomeActivity) getActivity()).viewBookingDialog();
+                    } else
                     ((CustomerHomeActivity) getActivity()).viewBookingDialog();
 
                     SharedPreferencesUtils.saveBooleanToSharedPrefs(root.getContext(), Constants.TABLE_EXISTS_ALREADY_STRING, tableExistsAlready);
@@ -131,7 +142,7 @@ public class MenuCardFragment extends Fragment {
                 if (response.code() == 200) {
                     tableExistsAlready = order.getExistingOrder();
                 } else {
-                    Toast.makeText(root.getContext(), getString(R.string.customer_table_exist_error_message_string), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(root.getContext(), getString(R.string.customer_table_exist_error_message_string), Toast.LENGTH_SHORT).show();
                     tableExistsAlready = false;
 
                     SharedPreferencesUtils.saveBooleanToSharedPrefs(root.getContext(), Constants.TABLE_EXISTS_ALREADY_STRING, tableExistsAlready);

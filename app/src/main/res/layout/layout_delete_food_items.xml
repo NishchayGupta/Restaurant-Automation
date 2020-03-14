@@ -22,7 +22,7 @@
             android:id="@+id/foodItemImage"
             android:layout_width="80dp"
             android:layout_height="wrap_content"
-            android:scaleType="centerCrop"
+            android:scaleType="fitXY"
             android:src="@drawable/background_three" />
 
         <TextView

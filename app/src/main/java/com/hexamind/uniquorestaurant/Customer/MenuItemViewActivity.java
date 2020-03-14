@@ -74,19 +74,19 @@ public class MenuItemViewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu_item_view);
 
-        customer = SharedPreferencesUtils.getCustomerFromSharedPrefs(this, CUSTOMER_OBJ_NAME);
+        customer = SharedPreferencesUtils.getCustomerFromSharedPrefs(MenuItemViewActivity.this, CUSTOMER_OBJ_NAME);
         person = customer.getPerson();
-        list = SharedPreferencesUtils.getFoodItemsFromSharedPrefs(this, FOOD_ITEM_STRING);
+        list = SharedPreferencesUtils.getFoodItemsFromSharedPrefs(MenuItemViewActivity.this, FOOD_ITEM_STRING);
         Gson gson = new Gson();
         String object = getIntent().getStringExtra(FOOD_ITEM_STRING);
         foodItem = gson.fromJson(object, FoodItems.class);
-        isTabledBooked = SharedPreferencesUtils.getBooleanFromSharedPrefs(this, IS_TABLE_BOOKED);
+        isTabledBooked = SharedPreferencesUtils.getBooleanFromSharedPrefs(MenuItemViewActivity.this, IS_TABLE_BOOKED);
         back = findViewById(R.id.back);
-        isCustomerTableAlreadyExists = SharedPreferencesUtils.getBooleanFromSharedPrefs(this, Constants.TABLE_EXISTS_ALREADY_STRING);
+        isCustomerTableAlreadyExists = SharedPreferencesUtils.getBooleanFromSharedPrefs(MenuItemViewActivity.this, Constants.TABLE_EXISTS_ALREADY_STRING);
 
-        /*Map<Long, Long> tableIdMap = SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(this,Constants.TABLE_ID_MAP_CONST_STRING);
+        /*Map<Long, Long> tableIdMap = SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(MenuItemViewActivity.this,Constants.TABLE_ID_MAP_CONST_STRING);
         tableIdMap.put(customer.getPerson().getCustomer().getCustomerId(), 2L);
-        SharedPreferencesUtils.saveTableIdByCustomerToSharedPrefs(this, Constants.TABLE_ID_MAP_CONST_STRING, tableIdMap);*/
+        SharedPreferencesUtils.saveTableIdByCustomerToSharedPrefs(MenuItemViewActivity.this, Constants.TABLE_ID_MAP_CONST_STRING, tableIdMap);*/
         addPersons = findViewById(R.id.addPersons);
         removePersons = findViewById(R.id.removePersons);
         addToCart = findViewById(R.id.addToCart);
@@ -97,10 +97,10 @@ public class MenuItemViewActivity extends AppCompatActivity {
 
         title.setText(foodItem.getFoodItemName());
         addPersons.setOnClickListener(view -> {
-            int quantityInt = Integer.parseInt(this.quantity.getText().toString());
+            int quantityInt = Integer.parseInt(MenuItemViewActivity.this.quantity.getText().toString());
 
             quantityInt++;
-            this.quantity.setText(String.valueOf(quantityInt));
+            MenuItemViewActivity.this.quantity.setText(String.valueOf(quantityInt));
             Double totalPrice = quantityInt * foodItem.getFoodItemPrice();
             if (foodItem.getFoodItemPrice() % 1 == 0)
                 price.setText(getString(R.string.default_price_string, String.valueOf(dfDoubleInt.format(totalPrice))));
@@ -121,33 +121,62 @@ public class MenuItemViewActivity extends AppCompatActivity {
             }
         });
 
-        if (SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(this, Constants.TABLE_ID_MAP_CONST_STRING) != null) {
-            if (SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(this, Constants.TABLE_ID_MAP_CONST_STRING).get(customer.getPerson().getCustomer().getCustomerId()) != null) {
-                tableId = SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(this, Constants.TABLE_ID_MAP_CONST_STRING).get(customer.getPerson().getCustomer().getCustomerId());
-                if (tableId != 12 && tableId != 0) {
-                    if (getCustomerTableAlreadyExists())
-                        paymentRemaining = true;
-                    else
+        ApiService api = RetrofitClient.getApiService();
+        Call<ChefOrders> callTableExists = api.getCustomerTableExists(customer.getPerson().getCustomer().getCustomerId());
+        callTableExists.enqueue(new Callback<ChefOrders>() {
+            @Override
+            public void onResponse(Call<ChefOrders> call, Response<ChefOrders> response) {
+                ChefOrders order = response.body();
+
+                if (response.code() == 200) {
+                    tableExistsAlready = order.getExistingOrder();
+                    if (SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(MenuItemViewActivity.this, Constants.TABLE_ID_MAP_CONST_STRING) != null) {
+                        if (SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(MenuItemViewActivity.this, Constants.TABLE_ID_MAP_CONST_STRING).get(customer.getPerson().getCustomer().getCustomerId()) != null) {
+                            tableId = SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(MenuItemViewActivity.this, Constants.TABLE_ID_MAP_CONST_STRING).get(customer.getPerson().getCustomer().getCustomerId());
+                            if (tableId != 12 && tableId != 0) {
+                                if (tableExistsAlready) {
+                                    paymentRemaining = true;
+                                    isTableOccupied = true;
+                                } else {
+                                    paymentRemaining = false;
+                                    isTableOccupied = false;
+                                }
+                            } else {
+                                paymentRemaining = false;
+                                isTableOccupied = false;
+                            }
+                        } else {
+                            paymentRemaining = false;
+                            isTableOccupied = false;
+                        }
+                    } else {
                         paymentRemaining = false;
+                        isTableOccupied = false;
+                    }
                 } else {
+                    Toast.makeText(MenuItemViewActivity.this, getString(R.string.customer_table_exist_error_message_string), Toast.LENGTH_SHORT).show();
+                    tableExistsAlready = false;
                     paymentRemaining = false;
-                    isTableOccupied = true;
                 }
-            } else {
-                paymentRemaining = false;
-                isTableOccupied = true;
             }
-        } else {
-            paymentRemaining = false;
-            isTableOccupied = true;
-        }
+
+            @Override
+            public void onFailure(Call<ChefOrders> call, Throwable t) {
+                Toast.makeText(MenuItemViewActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                tableExistsAlready = false;
+                if (tableId != 12 && tableId != 0)
+                    isTableOccupied = true;
+                else
+                    isTableOccupied = false;
+            }
+        });
 
         addToCart.setOnClickListener(view -> {
-            if (SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(this, Constants.TABLE_ID_MAP_CONST_STRING) != null) {
-                if (SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(this, Constants.TABLE_ID_MAP_CONST_STRING).get(customer.getPerson().getCustomer().getCustomerId()) != null) {
-                    tableId = SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(this, Constants.TABLE_ID_MAP_CONST_STRING).get(customer.getPerson().getCustomer().getCustomerId());
+            if (SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(MenuItemViewActivity.this, Constants.TABLE_ID_MAP_CONST_STRING) != null) {
+                if (SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(MenuItemViewActivity.this, Constants.TABLE_ID_MAP_CONST_STRING).get(customer.getPerson().getCustomer().getCustomerId()) != null) {
+                    tableId = SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(MenuItemViewActivity.this, Constants.TABLE_ID_MAP_CONST_STRING).get(customer.getPerson().getCustomer().getCustomerId());
                     if (tableId != 12 && tableId != 0) {
-                        if (paymentRemaining) {
+                        if (paymentRemaining == false) {
                             list = new ArrayList<>();
                             if (SharedPreferencesUtils.getFoodItemsByCustomerFromSharedPrefs(MenuItemViewActivity.this, FOOD_ITEM_MAP_STRING) != null) {
                                 if (SharedPreferencesUtils.getFoodItemsByCustomerFromSharedPrefs(MenuItemViewActivity.this, FOOD_ITEM_MAP_STRING).get(customer.getPerson().getCustomer().getCustomerId()) != null)
@@ -178,18 +207,18 @@ public class MenuItemViewActivity extends AppCompatActivity {
                             //SharedPreferencesUtils.saveFoodItemsToSharedPrefs(MenuItemViewActivity.this, FOOD_ITEM_STRING, list);
                             Map<Long, List<CartFoodItems>> foodItemsInCart = new HashMap<>();
                             foodItemsInCart.put(customer.getPerson().getCustomer().getCustomerId(), list);
-                            SharedPreferencesUtils.saveFoodItemsByCustomerToSharedPrefs(this, Constants.FOOD_ITEM_MAP_STRING, foodItemsInCart);
-                            Toast.makeText(this, getString(R.string.item_add_success), Toast.LENGTH_SHORT).show();
+                            SharedPreferencesUtils.saveFoodItemsByCustomerToSharedPrefs(MenuItemViewActivity.this, Constants.FOOD_ITEM_MAP_STRING, foodItemsInCart);
+                            Toast.makeText(MenuItemViewActivity.this, getString(R.string.item_add_success), Toast.LENGTH_SHORT).show();
                             startActivity(new Intent(MenuItemViewActivity.this, CustomerHomeActivity.class));
                             finish();
                         } else {
-                            Toast.makeText(this, getString(R.string.payment_first_string), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MenuItemViewActivity.this, getString(R.string.payment_first_string), Toast.LENGTH_SHORT).show();
                         }
-                    } else if (isTableOccupied)
+                    } else if (!isTableOccupied)
                         viewBookingDialog();
-                } else if (isTableOccupied)
+                } else if (!isTableOccupied)
                     viewBookingDialog();
-            } else if (isTableOccupied)
+            } else if (!isTableOccupied)
                 viewBookingDialog();
         });
         back.setOnClickListener(view -> {
@@ -204,9 +233,9 @@ public class MenuItemViewActivity extends AppCompatActivity {
     }
 
     private void viewBookingDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(MenuItemViewActivity.this);
         builder.setCancelable(false);
-        LayoutInflater inflater = this.getLayoutInflater();
+        LayoutInflater inflater = MenuItemViewActivity.this.getLayoutInflater();
         View tableBooking = inflater.inflate(R.layout.layout_table_booking, null);
         builder.setView(tableBooking);
 
@@ -230,20 +259,20 @@ public class MenuItemViewActivity extends AppCompatActivity {
         AppCompatButton reserveTakeout = tableBooking.findViewById(R.id.reserveTakeout);
 
         dineIn.setOnClickListener(view -> {
-            dineIn.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.drawable_table_booking_selected));
-            takeOut.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.drawable_table_booking_unselected));
-            dineIn.setTextColor(ContextCompat.getColor(this, android.R.color.white));
-            takeOut.setTextColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
+            dineIn.setBackgroundDrawable(ContextCompat.getDrawable(MenuItemViewActivity.this, R.drawable.drawable_table_booking_selected));
+            takeOut.setBackgroundDrawable(ContextCompat.getDrawable(MenuItemViewActivity.this, R.drawable.drawable_table_booking_unselected));
+            dineIn.setTextColor(ContextCompat.getColor(MenuItemViewActivity.this, android.R.color.white));
+            takeOut.setTextColor(ContextCompat.getColor(MenuItemViewActivity.this, R.color.colorPrimaryDark));
             dineInLayout.setVisibility(View.VISIBLE);
             takeOutLayout.setVisibility(View.GONE);
             takeOutLayout.animate().alpha(0.0f);
             dineInLayout.animate().alpha(1.0f);
         });
         takeOut.setOnClickListener(view -> {
-            dineIn.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.drawable_table_booking_unselected));
-            takeOut.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.drawable_table_booking_selected));
-            dineIn.setTextColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
-            takeOut.setTextColor(ContextCompat.getColor(this, android.R.color.white));
+            dineIn.setBackgroundDrawable(ContextCompat.getDrawable(MenuItemViewActivity.this, R.drawable.drawable_table_booking_unselected));
+            takeOut.setBackgroundDrawable(ContextCompat.getDrawable(MenuItemViewActivity.this, R.drawable.drawable_table_booking_selected));
+            dineIn.setTextColor(ContextCompat.getColor(MenuItemViewActivity.this, R.color.colorPrimaryDark));
+            takeOut.setTextColor(ContextCompat.getColor(MenuItemViewActivity.this, android.R.color.white));
             dineInLayout.setVisibility(View.GONE);
             takeOutLayout.setVisibility(View.VISIBLE);
             dineInLayout.animate().alpha(0.0f);
@@ -265,7 +294,7 @@ public class MenuItemViewActivity extends AppCompatActivity {
         });
         close.setOnClickListener(view -> dialog.dismiss());
         bookTable.setOnClickListener(view -> {
-            Toast.makeText(this, "The table has successfully been booked", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MenuItemViewActivity.this, "The table has successfully been booked", Toast.LENGTH_SHORT).show();
             dialog.dismiss();
         });
         reserveTakeout.setOnClickListener(view -> dialog.dismiss());

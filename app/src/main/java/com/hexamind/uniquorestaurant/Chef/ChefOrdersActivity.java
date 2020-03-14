@@ -86,4 +86,8 @@ public class ChefOrdersActivity extends AppCompatActivity {
     public void onBackPressed() {
         Toast.makeText(this, getString(R.string.back_press_diable_issue), Toast.LENGTH_SHORT).show();
     }
+
+    public void viewNoOrders() {
+        noOrders.setVisibility(View.VISIBLE);
+    }
 }
