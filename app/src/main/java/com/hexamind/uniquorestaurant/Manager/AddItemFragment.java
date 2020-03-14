@@ -121,7 +121,7 @@ public class AddItemFragment extends Fragment {
                 Uri downloadUri = task.getResult();
                 mainPath = downloadUri.toString();
             } else {
-                Toast.makeText(root.getContext(), "upload failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(root.getContext(), "upload failed:" + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
