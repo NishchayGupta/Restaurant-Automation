@@ -194,6 +194,7 @@ public class MyCartFragment extends Fragment implements OnTotalComputedListener 
         });
 
         addOrder.setOnClickListener(view -> {
+            addOrder.setEnabled(false);
             if (SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(root.getContext(), Constants.TABLE_ID_MAP_CONST_STRING) != null) {
                 if (SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(root.getContext(), Constants.TABLE_ID_MAP_CONST_STRING).get(customerID) != null) {
                     Long tableId = SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(root.getContext(), Constants.TABLE_ID_MAP_CONST_STRING).get(customerID);
@@ -224,6 +225,7 @@ public class MyCartFragment extends Fragment implements OnTotalComputedListener 
                                     public void onResponse(Call<OrderSuccess> call, Response<OrderSuccess> response) {
                                         OrderSuccess orderSuccess = response.body();
 
+                                        addOrder.setEnabled(true);
                                         if (response.code() == 200) {
                                             //SharedPreferencesUtils.saveBooleanToSharedPrefs(root.getContext(), Constants.TABLE_EXISTS_ALREADY_STRING, true);
                                             Toast.makeText(root.getContext(), getString(R.string.order_successful_message_string), Toast.LENGTH_SHORT).show();
@@ -232,6 +234,9 @@ public class MyCartFragment extends Fragment implements OnTotalComputedListener 
                                             adapter.notifyDataSetChanged();
                                             noItems.setVisibility(View.VISIBLE);
                                             foodPrice.setText(getString(R.string.default_cart_price_string));
+                                            totalTxt.setText(getString(R.string.default_cart_price_string));
+                                            totalTax.setText(getString(R.string.default_cart_price_string));
+                                            totalCost.setText(getString(R.string.default_cart_price_string));
                                             SharedPreferencesUtils.removeCartItems(root.getContext(), Constants.FOOD_ITEM_MAP_STRING);
                                             SharedPreferencesUtils.saveFoodItemsByCustomerToSharedPrefs(root.getContext(), Constants.FOOD_ITEM_MAP_STRING, cartItemsMap);
                                             viewBookingDialog(orderSuccess.getId(), tableId);
@@ -242,6 +247,7 @@ public class MyCartFragment extends Fragment implements OnTotalComputedListener 
 
                                     @Override
                                     public void onFailure(Call<OrderSuccess> call, Throwable t) {
+                                        addOrder.setEnabled(true);
                                         new AlertDialog.Builder(root.getContext())
                                                 .setMessage(getString(R.string.order_error_message_string) + "\n" +
                                                         t.getMessage())
@@ -250,6 +256,7 @@ public class MyCartFragment extends Fragment implements OnTotalComputedListener 
                                     }
                                 });
                             } else {
+                                addOrder.setEnabled(false);
                                 Toast.makeText(root.getContext(), getString(R.string.cart_empty_message_string), Toast.LENGTH_SHORT).show();
                             }
                         }

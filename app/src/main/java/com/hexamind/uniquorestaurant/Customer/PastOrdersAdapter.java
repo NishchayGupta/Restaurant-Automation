@@ -96,7 +96,7 @@ public class PastOrdersAdapter extends RecyclerView.Adapter<PastOrdersAdapter.Pa
 
         String dateString = cal.get(Calendar.DATE) + " " + getMonth(cal.get(Calendar.MONTH)+1) + ", " + cal.get(Calendar.YEAR);
         holder.dateOrdered.setText(dateString);
-        holder.amountPaid.setText(df.format((order.getTotalCost() * 1.15)));
+        holder.amountPaid.setText(context.getString(R.string.default_price_string, df.format((order.getTotalCost() * 1.15))));
         if (order.getExistingOrder()) {
             holder.paidText.setText(context.getString(R.string.not_paid_string));
             holder.paidText.setTextColor(ContextCompat.getColor(context, android.R.color.holo_red_dark));

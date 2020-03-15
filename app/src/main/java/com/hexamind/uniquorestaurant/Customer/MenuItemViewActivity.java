@@ -29,6 +29,7 @@ import com.hexamind.uniquorestaurant.Data.CustomerSuccess;
 import com.hexamind.uniquorestaurant.Data.FoodItems;
 import com.hexamind.uniquorestaurant.Data.GeneralError;
 import com.hexamind.uniquorestaurant.Data.Person;
+import com.hexamind.uniquorestaurant.Data.RegisterSuccess;
 import com.hexamind.uniquorestaurant.LoginActivity;
 import com.hexamind.uniquorestaurant.R;
 import com.hexamind.uniquorestaurant.Retrofit.ApiService;
@@ -293,11 +294,33 @@ public class MenuItemViewActivity extends AppCompatActivity {
             }
         });
         close.setOnClickListener(view -> dialog.dismiss());
-        bookTable.setOnClickListener(view -> {
-            Toast.makeText(MenuItemViewActivity.this, "The table has successfully been booked", Toast.LENGTH_SHORT).show();
-            dialog.dismiss();
+        reserveTakeout.setOnClickListener(view -> {
+            ApiService apiService = RetrofitClient.getApiService();
+            Call<RegisterSuccess> call = apiService.registedrForTakeout(customer.getPerson().getCustomer().getCustomerId());
+
+            call.enqueue(new Callback<RegisterSuccess>() {
+                @Override
+                public void onResponse(Call<RegisterSuccess> call, Response<RegisterSuccess> response) {
+                    RegisterSuccess takeout = response.body();
+
+                    Toast.makeText(MenuItemViewActivity.this, getString(R.string.table_take_out_success_message_string), Toast.LENGTH_SHORT).show();
+                    tableId = 11L;
+                    SharedPreferencesUtils.saveBooleanToSharedPrefs(MenuItemViewActivity.this, Constants.IS_TABLE_BOOKED, true);
+                    Map<Long, Long> tableIdMap = new HashMap<>();
+                    if (SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(MenuItemViewActivity.this, Constants.TABLE_ID_MAP_CONST_STRING) != null) {
+                        tableIdMap = SharedPreferencesUtils.getTableIdByCustomerFromSharedPrefs(MenuItemViewActivity.this, Constants.TABLE_ID_MAP_CONST_STRING);
+                    }
+                    tableIdMap.put(customer.getPerson().getCustomer().getCustomerId(), tableId);
+                    SharedPreferencesUtils.saveTableIdByCustomerToSharedPrefs(MenuItemViewActivity.this, Constants.TABLE_ID_MAP_CONST_STRING, tableIdMap);
+                    dialog.dismiss();
+                }
+
+                @Override
+                public void onFailure(Call<RegisterSuccess> call, Throwable t) {
+                    Toast.makeText(MenuItemViewActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
         });
-        reserveTakeout.setOnClickListener(view -> dialog.dismiss());
         checkAvailability.setOnClickListener(view -> {
             ApiService apiService = RetrofitClient.getApiService();
             Call<GeneralError> initUpdateCall = apiService.checkAvailabilityCheck();
